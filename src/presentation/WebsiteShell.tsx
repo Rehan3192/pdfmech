@@ -182,7 +182,14 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
         )}
       </header>
 
-      {page === "editor" ? editor : <MarketingPage page={page} />}
+      {page === "editor" ? (
+        editor
+      ) : (
+        <>
+          <MarketingPage page={page} />
+          <InternalLinkSilo page={page} />
+        </>
+      )}
       <SiteFooter />
     </div>
   );
@@ -252,6 +259,80 @@ function SiteLink({
     >
       {children}
     </a>
+  );
+}
+
+const internalLinkClusters: Readonly<
+  Record<Exclude<WebsitePage, "editor">, readonly { path: string; eyebrow: string; title: string; description: string }[]>
+> = {
+  home: [
+    { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
+    { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
+    { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
+  ],
+  features: [
+    { path: "/editor", eyebrow: "Use the tools", title: "Open the PDF editor", description: "Try the features on a PDF from your device." },
+    { path: "/how-it-works", eyebrow: "Learn the workflow", title: "See how PDFMech works", description: "Follow the path from opening a file to downloading it." },
+    { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
+  ],
+  howItWorks: [
+    { path: "/editor", eyebrow: "Start now", title: "Open the PDF editor", description: "Choose a PDF and follow the workflow as you edit." },
+    { path: "/features", eyebrow: "Explore tools", title: "See what each tool can do", description: "Review editing, page organization, and recovery features." },
+    { path: "/faq", eyebrow: "Need help?", title: "Read the FAQ", description: "Get answers before you begin your next edit." },
+  ],
+  faq: [
+    { path: "/how-it-works", eyebrow: "Step-by-step", title: "Learn the editing workflow", description: "See the complete path from opening to downloading." },
+    { path: "/features", eyebrow: "Product guide", title: "Explore PDFMech features", description: "See which tools support the edit you need." },
+    { path: "/security", eyebrow: "Trust & safety", title: "Read the security overview", description: "Understand local processing and product limits." },
+  ],
+  security: [
+    { path: "/privacy", eyebrow: "Privacy details", title: "Read the privacy overview", description: "Learn what stays in your browser and what you control." },
+    { path: "/editor", eyebrow: "Use PDFMech", title: "Open the PDF editor", description: "Start a browser-based editing session without an account." },
+    { path: "/faq", eyebrow: "Common questions", title: "Find practical answers", description: "Review guidance for recovery, downloads, and visual covers." },
+  ],
+  terms: [
+    { path: "/privacy", eyebrow: "Your data", title: "Read the privacy overview", description: "Understand local recovery and browser-based PDF processing." },
+    { path: "/security", eyebrow: "Product safety", title: "Review security information", description: "Learn the scope and limits of the editing tools." },
+    { path: "/contact", eyebrow: "Need assistance?", title: "Contact PDFMech support", description: "Send product questions or focused feedback." },
+  ],
+  about: [
+    { path: "/features", eyebrow: "Product tools", title: "Explore PDFMech features", description: "See the focused tools built for everyday document fixes." },
+    { path: "/how-it-works", eyebrow: "The workflow", title: "See how editing works", description: "Learn how to go from an original PDF to a new copy." },
+    { path: "/contact", eyebrow: "Get in touch", title: "Contact PDFMech", description: "Share feedback, questions, or an issue you found." },
+  ],
+  privacy: [
+    { path: "/security", eyebrow: "Security overview", title: "Understand local processing", description: "Review how PDFMech approaches browser-based editing." },
+    { path: "/editor", eyebrow: "Start privately", title: "Open the PDF editor", description: "Edit a PDF from your device without an account." },
+    { path: "/terms", eyebrow: "Terms of use", title: "Read the terms", description: "Review the basic conditions for using PDFMech." },
+  ],
+  contact: [
+    { path: "/faq", eyebrow: "Self-service help", title: "Browse common questions", description: "Find answers for common editing, download, and privacy topics." },
+    { path: "/how-it-works", eyebrow: "Product guide", title: "Learn the editing workflow", description: "Follow the steps and controls before reporting an issue." },
+    { path: "/privacy", eyebrow: "Share safely", title: "Read the privacy overview", description: "Learn how to report an issue without sharing sensitive PDFs." },
+  ],
+};
+
+function InternalLinkSilo({ page }: { readonly page: Exclude<WebsitePage, "editor"> }) {
+  const links = internalLinkClusters[page];
+
+  return (
+    <aside className="internal-link-silo" aria-labelledby="explore-next-title">
+      <div className="internal-link-silo-heading">
+        <span className="hero-kicker">Explore next</span>
+        <h2 id="explore-next-title">Keep moving with PDFMech.</h2>
+        <p>Related guides and product pages for your next step.</p>
+      </div>
+      <nav className="internal-link-silo-grid" aria-label="Related PDFMech pages">
+        {links.map((link) => (
+          <SiteLink key={link.path} path={link.path}>
+            <span>{link.eyebrow}</span>
+            <strong>{link.title}</strong>
+            <small>{link.description}</small>
+            <i aria-hidden="true">→</i>
+          </SiteLink>
+        ))}
+      </nav>
+    </aside>
   );
 }
 
