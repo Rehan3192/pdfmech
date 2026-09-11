@@ -433,10 +433,13 @@ export function ProductionApp({
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [placementArmed, setPlacementArmed] = useState(false);
   const [panModeEnabled, setPanModeEnabled] = useState(false);
-  const [pageStripVisible, setPageStripVisible] = useState(true);
+  const [pageStripVisible, setPageStripVisible] = useState(
+    () => window.innerWidth > 720,
+  );
   const [toolbarVisible, setToolbarVisible] = useState(true);
   const [toolRailVisible, setToolRailVisible] = useState(true);
   const [propertiesVisible, setPropertiesVisible] = useState(true);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [fullscreenEnabled, setFullscreenEnabled] = useState(false);
   const [selectedObjectId, setSelectedObjectId] = useState<ObjectId | null>(
     null,
@@ -2144,6 +2147,95 @@ function finishTutorial(): void {
           ↷
         </button>
       </header>
+
+      {documentState !== null ? (
+        <>
+          <details
+            className="mobile-editor-more"
+            open={mobileMoreOpen}
+            onToggle={(event) => setMobileMoreOpen(event.currentTarget.open)}
+          >
+            <summary>
+              <span aria-hidden="true">•••</span>
+              More tools
+            </summary>
+            <div className="mobile-editor-more-panel">
+              <button type="button" onClick={() => setPageStripVisible((visible) => !visible)}>
+                {pageStripVisible ? "Hide pages" : "Show pages"}
+              </button>
+              <button type="button" onClick={rotateCurrentPage}>Rotate page</button>
+              <button type="button" onClick={moveCurrentPageEarlier} disabled={selectedPageIndex === 0}>Move page up</button>
+              <button type="button" onClick={moveCurrentPageLater} disabled={selectedPageIndex === documentState.pages.length - 1}>Move page down</button>
+              <button type="button" onClick={deleteCurrentPage}>Delete page</button>
+              <button type="button" onClick={undoLastChange} disabled={!canUndo}>Undo</button>
+              <button type="button" onClick={redoLastChange} disabled={!canRedo}>Redo</button>
+              <button type="button" onClick={() => void toggleFullscreen()}>
+                {fullscreenEnabled ? "Exit full screen" : "Full screen"}
+              </button>
+            </div>
+          </details>
+          <nav className="mobile-editor-dock" aria-label="Mobile PDF editing tools">
+            <button
+              type="button"
+              aria-pressed={!placementArmed && !panModeEnabled}
+              onClick={() => {
+                setEditingEnabled(false);
+                setPlacementArmed(false);
+                setPanModeEnabled(false);
+                setSelectedObjectId(null);
+                setPropertiesVisible(false);
+                setStatus({ kind: "ready", text: "Select mode is on." });
+              }}
+            >
+              <span aria-hidden="true">↖</span>Select
+            </button>
+            <button
+              type="button"
+              aria-pressed={placementArmed && creationTool === "text"}
+              onClick={() => {
+                setEditingEnabled(true);
+                setPlacementArmed(true);
+                setPanModeEnabled(false);
+                setCreationTool("text");
+                setPropertiesVisible(true);
+                setStatus({ kind: "ready", text: "Add Text is selected. Tap the page to add a text box." });
+              }}
+            >
+              <span aria-hidden="true">T</span>Text
+            </button>
+            <button
+              type="button"
+              aria-pressed={placementArmed && creationTool === "whiteout"}
+              onClick={() => {
+                setEditingEnabled(true);
+                setPlacementArmed(true);
+                setPanModeEnabled(false);
+                setCreationTool("whiteout");
+                setPropertiesVisible(true);
+                setStatus({ kind: "ready", text: "Whiteout is selected. Tap the page to add a visual cover." });
+              }}
+            >
+              <span aria-hidden="true">▱</span>Whiteout
+            </button>
+            <button
+              className="mobile-editor-more-trigger"
+              type="button"
+              aria-expanded={mobileMoreOpen}
+              onClick={() => setMobileMoreOpen((open) => !open)}
+            >
+              <span aria-hidden="true">•••</span>More
+            </button>
+            <button
+              className="mobile-download-button"
+              type="button"
+              onClick={() => void downloadDocument()}
+              disabled={isDownloading}
+            >
+              <span aria-hidden="true">⇩</span>{isDownloading ? "Preparing…" : "Download"}
+            </button>
+          </nav>
+        </>
+      ) : null}
 
       {documentState !== null && !toolbarVisible ? (
         <button
