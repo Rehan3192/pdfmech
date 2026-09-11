@@ -236,6 +236,8 @@ function SiteFooter() {
         <SiteLink path="/security">Security</SiteLink>
         <SiteLink path="/privacy">Privacy</SiteLink>
         <SiteLink path="/terms">Terms</SiteLink>
+        <a href="/sitemap.xml">Sitemap</a>
+        <a href="/robots.txt">Robots.txt</a>
       </nav>
       <p className="footer-note">© {year} PDFMech. Built for fast browser-based PDF fixes.</p>
     </footer>
