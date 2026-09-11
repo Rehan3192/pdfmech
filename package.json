@@ -1,0 +1,49 @@
+{
+  "name": "privacy-pdf-editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Privacy-first browser-local PDF editor.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "preview": "vite preview --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:performance": "playwright test tests/e2e/corpus.spec.ts --grep \"measures medium and large local workflows\" --project=chromium",
+    "build:verify-phase8": "node scripts/verify-phase8-build.mjs",
+    "corpus:validate": "node scripts/validate-corpus.mjs",
+    "fixtures": "node scripts/generate-fixtures.mjs"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/lato": "^5.3.0",
+    "@fontsource/montserrat": "^5.3.0",
+    "@fontsource/noto-sans": "^5.3.0",
+    "@fontsource/noto-sans-arabic": "^5.3.0",
+    "@fontsource/noto-sans-devanagari": "^5.3.0",
+    "@fontsource/noto-sans-jp": "^5.3.0",
+    "@fontsource/noto-sans-kr": "^5.3.0",
+    "@fontsource/noto-sans-sc": "^5.3.0",
+    "@fontsource/open-sans": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/poppins": "^5.3.0",
+    "@fontsource/roboto": "^5.3.0",
+    "@fontsource/source-sans-3": "^5.3.0",
+    "@pdf-lib/fontkit": "^1.1.1",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.2.108",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "regenerator-runtime": "^0.14.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.0",
+    "@types/node": "26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "typescript": "7.0.2",
+    "vite": "8.2.0",
+    "vitest": "4.1.10"
+  }
+}

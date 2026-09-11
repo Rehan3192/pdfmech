@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "caveat": "Playwright elapsed time and Chromium main-realm heap do not include every worker/native allocation.",
+  "environment": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "cpuModel": "Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz",
+    "logicalCpuCount": 8,
+    "totalMemoryBytes": 17048842240,
+    "freeMemoryBytesAtReport": 5625077760
+  },
+  "measurements": [
+    {
+      "name": "performance-25p-20m.pdf",
+      "bytes": 20996028,
+      "pages": 25,
+      "openMilliseconds": 928,
+      "exportAndValidationMilliseconds": 1387,
+      "mainRealmHeap": {
+        "usedJSHeapSize": 57749056,
+        "totalJSHeapSize": 63490688
+      }
+    },
+    {
+      "name": "performance-100p-50m.pdf",
+      "bytes": 52514735,
+      "pages": 100,
+      "openMilliseconds": 939,
+      "exportAndValidationMilliseconds": 1136,
+      "mainRealmHeap": {
+        "usedJSHeapSize": 197891264,
+        "totalJSHeapSize": 208417760
+      }
+    }
+  ]
+}
