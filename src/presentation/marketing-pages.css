@@ -1799,6 +1799,30 @@ html {
 }
 
 /* Contextual internal links: connect each page to the relevant product, guide, and trust topics. */
+.search-intent-section {
+  width: min(100% - 48px, 880px);
+  margin: 0 auto 32px;
+  padding: clamp(28px, 4vw, 42px);
+  text-align: center;
+}
+
+.search-intent-section h2 {
+  max-width: 740px;
+  margin: 13px auto 12px;
+  color: #12384b;
+  font-size: clamp(25px, 3vw, 38px);
+  line-height: 1.12;
+  letter-spacing: -.045em;
+}
+
+.search-intent-section p {
+  max-width: 780px;
+  margin: 0 auto;
+  color: #506f7d;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
 .internal-link-silo {
   width: min(100% - 48px, 1180px);
   margin: 0 auto 72px;
@@ -1925,6 +1949,11 @@ html {
 }
 
 @media (max-width: 760px) {
+  .search-intent-section {
+    width: min(100% - 30px, 880px);
+    padding-inline: 8px;
+  }
+
   .internal-link-silo {
     width: min(100% - 30px, 1180px);
     margin-bottom: 48px;

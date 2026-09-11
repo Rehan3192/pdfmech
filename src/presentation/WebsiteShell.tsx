@@ -55,6 +55,19 @@ const pageDescriptions: Readonly<Record<WebsitePage, string>> = {
   contact: "Contact PDFMech for free PDF editor support, page deletion or reordering help, text cover questions, browser issues, PDF opening problems, and export feedback.",
 };
 
+const pagePaths: Readonly<Record<WebsitePage, string>> = {
+  home: "/",
+  editor: "/editor",
+  features: "/features",
+  howItWorks: "/how-it-works",
+  faq: "/faq",
+  security: "/security",
+  terms: "/terms",
+  about: "/about",
+  privacy: "/privacy",
+  contact: "/contact",
+};
+
 const freeCampaignFirstCycleEndsAt = new Date("2026-10-17T00:00:00+05:00").getTime();
 const freeCampaignCycleLength = 37 * 24 * 60 * 60 * 1000;
 
@@ -84,6 +97,8 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
   }, []);
 
   useEffect(() => {
+    const canonicalUrl = `https://www.pdfmech.com${pagePaths[page]}`;
+
     document.title = pageTitles[page];
     document
       .querySelector('meta[name="description"]')
@@ -100,6 +115,12 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
     document
       .querySelector('meta[name="twitter:description"]')
       ?.setAttribute("content", pageDescriptions[page]);
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute("href", canonicalUrl);
+    document
+      .querySelector('meta[property="og:url"]')
+      ?.setAttribute("content", canonicalUrl);
   }, [page]);
 
   const navItems = useMemo(
@@ -187,6 +208,7 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
       ) : (
         <>
           <MarketingPage page={page} />
+          <SearchIntentSection page={page} />
           <InternalLinkSilo page={page} />
         </>
       )}
@@ -335,6 +357,59 @@ function InternalLinkSilo({ page }: { readonly page: Exclude<WebsitePage, "edito
         ))}
       </nav>
     </aside>
+  );
+}
+
+const searchIntentCopy: Readonly<
+  Record<Exclude<WebsitePage, "editor">, { title: string; text: string }>
+> = {
+  home: {
+    title: "A free online PDF editor for quick, private fixes.",
+    text: "Use PDFMech to add text to a PDF, visually cover visible content, rotate pages, delete PDF pages, or move pages into a better order. It is a browser-based PDF editor: open a file from your device, make supported changes, and download a new copy without creating an account.",
+  },
+  features: {
+    title: "Free PDF editing tools for text and page changes.",
+    text: "Whether you need to add text to a PDF, cover an outdated detail, delete a PDF page, or rearrange PDF pages, PDFMech keeps the task focused. It adds new editable text boxes and visual covers; it does not claim to securely remove underlying PDF content.",
+  },
+  howItWorks: {
+    title: "How to edit a PDF online for free.",
+    text: "Open a PDF from your device, choose the editing or page-organizing tool you need, then review and download a separate edited PDF. PDFMech is designed for common browser-based PDF tasks without a required account or upload queue.",
+  },
+  faq: {
+    title: "Answers for common free PDF editor tasks.",
+    text: "Find help before you add text to a PDF, delete or reorder PDF pages, use a visual cover, or download your edited file. The FAQ also explains local browser processing, recovery data, and the limits of visual whiteout and redact tools.",
+  },
+  security: {
+    title: "A browser-based PDF editor with local processing.",
+    text: "PDFMech is built so supported editing work happens in your browser rather than through an editing-server upload. Review the product limits before using any free online PDF editor for sensitive documents, especially when a task requires secure redaction.",
+  },
+  terms: {
+    title: "Using a free browser PDF editor responsibly.",
+    text: "PDFMech helps with focused PDF edits such as adding text, visually covering content, and organizing pages. Always review the downloaded PDF and use specialist tools when you need security controls, legally binding signatures, or secure redaction.",
+  },
+  about: {
+    title: "Built for everyday free PDF editing.",
+    text: "PDFMech focuses on the jobs people commonly need from a free online PDF editor: add a note, cover a visible detail, rotate a scan, delete an extra page, or reorder a document before downloading a new copy.",
+  },
+  privacy: {
+    title: "Private PDF editing without an editing-server upload.",
+    text: "PDFMech is designed for browser-based PDF editing, so supported work happens on your device. You can add text, organize pages, and download a new copy while understanding how local recovery data may remain in the browser you use.",
+  },
+  contact: {
+    title: "Help with free PDF editor tasks and browser issues.",
+    text: "Contact PDFMech if you need help adding text to a PDF, deleting or moving PDF pages, using a visual cover, or downloading an edited file. For privacy, describe the issue without sending a sensitive source document.",
+  },
+};
+
+function SearchIntentSection({ page }: { readonly page: Exclude<WebsitePage, "editor"> }) {
+  const copy = searchIntentCopy[page];
+
+  return (
+    <section className="search-intent-section" aria-labelledby="search-intent-title">
+      <span className="hero-kicker">Free PDF editing</span>
+      <h2 id="search-intent-title">{copy.title}</h2>
+      <p>{copy.text}</p>
+    </section>
   );
 }
 
