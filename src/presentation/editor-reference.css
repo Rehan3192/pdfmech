@@ -799,6 +799,7 @@
     border-radius: 0 !important;
     background: linear-gradient(145deg, #e7f3f7, #d6e6eb) !important;
     box-shadow: inset 0 12px 25px rgb(19 70 91 / 7%) !important;
+    touch-action: none !important;
   }
 
   .mobile-editor-dock {
@@ -935,10 +936,23 @@
     right: 18px !important;
     display: grid !important;
     place-items: center !important;
-    width: 32px !important;
-    min-height: 32px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
     padding: 0 !important;
     border-radius: 50% !important;
+    border: 1px solid #cde4eb !important;
+    background: #f5fbfd !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+  }
+  .production-shell[data-has-document="true"] .properties-collapse-arrow::before {
+    content: "×";
+    color: #12384b;
+    font-size: 24px;
+    font-weight: 400;
   }
 
   .production-shell[data-has-document="true"] .toolbar-restore,

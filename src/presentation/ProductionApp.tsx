@@ -2160,6 +2160,21 @@ function finishTutorial(): void {
               More tools
             </summary>
             <div className="mobile-editor-more-panel">
+              <button
+                type="button"
+                aria-pressed={documentPanEnabled}
+                onClick={() => {
+                  setEditingEnabled(false);
+                  setPlacementArmed(false);
+                  setPanModeEnabled(true);
+                  setSelectedObjectId(null);
+                  setPropertiesVisible(false);
+                  setMobileMoreOpen(false);
+                  setStatus({ kind: "ready", text: "Move canvas is on. Drag the document with one finger." });
+                }}
+              >
+                Move canvas
+              </button>
               <button type="button" onClick={() => setPageStripVisible((visible) => !visible)}>
                 {pageStripVisible ? "Hide pages" : "Show pages"}
               </button>
