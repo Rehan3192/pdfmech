@@ -1091,11 +1091,11 @@
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important;
+    gap: 10px !important;
     width: 100% !important;
-    height: min(56dvh, 560px) !important;
-    max-height: min(56dvh, 560px) !important;
-    padding: 30px 18px calc(16px + env(safe-area-inset-bottom)) !important;
+    height: auto !important;
+    max-height: min(44dvh, 410px) !important;
+    padding: 27px 16px calc(12px + env(safe-area-inset-bottom)) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     border: 0 !important;
@@ -1127,7 +1127,7 @@
     flex: 0 0 auto !important;
     margin: 0 48px 3px 0 !important;
     color: #092b4b !important;
-    font-size: 20px !important;
+    font-size: 19px !important;
     line-height: 1.2 !important;
     letter-spacing: -.035em !important;
   }
@@ -1172,13 +1172,34 @@
   }
 
   .mobile-properties-sheet .property-row {
-    display: flex !important;
+    display: grid !important;
     gap: 7px !important;
     width: 100% !important;
   }
 
+  .mobile-properties-sheet .property-size-style .property-row {
+    grid-template-columns: minmax(68px, 1.2fr) repeat(3, minmax(48px, .75fr)) !important;
+  }
+
+  .mobile-properties-sheet .property-color-field .property-row {
+    grid-template-columns: 54px minmax(110px, 1fr) 48px !important;
+  }
+
+  .mobile-properties-sheet .property-align-field .property-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
   .mobile-properties-sheet input:not([type="checkbox"]),
-  .mobile-properties-sheet select,
+  .mobile-properties-sheet select {
+    box-sizing: border-box !important;
+    min-height: 42px !important;
+    border: 1px solid #d5e4ef !important;
+    border-radius: 11px !important;
+    background: #fff !important;
+    color: #102f49 !important;
+    font-size: 16px !important;
+  }
+
   .mobile-properties-sheet button {
     box-sizing: border-box !important;
     min-height: 42px !important;
@@ -1186,7 +1207,7 @@
     border-radius: 11px !important;
     background: #fff !important;
     color: #102f49 !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
   }
 
   .mobile-properties-sheet input:not([type="checkbox"]),
@@ -1197,18 +1218,30 @@
   }
 
   .mobile-properties-sheet .property-row > * {
-    flex: 1 1 0 !important;
+    width: 100% !important;
     min-width: 0 !important;
   }
 
   .mobile-properties-sheet .property-color-field input[type="color"] {
-    flex: 0 0 54px !important;
     width: 54px !important;
     padding: 4px !important;
   }
 
   .mobile-properties-sheet .text-content-control {
     display: grid !important;
+  }
+
+  .mobile-properties-sheet[data-tool="whiteout"] > .property-font-field,
+  .mobile-properties-sheet[data-tool="whiteout"] > .property-size-style,
+  .mobile-properties-sheet[data-tool="whiteout"] > .property-color-field,
+  .mobile-properties-sheet[data-tool="whiteout"] > .property-align-field,
+  .mobile-properties-sheet[data-tool="whiteout"] > .text-content-control,
+  .mobile-properties-sheet[data-tool="redaction"] > .property-font-field,
+  .mobile-properties-sheet[data-tool="redaction"] > .property-size-style,
+  .mobile-properties-sheet[data-tool="redaction"] > .property-color-field,
+  .mobile-properties-sheet[data-tool="redaction"] > .property-align-field,
+  .mobile-properties-sheet[data-tool="redaction"] > .text-content-control {
+    display: none !important;
   }
 
   .mobile-properties-sheet button[data-testid="production-apply-text"],
@@ -1231,8 +1264,7 @@
   }
 
   .mobile-properties-done {
-    position: sticky !important;
-    bottom: 0 !important;
+    position: static !important;
     order: 99 !important;
     display: block !important;
     flex: 0 0 46px !important;

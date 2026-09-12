@@ -603,6 +603,11 @@ function finishTutorial(): void {
   }, [selectedTextObject?.id, selectedTextObject?.text]);
 
   useEffect(() => {
+    if (mobileLayout) {
+      pendingTextFocusIdRef.current = null;
+      return;
+    }
+
     const pendingObjectId = pendingTextFocusIdRef.current;
     if (
       pendingObjectId === null ||
@@ -621,7 +626,7 @@ function finishTutorial(): void {
 
     pendingTextFocusIdRef.current = null;
     focusEditableTextAtEnd(editableTextElement);
-  }, [editingEnabled, selectedObjectId, selectedPageObjects]);
+  }, [editingEnabled, mobileLayout, selectedObjectId, selectedPageObjects]);
 
   useEffect(() => {
     setAppearanceDraft(
@@ -1475,14 +1480,20 @@ function finishTutorial(): void {
     commitDocument(result.document);
     setSelectedObjectId(result.objectId);
     setPlacementArmed(false);
-    if (creationTool === "text") {
+    if (mobileLayout) {
+      setEditingEnabled(false);
+      setPropertiesVisible(true);
+    }
+    if (creationTool === "text" && !mobileLayout) {
       pendingTextFocusIdRef.current = result.objectId;
     }
     setStatus({
       kind: "ready",
       text:
-        creationTool === "text"
+        creationTool === "text" && !mobileLayout
           ? "Added one text box. Type inside it, or choose Add Text again to place another."
+          : creationTool === "text"
+            ? "Added one text box. Edit it in Text Properties."
           : `Created one ${creationTool} object on page ${selectedPageIndex + 1}. Choose the tool again to place another.`,
     });
   }
@@ -1515,7 +1526,11 @@ function finishTutorial(): void {
     setPlacementArmed(false);
     setPanModeEnabled(false);
     setSelectedObjectId(object.id);
-    setPropertiesVisible(true);
+    if (mobileLayout) {
+      setPropertiesVisible(false);
+    } else {
+      setPropertiesVisible(true);
+    }
     setStatus({
       kind: "ready",
       text: `Selected ${object.kind} object.`,
@@ -1562,15 +1577,25 @@ function finishTutorial(): void {
       session.latestFrame.y !== session.startFrame.y;
     if (!moved) {
       if (session.objectKind === "text") {
-        setEditingEnabled(true);
+        setEditingEnabled(!mobileLayout);
         setPlacementArmed(false);
-        pendingTextFocusIdRef.current = session.objectId;
+        if (mobileLayout) {
+          pendingTextFocusIdRef.current = null;
+          setPropertiesVisible(true);
+        } else {
+          pendingTextFocusIdRef.current = session.objectId;
+        }
         setStatus({
           kind: "ready",
-          text: "Text selected. Type directly inside it or use Text Properties.",
+          text: mobileLayout
+            ? "Text selected. Edit it in Text Properties."
+            : "Text selected. Type directly inside it or use Text Properties.",
         });
       } else {
         setEditingEnabled(false);
+        if (mobileLayout) {
+          setPropertiesVisible(true);
+        }
       }
       return;
     }
@@ -1624,7 +1649,11 @@ function finishTutorial(): void {
     };
 
     setSelectedObjectId(object.id);
-    setPropertiesVisible(true);
+    if (mobileLayout) {
+      setPropertiesVisible(false);
+    } else {
+      setPropertiesVisible(true);
+    }
     setStatus({
       kind: "ready",
       text: `Selected ${object.kind} object.`,
@@ -2229,7 +2258,8 @@ function finishTutorial(): void {
                 setPlacementArmed(true);
                 setPanModeEnabled(false);
                 setCreationTool("text");
-                setPropertiesVisible(true);
+                setSelectedObjectId(null);
+                setPropertiesVisible(false);
                 setStatus({ kind: "ready", text: "Add Text is selected. Tap the page to add a text box." });
               }}
             >
@@ -2243,7 +2273,8 @@ function finishTutorial(): void {
                 setPlacementArmed(true);
                 setPanModeEnabled(false);
                 setCreationTool("whiteout");
-                setPropertiesVisible(true);
+                setSelectedObjectId(null);
+                setPropertiesVisible(false);
                 setStatus({ kind: "ready", text: "Whiteout is selected. Tap the page to add a visual cover." });
               }}
             >
