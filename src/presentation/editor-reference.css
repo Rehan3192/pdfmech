@@ -1079,6 +1079,106 @@
   display: none;
 }
 
+/* Keep phone-only controls out of tablet and desktop layouts. */
+@media (min-width: 721px) {
+  .mobile-editor-dock,
+  .mobile-editor-more {
+    display: none !important;
+  }
+}
+
+/* Final desktop editor alignment. */
+@media (min-width: 901px) {
+  .production-shell[data-has-document="true"] {
+    position: relative !important;
+    height: calc(100dvh - 118px) !important;
+    min-height: 620px !important;
+  }
+
+  .production-shell[data-has-document="true"] .workspace-title {
+    position: relative !important;
+    padding-right: 32px !important;
+  }
+
+  .production-shell[data-has-document="true"] .toolbar-collapse-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    right: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    border: 1px solid #d7e6ec !important;
+    border-radius: 8px !important;
+    background: #f7fbfc !important;
+    color: #31596c !important;
+    font-size: 14px !important;
+    transform: translateY(-50%) !important;
+    box-shadow: none !important;
+  }
+
+  .production-shell[data-has-document="true"] .production-toolbar .fullscreen-toggle {
+    position: static !important;
+    inset: auto !important;
+    order: 18 !important;
+    z-index: auto !important;
+    flex: 0 0 auto !important;
+  }
+
+  .production-shell[data-has-document="true"] .viewer-controls .page-controls {
+    position: absolute !important;
+    top: -49px !important;
+    left: 45% !important;
+    z-index: 60 !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .production-shell[data-has-document="true"] .page-strip .panel-heading {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    min-width: 86px !important;
+    margin: 0 !important;
+  }
+
+  .production-shell[data-has-document="true"] .page-strip .panel-heading .bar-collapse-arrow {
+    margin-left: auto !important;
+  }
+
+  .production-shell[data-has-document="true"] .editor-tool-rail .bar-collapse-arrow,
+  .production-shell[data-has-document="true"] .page-strip .bar-collapse-arrow,
+  .production-shell[data-has-document="true"] .object-controls .bar-collapse-arrow {
+    display: grid !important;
+    place-items: center !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    border: 1px solid #d7e6ec !important;
+    border-radius: 8px !important;
+    background: #f7fbfc !important;
+    color: #31596c !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1500px) {
+  .production-shell[data-has-document="true"] .editor-view-menu,
+  .production-shell[data-has-document="true"] .production-toolbar .fullscreen-toggle {
+    display: none !important;
+  }
+
+  .production-shell[data-has-document="true"] .viewer-controls .page-controls {
+    left: 42% !important;
+  }
+}
+
 @media (max-width: 720px) {
   body:has(.mobile-properties-sheet) {
     overflow: hidden;
