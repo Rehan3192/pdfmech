@@ -2847,6 +2847,20 @@ function finishTutorial(): void {
                     >
                       ›
                     </button>
+                    <button
+                      className="mobile-properties-done"
+                      type="button"
+                      onClick={() => {
+                        if (selectedTextObject !== null && canApplyTextDraft) {
+                          applySelectedTextContent();
+                        }
+                        setPropertiesVisible(false);
+                        setEditingEnabled(false);
+                        setPlacementArmed(false);
+                      }}
+                    >
+                      Done
+                    </button>
                     {selectedObject === null ? (
                       <>
                         <p className="properties-empty-note">
