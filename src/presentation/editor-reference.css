@@ -800,6 +800,8 @@
     background: linear-gradient(145deg, #e7f3f7, #d6e6eb) !important;
     box-shadow: inset 0 12px 25px rgb(19 70 91 / 7%) !important;
     touch-action: none !important;
+    overflow: auto !important;
+    overscroll-behavior: contain !important;
   }
 
   .mobile-editor-dock {

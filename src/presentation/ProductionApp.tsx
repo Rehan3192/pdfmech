@@ -1688,11 +1688,14 @@ function finishTutorial(): void {
   }
 
   function startDocumentPan(event: ReactPointerEvent<HTMLElement>): void {
+    const canUseDirectTouchPan =
+      event.pointerType === "touch" && !placementArmed && !editingEnabled;
+
     if (
-      !documentPanEnabled ||
+      (!documentPanEnabled && !canUseDirectTouchPan) ||
       documentState === null ||
       renderPanelRef.current === null ||
-      event.button !== 0
+      (event.pointerType === "mouse" && event.button !== 0)
     ) {
       return;
     }
