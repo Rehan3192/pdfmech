@@ -8,7 +8,9 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TouchEvent as ReactTouchEvent,
   type WheelEvent as ReactWheelEvent,
+  type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 import type {
   EditObject,
@@ -440,6 +442,9 @@ export function ProductionApp({
   const [toolRailVisible, setToolRailVisible] = useState(true);
   const [propertiesVisible, setPropertiesVisible] = useState(true);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const [mobileLayout, setMobileLayout] = useState(
+    () => window.matchMedia("(max-width: 720px)").matches,
+  );
   const [fullscreenEnabled, setFullscreenEnabled] = useState(false);
   const [selectedObjectId, setSelectedObjectId] = useState<ObjectId | null>(
     null,
@@ -471,6 +476,13 @@ export function ProductionApp({
   const [tutorialStepIndex, setTutorialStepIndex] = useState<number | null>(
     null,
   );
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 720px)");
+    const syncMobileLayout = () => setMobileLayout(media.matches);
+    media.addEventListener("change", syncMobileLayout);
+    return () => media.removeEventListener("change", syncMobileLayout);
+  }, []);
   const canUndo = canUndoDocumentChange(documentHistory);
   const canRedo = canRedoDocumentChange(documentHistory);
   const canRestoreRecoveredDocument =
@@ -1503,6 +1515,7 @@ function finishTutorial(): void {
     setPlacementArmed(false);
     setPanModeEnabled(false);
     setSelectedObjectId(object.id);
+    setPropertiesVisible(true);
     setStatus({
       kind: "ready",
       text: `Selected ${object.kind} object.`,
@@ -1611,6 +1624,7 @@ function finishTutorial(): void {
     };
 
     setSelectedObjectId(object.id);
+    setPropertiesVisible(true);
     setStatus({
       kind: "ready",
       text: `Selected ${object.kind} object.`,
@@ -2831,13 +2845,22 @@ function finishTutorial(): void {
                     </p>
                   ) : null}
                 </section>
-                {documentState !== null ? (
+                {documentState !== null &&
+                (!mobileLayout || (propertiesVisible && selectedObject !== null)) ? (
+                  <ResponsivePortal enabled={mobileLayout}>
                   <section
-                    className="control-group object-controls"
+                    className={`control-group object-controls${mobileLayout ? " mobile-properties-sheet" : ""}`}
                     aria-label="Object tools"
                     data-empty={selectedObject === null ? "true" : "false"}
                     data-tool={propertiesTool}
                   >
+                    <h2 className="mobile-properties-title">
+                      {propertiesTool === "text"
+                        ? "Text Properties"
+                        : propertiesTool === "whiteout"
+                          ? "Whiteout Properties"
+                          : "Redaction Properties"}
+                    </h2>
                     <button
                       className="bar-collapse-arrow properties-collapse-arrow"
                       type="button"
@@ -3097,6 +3120,7 @@ function finishTutorial(): void {
                       Delete
                     </button>
                   </section>
+                  </ResponsivePortal>
                 ) : null}
               </div>
             </>
@@ -3309,6 +3333,16 @@ function finishTutorial(): void {
       </output>
     </div>
   );
+}
+
+function ResponsivePortal({
+  enabled,
+  children,
+}: {
+  readonly enabled: boolean;
+  readonly children: ReactNode;
+}) {
+  return enabled ? createPortal(children, document.body) : children;
 }
 
 function getTouchDistance(
