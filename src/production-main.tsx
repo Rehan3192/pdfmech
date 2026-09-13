@@ -52,6 +52,7 @@ import type { SourceId } from "./domain/primitives";
 import type { RecoverySummary } from "./ports/recovery";
 import "./presentation/production.css";
 import "./presentation/editor-reference.css";
+import "./presentation/editor-reference-v2.css";
 import "./presentation/content-guide.css";
 import "./presentation/marketing-pages.css";
 

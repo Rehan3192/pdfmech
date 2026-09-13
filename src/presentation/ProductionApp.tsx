@@ -424,6 +424,7 @@ export function ProductionApp({
   const resizeSessionRef = useRef<ResizeSession | null>(null);
   const panSessionRef = useRef<PanSession | null>(null);
   const pendingTextFocusIdRef = useRef<ObjectId | null>(null);
+  const initialFitSourceIdRef = useRef<string | null>(null);
   const pinchDistanceRef = useRef<number | null>(null);
   const [documentHistory, setDocumentHistory] = useState(() =>
     createDocumentHistory(),
@@ -435,15 +436,13 @@ export function ProductionApp({
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [placementArmed, setPlacementArmed] = useState(false);
   const [panModeEnabled, setPanModeEnabled] = useState(false);
-  const [pageStripVisible, setPageStripVisible] = useState(
-    () => window.innerWidth > 720,
-  );
+  const [pageStripVisible, setPageStripVisible] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(true);
   const [toolRailVisible, setToolRailVisible] = useState(true);
-  const [propertiesVisible, setPropertiesVisible] = useState(true);
+  const [propertiesVisible, setPropertiesVisible] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [mobileLayout, setMobileLayout] = useState(
-    () => window.matchMedia("(max-width: 720px)").matches,
+    () => window.matchMedia("(max-width: 1023px)").matches,
   );
   const [fullscreenEnabled, setFullscreenEnabled] = useState(false);
   const [selectedObjectId, setSelectedObjectId] = useState<ObjectId | null>(
@@ -478,7 +477,7 @@ export function ProductionApp({
   );
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 720px)");
+    const media = window.matchMedia("(max-width: 1023px)");
     const syncMobileLayout = () => setMobileLayout(media.matches);
     media.addEventListener("change", syncMobileLayout);
     return () => media.removeEventListener("change", syncMobileLayout);
@@ -536,6 +535,23 @@ export function ProductionApp({
     normalizedTextDraft.length > 0 &&
     normalizedTextDraft !== selectedTextObject.text;
   const documentPanEnabled = panModeEnabled;
+
+  useEffect(() => {
+    const sourceId = activeSource?.id ?? null;
+    if (sourceId === null) {
+      initialFitSourceIdRef.current = null;
+      return;
+    }
+    if (initialFitSourceIdRef.current === sourceId || selectedPageSize === null) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      fitZoom("page");
+      initialFitSourceIdRef.current = sourceId;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeSource?.id, selectedPageSize?.height, selectedPageSize?.width]);
 
   const currentTutorialStep =
     tutorialStepIndex === null ? null : tutorialSteps[tutorialStepIndex];
@@ -1731,11 +1747,10 @@ function finishTutorial(): void {
   }
 
   function startDocumentPan(event: ReactPointerEvent<HTMLElement>): void {
-    const canUseDirectTouchPan =
-      event.pointerType === "touch" && !placementArmed && !editingEnabled;
+    const canUseDirectSelectPan = !placementArmed && !editingEnabled;
 
     if (
-      (!documentPanEnabled && !canUseDirectTouchPan) ||
+      (!documentPanEnabled && !canUseDirectSelectPan) ||
       documentState === null ||
       renderPanelRef.current === null ||
       (event.pointerType === "mouse" && event.button !== 0)
@@ -2044,9 +2059,12 @@ function finishTutorial(): void {
       data-properties-open={propertiesVisible ? "true" : "false"}
     >
       <header className="production-toolbar">
+        <div className="editor-app-brand" aria-label="PDFMech">
+          <span>PDF</span>Mech
+        </div>
         {documentState !== null ? (
           <label className="toolbar-file-switch" title="Open another PDF">
-            <span aria-hidden="true">☰</span>
+            <span>Open</span>
             <input
               type="file"
               accept="application/pdf,.pdf"
@@ -2206,36 +2224,54 @@ function finishTutorial(): void {
               More tools
             </summary>
             <div className="mobile-editor-more-panel">
+              <div className="context-sheet-heading">
+                <h2>More Tools</h2>
+                <button
+                  className="context-sheet-close"
+                  type="button"
+                  aria-label="Close more tools"
+                  onClick={() => setMobileMoreOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
               <button
                 type="button"
-                aria-pressed={documentPanEnabled}
                 onClick={() => {
-                  setEditingEnabled(false);
-                  setPlacementArmed(false);
-                  setPanModeEnabled(true);
-                  setSelectedObjectId(null);
-                  setPropertiesVisible(false);
+                  setPageStripVisible(true);
                   setMobileMoreOpen(false);
-                  setStatus({ kind: "ready", text: "Move canvas is on. Drag the document with one finger." });
                 }}
               >
-                Move canvas
+                <span aria-hidden="true">▤</span>Pages
               </button>
-              <button type="button" onClick={() => setPageStripVisible((visible) => !visible)}>
-                {pageStripVisible ? "Hide pages" : "Show pages"}
+              <button type="button" onClick={rotateCurrentPage}>
+                <span aria-hidden="true">↻</span>Rotate Page
               </button>
-              <button type="button" onClick={rotateCurrentPage}>Rotate page</button>
-              <button type="button" onClick={moveCurrentPageEarlier} disabled={selectedPageIndex === 0}>Move page up</button>
-              <button type="button" onClick={moveCurrentPageLater} disabled={selectedPageIndex === documentState.pages.length - 1}>Move page down</button>
-              <button type="button" onClick={deleteCurrentPage}>Delete page</button>
-              <button type="button" onClick={undoLastChange} disabled={!canUndo}>Undo</button>
-              <button type="button" onClick={redoLastChange} disabled={!canRedo}>Redo</button>
+              <button
+                type="button"
+                onClick={selectedPageIndex < documentState.pages.length - 1 ? moveCurrentPageLater : moveCurrentPageEarlier}
+                disabled={documentState.pages.length < 2}
+              >
+                <span aria-hidden="true">↕</span>Move Page
+              </button>
+              <button type="button" onClick={deleteCurrentPage}>
+                <span aria-hidden="true">⌫</span>Delete Page
+              </button>
+              <button type="button" onClick={undoLastChange} disabled={!canUndo}>
+                <span aria-hidden="true">↶</span>Undo
+              </button>
+              <button type="button" onClick={redoLastChange} disabled={!canRedo}>
+                <span aria-hidden="true">↷</span>Redo
+              </button>
               <button type="button" onClick={() => void toggleFullscreen()}>
-                {fullscreenEnabled ? "Exit full screen" : "Full screen"}
+                <span aria-hidden="true">⛶</span>{fullscreenEnabled ? "Exit Fullscreen" : "Fullscreen"}
+              </button>
+              <button type="button" onClick={() => void clearDocument()}>
+                <span aria-hidden="true">⌫</span>Clear Document
               </button>
             </div>
           </details>
-          <nav className="mobile-editor-dock" aria-label="Mobile PDF editing tools">
+          <nav className="mobile-editor-dock" aria-label="PDF editing tools">
             <button
               type="button"
               aria-pressed={!placementArmed && !panModeEnabled}
@@ -2348,7 +2384,7 @@ function finishTutorial(): void {
         </button>
       ) : null}
 
-      {currentTutorialStep !== undefined && currentTutorialStep !== null ? (
+      {documentState !== null && currentTutorialStep !== undefined && currentTutorialStep !== null ? (
         <section
           className="editor-tutorial"
           data-testid="editor-tutorial"
@@ -2668,14 +2704,11 @@ function finishTutorial(): void {
               onDrop={handlePdfDrop}
             >
               <div className="empty-state-card">
-                <span className="empty-state-kicker">Private PDF editing</span>
-                <h2>No PDF selected</h2>
-                <p>
-                  Drop a PDF here or open one from your device. Your PDF stays
-                  in this browser while you edit.
-                </p>
+                <span className="empty-document-icon" aria-hidden="true">▤</span>
+                <h2><span>PDF</span>Mech</h2>
+                <p>Edit PDFs privately in your browser.</p>
                 <label className="empty-open-control">
-                  <span>Open PDF</span>
+                  <span>Choose PDF File</span>
                   <input
                     data-testid="production-empty-file-input"
                     type="file"
@@ -2685,10 +2718,17 @@ function finishTutorial(): void {
                     }}
                   />
                 </label>
-                <small>Supports PDFs up to {localEditingLimits.maxFileSize}.</small>
+                <small>or drag &amp; drop a PDF here</small>
+                <div className="empty-trust-grid" aria-label="Privacy benefits">
+                  <span><b aria-hidden="true">▣</b>Private &amp; local</span>
+                  <span><b aria-hidden="true">♙</b>No account required</span>
+                  <span><b aria-hidden="true">✓</b>No watermark</span>
+                  <span><b aria-hidden="true">ϟ</b>Original stays unchanged</span>
+                </div>
+                <p className="empty-privacy-note">Your PDF is processed in your browser.</p>
               </div>
               <div className="empty-state-drop-hint" aria-hidden="true">
-                Drop your PDF here
+                Drop a PDF here
               </div>
             </section>
           ) : (
@@ -2876,11 +2916,10 @@ function finishTutorial(): void {
                     </p>
                   ) : null}
                 </section>
-                {documentState !== null &&
-                (!mobileLayout || (propertiesVisible && selectedObject !== null)) ? (
-                  <ResponsivePortal enabled={mobileLayout}>
+                {documentState !== null && propertiesVisible && selectedObject !== null ? (
+                  <ResponsivePortal enabled={!fullscreenEnabled}>
                   <section
-                    className={`control-group object-controls${mobileLayout ? " mobile-properties-sheet" : ""}`}
+                    className={`control-group object-controls context-properties-sheet${mobileLayout ? " mobile-properties-sheet" : ""}`}
                     aria-label="Object tools"
                     data-empty={selectedObject === null ? "true" : "false"}
                     data-tool={propertiesTool}
