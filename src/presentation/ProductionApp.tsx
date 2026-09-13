@@ -252,6 +252,16 @@ const textAlignmentOptions: readonly TextObject["horizontalAlignment"][] = [
   "center",
   "right",
 ];
+const quickColorOptions = [
+  "#121726",
+  "#FFFFFF",
+  "#EF4444",
+  "#F59E0B",
+  "#10B981",
+  "#0EA5E9",
+  "#2563EB",
+  "#7C3AED",
+] as const;
 const defaultAppearanceDraft: TextAppearanceDraft = {
   fontFamily: "helvetica",
   fontWeight: "regular",
@@ -3019,6 +3029,7 @@ function finishTutorial(): void {
                               "Updated selected text color.",
                             );
                           }}
+                          aria-label="Choose text color"
                         />
                       </label>
                       <div className="compact-size-control">
@@ -3061,6 +3072,24 @@ function finishTutorial(): void {
                         >
                           B
                         </button>
+                      </div>
+                      <div className="compact-color-presets" aria-label="Text color presets">
+                        {quickColorOptions.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            aria-label={`Use text color ${color}`}
+                            aria-pressed={appearanceDraft.color.toUpperCase() === color}
+                            onClick={() => {
+                              applySelectedTextAppearanceChange(
+                                { ...appearanceDraft, color },
+                                "Updated selected text color.",
+                              );
+                            }}
+                          >
+                            <span aria-hidden="true" style={{ backgroundColor: color }} />
+                          </button>
+                        ))}
                       </div>
                       <button
                         className="compact-more-properties"
@@ -3224,6 +3253,7 @@ function finishTutorial(): void {
                               "Updated selected text color.",
                             );
                           }}
+                          aria-label="Choose text color"
                         />
                         <input
                           type="text"
@@ -3242,6 +3272,25 @@ function finishTutorial(): void {
                         >
                           ⌕
                         </button>
+                      </div>
+                      <div className="color-preset-row" aria-label="Text color presets">
+                        {quickColorOptions.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            aria-label={`Use text color ${color}`}
+                            aria-pressed={appearanceDraft.color.toUpperCase() === color}
+                            disabled={selectedTextObject === null}
+                            onClick={() => {
+                              applySelectedTextAppearanceChange(
+                                { ...appearanceDraft, color },
+                                "Updated selected text color.",
+                              );
+                            }}
+                          >
+                            <span aria-hidden="true" style={{ backgroundColor: color }} />
+                          </button>
+                        ))}
                       </div>
                     </div>
                     <div className="property-field property-align-field">
@@ -3293,8 +3342,9 @@ function finishTutorial(): void {
                       Apply text
                     </button>
                     {selectedWhiteoutObject !== null ? (
-                      <label>
-                        Whiteout color
+                      <div className="property-field direct-color-field">
+                        <span>Whiteout color</span>
+                        <div className="direct-color-picker">
                         <input
                           data-testid="production-whiteout-color"
                           type="color"
@@ -3304,8 +3354,26 @@ function finishTutorial(): void {
                               event.currentTarget.value,
                             )
                           }
+                          aria-label="Choose whiteout color"
                         />
-                      </label>
+                          <output>{rgbaColorToHex(selectedWhiteoutObject.color).toUpperCase()}</output>
+                        </div>
+                        <div className="color-preset-row" aria-label="Whiteout color presets">
+                          {quickColorOptions.map((color) => (
+                            <button
+                              key={color}
+                              type="button"
+                              aria-label={`Use whiteout color ${color}`}
+                              aria-pressed={
+                                rgbaColorToHex(selectedWhiteoutObject.color).toUpperCase() === color
+                              }
+                              onClick={() => applySelectedWhiteoutColor(color)}
+                            >
+                              <span aria-hidden="true" style={{ backgroundColor: color }} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ) : null}
                     {selectedRedactionObject !== null ? (
                       <label>

@@ -1303,6 +1303,50 @@
   background: #fff;
 }
 
+.compact-color-presets,
+.color-preset-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.compact-color-presets {
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  padding: 2px 4px;
+}
+
+.compact-color-presets button,
+.context-properties-sheet .color-preset-row button {
+  display: grid !important;
+  place-items: center !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 3px !important;
+  border: 1px solid #d5e1ee !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: 0 2px 6px rgb(15 35 60 / 8%) !important;
+}
+
+.compact-color-presets button > span,
+.context-properties-sheet .color-preset-row button > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgb(15 35 60 / 10%);
+  border-radius: 50%;
+}
+
+.compact-color-presets button[aria-pressed="true"],
+.context-properties-sheet .color-preset-row button[aria-pressed="true"] {
+  border-color: var(--editor-blue) !important;
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 16%) !important;
+}
+
 .compact-more-properties {
   grid-column: 1 / -1;
   min-height: 42px;
@@ -1333,6 +1377,37 @@
 .context-properties-sheet[data-tool="whiteout"] > label,
 .context-properties-sheet[data-tool="redaction"] > label {
   width: 100% !important;
+}
+
+.context-properties-sheet .direct-color-field {
+  gap: 8px !important;
+}
+
+.context-properties-sheet .direct-color-picker {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.context-properties-sheet .direct-color-picker input[type="color"] {
+  width: 58px !important;
+  height: 44px !important;
+  padding: 4px !important;
+  cursor: pointer;
+}
+
+.context-properties-sheet .direct-color-picker output {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--editor-border);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--editor-navy);
+  font-size: 14px;
+  font-weight: 750;
 }
 
 /* The action dock belongs to the editor shell and stays available in every state. */
