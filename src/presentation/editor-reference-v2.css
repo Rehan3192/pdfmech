@@ -1161,8 +1161,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .website-shell[data-page="editor"] .mobile-editor-more-panel,
-  .website-shell[data-page="editor"] .page-strip,
-  .context-properties-sheet {
+  .website-shell[data-page="editor"] .page-strip {
     animation: editor-sheet-in 220ms ease-out both;
   }
 }
@@ -1170,4 +1169,260 @@
 @keyframes editor-sheet-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Focused text editing: write first, then reveal formatting on demand. */
+.overlay-properties-button {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  bottom: -36px;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid #cfe0f5;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--editor-blue);
+  box-shadow: 0 7px 18px rgb(15 35 60 / 14%);
+  font: 700 11px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.compact-text-properties {
+  position: fixed;
+  right: 16px;
+  bottom: calc(92px + env(safe-area-inset-bottom));
+  z-index: 340;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(340px, calc(100vw - 32px));
+  padding: 16px;
+  gap: 10px;
+  border: 1px solid var(--editor-border);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 98%);
+  color: var(--editor-navy);
+  box-shadow: 0 18px 44px rgb(15 35 60 / 20%);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  backdrop-filter: blur(18px);
+}
+
+.compact-properties-heading {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
+}
+
+.compact-properties-heading h2 {
+  margin: 0;
+  font-size: 17px;
+  letter-spacing: -.025em;
+}
+
+.compact-properties-heading button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: var(--editor-navy);
+  font-size: 20px;
+}
+
+.compact-color-control,
+.compact-size-control,
+.compact-bold-control {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr auto;
+  min-height: 46px;
+  padding: 7px 9px;
+  gap: 8px;
+  border: 1px solid var(--editor-border);
+  border-radius: 12px;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.compact-size-control {
+  grid-column: 1 / -1;
+}
+
+.compact-size-control > div {
+  display: grid;
+  grid-template-columns: 34px 42px 34px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--editor-border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.compact-size-control button,
+.compact-bold-control button {
+  min-height: 34px;
+  border: 0;
+  background: #fff;
+  color: var(--editor-navy);
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.compact-size-control output {
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.compact-bold-control button {
+  width: 38px;
+  border: 1px solid var(--editor-border);
+  border-radius: 9px;
+}
+
+.compact-bold-control button[aria-pressed="true"] {
+  border-color: #b8d6ff;
+  background: #eaf3ff;
+  color: var(--editor-blue);
+}
+
+.compact-color-control input[type="color"] {
+  width: 38px;
+  height: 34px;
+  padding: 3px;
+  border: 1px solid var(--editor-border);
+  border-radius: 9px;
+  background: #fff;
+}
+
+.compact-more-properties {
+  grid-column: 1 / -1;
+  min-height: 42px;
+  border: 1px solid #bed7fa;
+  border-radius: 11px;
+  background: #edf5ff;
+  color: #175ca8;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* Remove the inherited legacy Properties heading; every sheet owns one title. */
+.context-properties-sheet::before {
+  display: none !important;
+  content: none !important;
+}
+
+.context-properties-sheet[data-tool="whiteout"],
+.context-properties-sheet[data-tool="redaction"] {
+  height: auto !important;
+  min-height: 0 !important;
+  width: min(430px, calc(100vw - 32px)) !important;
+  padding: 26px 20px 20px !important;
+  gap: 10px !important;
+  border-radius: 22px !important;
+}
+
+.context-properties-sheet[data-tool="whiteout"] > label,
+.context-properties-sheet[data-tool="redaction"] > label {
+  width: 100% !important;
+}
+
+/* The action dock belongs to the editor shell and stays available in every state. */
+.website-shell[data-page="editor"] .mobile-editor-dock {
+  z-index: 360 !important;
+}
+
+.recent-document-card {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  gap: 12px;
+  border: 1px solid #d6e6f7;
+  border-radius: 14px;
+  background: #f7fbff;
+  text-align: left;
+}
+
+.recent-document-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.recent-document-card span,
+.recent-document-card small {
+  color: var(--editor-muted);
+  font-size: 10px;
+}
+
+.recent-document-card strong {
+  overflow: hidden;
+  color: var(--editor-navy);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-document-card button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid #bed7fa;
+  border-radius: 10px;
+  background: #fff;
+  color: #175ca8;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .website-shell[data-page="editor"] .mobile-editor-more-panel,
+  .context-properties-sheet,
+  .website-shell[data-page="editor"] .page-strip {
+    bottom: 92px !important;
+    border-radius: 22px !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .website-shell[data-page="editor"] .mobile-editor-more-panel,
+  .context-properties-sheet,
+  .website-shell[data-page="editor"] .page-strip {
+    right: 8px !important;
+    bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    left: 8px !important;
+    width: auto !important;
+    max-height: min(58dvh, 500px) !important;
+    border: 1px solid var(--editor-border) !important;
+    border-radius: 20px !important;
+  }
+
+  .website-shell[data-page="editor"] .page-strip {
+    height: min(64dvh, 560px) !important;
+  }
+
+  .compact-text-properties {
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .recent-document-card {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-document-card button {
+    width: 100%;
+  }
 }

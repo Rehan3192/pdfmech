@@ -46,7 +46,7 @@ import {
 } from "../app/overlay-coordinate-layer";
 import type { CanonicalFrame, CanonicalPageSize } from "../domain/geometry";
 import { asUnitInterval } from "../domain/primitives";
-import type { ObjectId } from "../domain/primitives";
+import type { DocumentId, ObjectId } from "../domain/primitives";
 import {
   ZOOM_LEVELS,
   calculateFitZoom,
@@ -216,6 +216,13 @@ interface PanSession {
 interface DragPreview {
   readonly objectId: ObjectId;
   readonly frame: CanonicalFrame;
+}
+
+interface RecentRecoveryDetails {
+  readonly documentId: DocumentId;
+  readonly originalName: string;
+  readonly pageCount: number;
+  readonly byteLength: number;
 }
 
 interface TextAppearanceDraft {
@@ -440,6 +447,9 @@ export function ProductionApp({
   const [toolbarVisible, setToolbarVisible] = useState(true);
   const [toolRailVisible, setToolRailVisible] = useState(true);
   const [propertiesVisible, setPropertiesVisible] = useState(false);
+  const [textPropertiesMode, setTextPropertiesMode] = useState<"compact" | "full">(
+    "compact",
+  );
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [mobileLayout, setMobileLayout] = useState(
     () => window.matchMedia("(max-width: 1023px)").matches,
@@ -472,6 +482,8 @@ export function ProductionApp({
   const [recoverableDocuments, setRecoverableDocuments] = useState<
     readonly RecoverySummary[]
   >([]);
+  const [recentRecoveryDetails, setRecentRecoveryDetails] =
+    useState<RecentRecoveryDetails | null>(null);
   const [tutorialStepIndex, setTutorialStepIndex] = useState<number | null>(
     null,
   );
@@ -619,11 +631,6 @@ function finishTutorial(): void {
   }, [selectedTextObject?.id, selectedTextObject?.text]);
 
   useEffect(() => {
-    if (mobileLayout) {
-      pendingTextFocusIdRef.current = null;
-      return;
-    }
-
     const pendingObjectId = pendingTextFocusIdRef.current;
     if (
       pendingObjectId === null ||
@@ -642,7 +649,7 @@ function finishTutorial(): void {
 
     pendingTextFocusIdRef.current = null;
     focusEditableTextAtEnd(editableTextElement);
-  }, [editingEnabled, mobileLayout, selectedObjectId, selectedPageObjects]);
+  }, [editingEnabled, selectedObjectId, selectedPageObjects]);
 
   useEffect(() => {
     setAppearanceDraft(
@@ -821,6 +828,7 @@ function finishTutorial(): void {
         }
 
         const verifiedSummaries: RecoverySummary[] = [];
+        let mostRecentDetails: RecentRecoveryDetails | null = null;
         for (const summary of summaries) {
           const checkpoint = await store!.load(summary.documentId);
           if (
@@ -828,10 +836,20 @@ function finishTutorial(): void {
             (await verifyRecoveryCheckpoint(checkpoint))
           ) {
             verifiedSummaries.push(summary);
+            if (mostRecentDetails === null) {
+              const [source] = Object.values(checkpoint.documentState.sources);
+              mostRecentDetails = {
+                documentId: summary.documentId,
+                originalName: source?.originalName ?? "PDF document",
+                pageCount: checkpoint.documentState.pages.length,
+                byteLength: source?.byteLength ?? 0,
+              };
+            }
           }
         }
 
         setRecoverableDocuments(verifiedSummaries);
+        setRecentRecoveryDetails(mostRecentDetails);
         setRecoveryStatus({
           kind: "ready",
           text:
@@ -1497,19 +1515,24 @@ function finishTutorial(): void {
     setSelectedObjectId(result.objectId);
     setPlacementArmed(false);
     if (mobileLayout) {
-      setEditingEnabled(false);
-      setPropertiesVisible(true);
-    }
-    if (creationTool === "text" && !mobileLayout) {
+      if (creationTool === "text") {
+        setEditingEnabled(true);
+        setTextPropertiesMode("compact");
+        setPropertiesVisible(false);
+        pendingTextFocusIdRef.current = result.objectId;
+      } else {
+        setEditingEnabled(false);
+        setTextPropertiesMode("full");
+        setPropertiesVisible(true);
+      }
+    } else if (creationTool === "text") {
       pendingTextFocusIdRef.current = result.objectId;
     }
     setStatus({
       kind: "ready",
       text:
-        creationTool === "text" && !mobileLayout
-          ? "Added one text box. Type inside it, or choose Add Text again to place another."
-          : creationTool === "text"
-            ? "Added one text box. Edit it in Text Properties."
+        creationTool === "text"
+          ? "Added one text box. Type directly in it, then open Properties if you want to format it."
           : `Created one ${creationTool} object on page ${selectedPageIndex + 1}. Choose the tool again to place another.`,
     });
   }
@@ -1545,6 +1568,7 @@ function finishTutorial(): void {
     if (mobileLayout) {
       setPropertiesVisible(false);
     } else {
+      setTextPropertiesMode("full");
       setPropertiesVisible(true);
     }
     setStatus({
@@ -1593,23 +1617,26 @@ function finishTutorial(): void {
       session.latestFrame.y !== session.startFrame.y;
     if (!moved) {
       if (session.objectKind === "text") {
-        setEditingEnabled(!mobileLayout);
+        setEditingEnabled(true);
         setPlacementArmed(false);
         if (mobileLayout) {
-          pendingTextFocusIdRef.current = null;
-          setPropertiesVisible(true);
+          setTextPropertiesMode("compact");
+          setPropertiesVisible(false);
+          pendingTextFocusIdRef.current = session.objectId;
         } else {
+          setTextPropertiesMode("full");
           pendingTextFocusIdRef.current = session.objectId;
         }
         setStatus({
           kind: "ready",
           text: mobileLayout
-            ? "Text selected. Edit it in Text Properties."
+            ? "Text selected. Type directly, or tap Properties for formatting."
             : "Text selected. Type directly inside it or use Text Properties.",
         });
       } else {
         setEditingEnabled(false);
         if (mobileLayout) {
+          setTextPropertiesMode("full");
           setPropertiesVisible(true);
         }
       }
@@ -1668,6 +1695,7 @@ function finishTutorial(): void {
     if (mobileLayout) {
       setPropertiesVisible(false);
     } else {
+      setTextPropertiesMode("full");
       setPropertiesVisible(true);
     }
     setStatus({
@@ -1912,6 +1940,18 @@ function finishTutorial(): void {
     } catch (error) {
       setStatus({ kind: "error", text: safeErrorMessage(error) });
     }
+  }
+
+  function nudgeSelectedTextSize(delta: number): void {
+    const currentSize = Number.parseFloat(appearanceDraft.fontSize);
+    const nextSize = Math.min(96, Math.max(2, (Number.isFinite(currentSize) ? currentSize : 14) + delta));
+    applySelectedTextAppearanceChange(
+      {
+        ...appearanceDraft,
+        fontSize: String(nextSize),
+      },
+      "Updated selected text size.",
+    );
   }
 
   async function pickSelectedTextColorFromPage(): Promise<void> {
@@ -2719,6 +2759,33 @@ function finishTutorial(): void {
                   />
                 </label>
                 <small>or drag &amp; drop a PDF here</small>
+                {canRestoreRecoveredDocument && recoverableDocuments[0] !== undefined ? (
+                  <section className="recent-document-card" aria-label="Recent document">
+                    <div>
+                      <span>Recent Document</span>
+                      <strong>
+                        {recentRecoveryDetails?.documentId === recoverableDocuments[0].documentId
+                          ? recentRecoveryDetails.originalName
+                          : "PDF document"}
+                      </strong>
+                      <small>
+                        {recentRecoveryDetails?.documentId === recoverableDocuments[0].documentId
+                          ? `${recentRecoveryDetails.pageCount} page${recentRecoveryDetails.pageCount === 1 ? "" : "s"} · ${formatBytes(recentRecoveryDetails.byteLength)} · `
+                          : ""}
+                        Saved locally · {new Date(recoverableDocuments[0].updatedAt).toLocaleString()}
+                      </small>
+                    </div>
+                    <button
+                      data-testid="production-restore-recent"
+                      type="button"
+                      onClick={() => {
+                        void restoreMostRecentDocument();
+                      }}
+                    >
+                      Restore Recent Document
+                    </button>
+                  </section>
+                ) : null}
                 <div className="empty-trust-grid" aria-label="Privacy benefits">
                   <span><b aria-hidden="true">▣</b>Private &amp; local</span>
                   <span><b aria-hidden="true">♙</b>No account required</span>
@@ -2916,7 +2983,97 @@ function finishTutorial(): void {
                     </p>
                   ) : null}
                 </section>
+                {documentState !== null &&
+                mobileLayout &&
+                propertiesVisible &&
+                textPropertiesMode === "compact" &&
+                selectedTextObject !== null ? (
+                  <ResponsivePortal enabled={!fullscreenEnabled}>
+                    <section
+                      className="compact-text-properties"
+                      aria-label="Quick text properties"
+                      data-testid="compact-text-properties"
+                    >
+                      <div className="compact-properties-heading">
+                        <h2>Text Properties</h2>
+                        <button
+                          type="button"
+                          aria-label="Close text properties"
+                          onClick={() => setPropertiesVisible(false)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <label className="compact-color-control">
+                        <span>Color</span>
+                        <input
+                          data-testid="compact-text-color"
+                          type="color"
+                          value={appearanceDraft.color}
+                          onChange={(event) => {
+                            applySelectedTextAppearanceChange(
+                              {
+                                ...appearanceDraft,
+                                color: event.currentTarget.value,
+                              },
+                              "Updated selected text color.",
+                            );
+                          }}
+                        />
+                      </label>
+                      <div className="compact-size-control">
+                        <span>Size</span>
+                        <div>
+                          <button
+                            type="button"
+                            aria-label="Decrease text size"
+                            onClick={() => nudgeSelectedTextSize(-1)}
+                          >
+                            −
+                          </button>
+                          <output>{appearanceDraft.fontSize}</output>
+                          <button
+                            type="button"
+                            aria-label="Increase text size"
+                            onClick={() => nudgeSelectedTextSize(1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="compact-bold-control">
+                        <span>Bold</span>
+                        <button
+                          type="button"
+                          aria-pressed={appearanceDraft.fontWeight === "bold"}
+                          onClick={() => {
+                            applySelectedTextAppearanceChange(
+                              {
+                                ...appearanceDraft,
+                                fontWeight:
+                                  appearanceDraft.fontWeight === "bold"
+                                    ? "regular"
+                                    : "bold",
+                              },
+                              "Updated selected text bold style.",
+                            );
+                          }}
+                        >
+                          B
+                        </button>
+                      </div>
+                      <button
+                        className="compact-more-properties"
+                        type="button"
+                        onClick={() => setTextPropertiesMode("full")}
+                      >
+                        More Properties
+                      </button>
+                    </section>
+                  </ResponsivePortal>
+                ) : null}
                 {documentState !== null && propertiesVisible && selectedObject !== null ? (
+                  !(mobileLayout && selectedTextObject !== null && textPropertiesMode === "compact") ? (
                   <ResponsivePortal enabled={!fullscreenEnabled}>
                   <section
                     className={`control-group object-controls context-properties-sheet${mobileLayout ? " mobile-properties-sheet" : ""}`}
@@ -3191,6 +3348,7 @@ function finishTutorial(): void {
                     </button>
                   </section>
                   </ResponsivePortal>
+                  ) : null
                 ) : null}
               </div>
             </>
@@ -3328,6 +3486,10 @@ function finishTutorial(): void {
                               }
                               onPointerDown={(event) => {
                                 if (selected && editingEnabled) {
+                                  if (!mobileLayout) {
+                                    setTextPropertiesMode("full");
+                                    setPropertiesVisible(true);
+                                  }
                                   event.stopPropagation();
                                 }
                               }}
@@ -3351,6 +3513,28 @@ function finishTutorial(): void {
                             >
                               Move
                             </div>
+                          ) : null}
+                          {selected && object.kind === "text" && mobileLayout ? (
+                            <button
+                              className="overlay-properties-button"
+                              data-testid="production-overlay-properties"
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                if (canApplyTextDraft) {
+                                  applySelectedTextContent();
+                                }
+                                setEditingEnabled(false);
+                                setTextPropertiesMode("compact");
+                                setPropertiesVisible(true);
+                              }}
+                              onPointerDown={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                              }}
+                            >
+                              Properties
+                            </button>
                           ) : null}
                           {selected ? (
                             <button
