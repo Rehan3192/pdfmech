@@ -27,15 +27,17 @@ describe("deployment metadata", () => {
     );
 
     expect(indexHtml).toContain(
-      "<title>PDFMech | Edit PDFs Privately in Your Browser</title>",
+      "<title>Free PDF Editor Online – Private &amp; No Upload | PDFMech</title>",
     );
     expect(indexHtml).toContain('name="description"');
-    expect(indexHtml).toContain("without uploading your PDF");
+    expect(indexHtml).toContain("no upload or account");
     expect(indexHtml).toContain('property="og:title"');
     expect(indexHtml).toContain('name="twitter:card"');
+    expect(indexHtml).toContain('property="og:image"');
+    expect(indexHtml).toContain('name="twitter:image"');
     expect(indexHtml).toContain('rel="manifest" href="/manifest.webmanifest"');
     expect(indexHtml).toContain('rel="icon" href="/PDFMechLogo-small.webp"');
-    expect(indexHtml).toContain('"@type": "SoftwareApplication"');
+    expect(indexHtml).toContain('id="route-structured-data"');
 
     expect(manifest).toMatchObject({
       name: "PDFMech",
@@ -54,5 +56,6 @@ describe("deployment metadata", () => {
     expect(icon192.length).toBeGreaterThan(100);
     expect(icon512.length).toBeGreaterThan(100);
     expect(robots).toContain("Allow: /");
+    expect(robots).toContain("https://www.pdfmech.com/sitemap.xml");
   });
 });

@@ -6,55 +6,67 @@
     <meta name="application-name" content="PDFMech" />
     <meta name="apple-mobile-web-app-title" content="PDFMech" />
     <meta name="theme-color" content="#244b42" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href="https://www.pdfmech.com/" />
     <meta
       name="description"
-      content="Edit PDFs privately in your browser. Add text, cover content, organize pages, rotate pages, and download your finished PDF without uploading it."
+      content="Edit PDFs online for free with PDFMech. Add text, cover content, rotate, reorder, or delete pages privately in your browser—no upload or account."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PDFMech" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://www.pdfmech.com/" />
-    <meta property="og:title" content="PDFMech" />
+    <meta property="og:title" content="Free PDF Editor Online – Private &amp; No Upload | PDFMech" />
     <meta
       property="og:description"
-      content="Edit PDFs privately in your browser. Add text, cover content, organize pages, and download without uploading your PDF."
+      content="Edit PDFs online for free with PDFMech. Add text, cover content, rotate, reorder, or delete pages privately in your browser—no upload or account."
     />
+    <meta property="og:image" content="https://www.pdfmech.com/PDFMechLogo.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1254" />
+    <meta property="og:image:height" content="1254" />
+    <meta property="og:image:alt" content="PDFMech private browser PDF editor" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="PDFMech" />
+    <meta name="twitter:title" content="Free PDF Editor Online – Private &amp; No Upload | PDFMech" />
     <meta
       name="twitter:description"
-      content="Edit PDFs privately in your browser without uploading your files."
+      content="Edit PDFs online for free with PDFMech—privately in your browser with no upload or account."
     />
+    <meta name="twitter:image" content="https://www.pdfmech.com/PDFMechLogo.png" />
+    <meta name="twitter:image:alt" content="PDFMech private browser PDF editor" />
     <link rel="icon" href="/PDFMechLogo-small.webp" type="image/webp" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <script type="application/ld+json">
+    <script id="route-structured-data" type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "PDFMech",
-        "url": "https://www.pdfmech.com/",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Web browser",
-        "description": "Edit PDFs privately in your browser. Add text, cover content, organize pages, rotate pages, and download your finished PDF without uploading it.",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://www.pdfmech.com/#organization",
+            "name": "PDFMech",
+            "url": "https://www.pdfmech.com/"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.pdfmech.com/#website",
+            "name": "PDFMech",
+            "url": "https://www.pdfmech.com/"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "PDFMech",
+            "url": "https://www.pdfmech.com/editor",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Any operating system with a modern web browser",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          }
+        ]
       }
     </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "PDFMech",
-        "url": "https://www.pdfmech.com/"
-      }
-    </script>
-    <title>PDFMech | Edit PDFs Privately in Your Browser</title>
+    <title>Free PDF Editor Online – Private &amp; No Upload | PDFMech</title>
   </head>
   <body>
-    <main id="app"></main>
+    <div id="app"></div>
     <script type="module" src="/src/production-main.tsx"></script>
   </body>
 </html>

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/prerender-seo.mjs && node scripts/verify-seo-build.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:performance": "playwright test tests/e2e/corpus.spec.ts --grep \"measures medium and large local workflows\" --project=chromium",

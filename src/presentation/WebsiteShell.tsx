@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  buildStructuredData,
+  canonicalUrl,
+  SEO_PAGES,
+  type SeoPageKey,
+} from "../seo-config";
 
-type WebsitePage =
-  | "home"
-  | "editor"
-  | "features"
-  | "howItWorks"
-  | "faq"
-  | "security"
-  | "terms"
-  | "about"
-  | "privacy"
-  | "contact";
+type WebsitePage = SeoPageKey | "notFound";
+type MarketingPageKey = Exclude<SeoPageKey, "editor">;
 
 interface WebsiteShellProps {
   readonly editor: ReactNode;
@@ -29,50 +26,12 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/contact": "contact",
 };
 
-const pageTitles: Readonly<Record<WebsitePage, string>> = {
-  home: "PDFMech | Free PDF Editor in Your Browser",
-  editor: "PDFMech App | Free Browser PDF Editor",
-  features: "PDFMech Features | Free PDF Editing Tools",
-  howItWorks: "PDFMech | How Free PDF Editing Works",
-  faq: "PDFMech FAQ | Free PDF Editor Help",
-  security: "PDFMech Security | Local PDF Processing",
-  terms: "PDFMech | Terms of Service",
-  about: "About PDFMech | Private Browser PDF Editing",
-  privacy: "PDFMech | Privacy",
-  contact: "Contact PDFMech | PDF Editing Support",
-};
-
-const pageDescriptions: Readonly<Record<WebsitePage, string>> = {
-  home: "Use PDFMech as a free PDF editor in your browser. Add text, visually cover content, delete PDF pages free, move pages up or down, and download without uploading.",
-  editor: "Open PDFMech, a free browser PDF editor for adding text, visually covering PDF text, rotating pages, moving pages up or down, and deleting pages.",
-  features: "Explore PDFMech free PDF editing tools: add text, visually remove PDF text, rotate pages, move PDF pages up or down, delete pages, undo, redo, and recover work locally.",
-  howItWorks: "Learn how PDFMech works as a free PDF editor: open a file, add text, cover text visually, delete or reorder PDF pages, review, and download a new copy.",
-  faq: "Get PDFMech answers about free PDF editing, deleting PDF pages free, moving pages up or down, visually removing text, privacy, recovery, and downloads.",
-  security: "Learn how PDFMech is designed around local browser processing, no required account, and clear limits for private PDF editing.",
-  terms: "Read the basic terms for using PDFMech, a browser-based PDF editing tool for common document fixes.",
-  about: "Learn about PDFMech, a free PDF editor for private browser-based text additions, visual text removal, PDF page deletion, page reordering, and quick document fixes.",
-  privacy: "Learn how PDFMech handles privacy, local browser processing, recovery data, and documents opened in the editor.",
-  contact: "Contact PDFMech for free PDF editor support, page deletion or reordering help, text cover questions, browser issues, PDF opening problems, and export feedback.",
-};
-
-const pagePaths: Readonly<Record<WebsitePage, string>> = {
-  home: "/",
-  editor: "/editor",
-  features: "/features",
-  howItWorks: "/how-it-works",
-  faq: "/faq",
-  security: "/security",
-  terms: "/terms",
-  about: "/about",
-  privacy: "/privacy",
-  contact: "/contact",
-};
-
 const freeCampaignFirstCycleEndsAt = new Date("2026-10-17T00:00:00+05:00").getTime();
 const freeCampaignCycleLength = 37 * 24 * 60 * 60 * 1000;
 
 function pageFromPath(pathname: string): WebsitePage {
-  return routes[pathname] ?? "editor";
+  const normalizedPath = pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
+  return routes[normalizedPath] ?? "notFound";
 }
 
 function navigateTo(pathname: string): void {
@@ -97,30 +56,66 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
   }, []);
 
   useEffect(() => {
-    const canonicalUrl = `https://www.pdfmech.com${pagePaths[page]}`;
+    const isNotFound = page === "notFound";
+    const title = isNotFound ? "Page Not Found | PDFMech" : SEO_PAGES[page].title;
+    const description = isNotFound
+      ? "The requested PDFMech page could not be found. Return home or open the free browser PDF editor."
+      : SEO_PAGES[page].description;
+    const pageCanonical = isNotFound ? null : canonicalUrl(page);
 
-    document.title = pageTitles[page];
+    document.title = title;
     document
       .querySelector('meta[name="description"]')
-      ?.setAttribute("content", pageDescriptions[page]);
+      ?.setAttribute("content", description);
+    document
+      .querySelector('meta[name="robots"]')
+      ?.setAttribute(
+        "content",
+        isNotFound ? "noindex,follow" : "index,follow,max-image-preview:large",
+      );
     document
       .querySelector('meta[property="og:title"]')
-      ?.setAttribute("content", pageTitles[page]);
+      ?.setAttribute("content", title);
     document
       .querySelector('meta[property="og:description"]')
-      ?.setAttribute("content", pageDescriptions[page]);
+      ?.setAttribute("content", description);
     document
       .querySelector('meta[name="twitter:title"]')
-      ?.setAttribute("content", pageTitles[page]);
+      ?.setAttribute("content", title);
     document
       .querySelector('meta[name="twitter:description"]')
-      ?.setAttribute("content", pageDescriptions[page]);
-    document
-      .querySelector('link[rel="canonical"]')
-      ?.setAttribute("href", canonicalUrl);
+      ?.setAttribute("content", description);
+    const existingCanonical = document.querySelector<HTMLLinkElement>(
+      'link[rel="canonical"]',
+    );
+    if (pageCanonical === null) {
+      existingCanonical?.remove();
+    } else if (existingCanonical === null) {
+      const canonicalLink = document.createElement("link");
+      canonicalLink.rel = "canonical";
+      canonicalLink.href = pageCanonical;
+      document.head.append(canonicalLink);
+    } else {
+      existingCanonical.href = pageCanonical;
+    }
     document
       .querySelector('meta[property="og:url"]')
-      ?.setAttribute("content", canonicalUrl);
+      ?.setAttribute("content", pageCanonical ?? window.location.href);
+
+    let structuredData = document.querySelector<HTMLScriptElement>(
+      "#route-structured-data",
+    );
+    if (isNotFound) {
+      structuredData?.remove();
+    } else {
+      if (structuredData === null) {
+        structuredData = document.createElement("script");
+        structuredData.id = "route-structured-data";
+        structuredData.type = "application/ld+json";
+        document.head.append(structuredData);
+      }
+      structuredData.textContent = JSON.stringify(buildStructuredData(page));
+    }
   }, [page]);
 
   const navItems = useMemo(
@@ -205,8 +200,11 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
 
       {page === "editor" ? (
         editor
+      ) : page === "notFound" ? (
+        <NotFoundPage />
       ) : (
         <>
+          {page !== "home" ? <Breadcrumbs page={page} /> : null}
           <MarketingPage page={page} />
           <SearchIntentSection page={page} />
           <InternalLinkSilo page={page} />
@@ -214,6 +212,34 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
       )}
       <SiteFooter />
     </div>
+  );
+}
+
+function Breadcrumbs({ page }: { readonly page: MarketingPageKey }) {
+  return (
+    <nav className="site-breadcrumbs" aria-label="Breadcrumb">
+      <SiteLink path="/">Home</SiteLink>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{SEO_PAGES[page].h1}</span>
+    </nav>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <main className="not-found-page">
+      <section>
+        <span className="hero-kicker">404</span>
+        <h1>Page not found</h1>
+        <p>
+          The PDFMech page you requested does not exist or may have moved.
+        </p>
+        <div>
+          <SiteLink path="/">Return home</SiteLink>
+          <SiteLink path="/editor">Open the PDF editor</SiteLink>
+        </div>
+      </section>
+    </main>
   );
 }
 
@@ -287,7 +313,7 @@ function SiteLink({
 }
 
 const internalLinkClusters: Readonly<
-  Record<Exclude<WebsitePage, "editor">, readonly { path: string; eyebrow: string; title: string; description: string }[]>
+  Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
@@ -336,7 +362,7 @@ const internalLinkClusters: Readonly<
   ],
 };
 
-function InternalLinkSilo({ page }: { readonly page: Exclude<WebsitePage, "editor"> }) {
+function InternalLinkSilo({ page }: { readonly page: MarketingPageKey }) {
   const links = internalLinkClusters[page];
 
   return (
@@ -361,7 +387,7 @@ function InternalLinkSilo({ page }: { readonly page: Exclude<WebsitePage, "edito
 }
 
 const searchIntentCopy: Readonly<
-  Record<Exclude<WebsitePage, "editor">, { title: string; text: string }>
+  Record<MarketingPageKey, { title: string; text: string }>
 > = {
   home: {
     title: "A free online PDF editor for quick, private fixes.",
@@ -401,7 +427,7 @@ const searchIntentCopy: Readonly<
   },
 };
 
-function SearchIntentSection({ page }: { readonly page: Exclude<WebsitePage, "editor"> }) {
+function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
   const copy = searchIntentCopy[page];
 
   return (
@@ -413,7 +439,7 @@ function SearchIntentSection({ page }: { readonly page: Exclude<WebsitePage, "ed
   );
 }
 
-function MarketingPage({ page }: { readonly page: Exclude<WebsitePage, "editor"> }) {
+function MarketingPage({ page }: { readonly page: MarketingPageKey }) {
   switch (page) {
     case "home":
       return <HomePage />;
@@ -471,7 +497,14 @@ function HomePage() {
         </div>
         <div className="hero-visual product-mockup-card" aria-hidden="true">
           <ProductMockup />
-          <img src="/home-pdf-repair.webp" alt="" width="900" height="900" />
+          <img
+            src="/home-pdf-repair.webp"
+            alt=""
+            width="900"
+            height="900"
+            decoding="async"
+            fetchPriority="high"
+          />
           <div>
             <span>PDFMech workspace</span>
             <strong>Open → Edit → Download</strong>
@@ -526,6 +559,8 @@ function HomePage() {
           src="/home-pdf-workflow.webp"
           alt="Illustration of a person editing a PDF document"
           caption="Quick edits without a heavy desktop app."
+          width={760}
+          height={760}
         />
       </section>
 
@@ -534,6 +569,8 @@ function HomePage() {
           src="/home-pdf-editing.webp"
           alt="Illustration of text and image boxes being edited on a PDF"
           caption="Add text, move objects, and adjust the page."
+          width={659}
+          height={496}
         />
         <div className="content-card">
           <span className="hero-kicker">Popular uses</span>
@@ -1449,14 +1486,25 @@ function ImageCard({
   src,
   alt,
   caption,
+  width,
+  height,
 }: {
   readonly src: string;
   readonly alt: string;
   readonly caption: string;
+  readonly width: number;
+  readonly height: number;
 }) {
   return (
     <figure className="image-card">
-      <img src={src} alt={alt} loading="lazy" />
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading="lazy"
+        decoding="async"
+      />
       <figcaption>{caption}</figcaption>
     </figure>
   );

@@ -1,0 +1,32 @@
+import { describe, expect, it } from "vitest";
+import {
+  buildStructuredData,
+  canonicalUrl,
+  SEO_PAGE_KEYS,
+  SEO_PAGES,
+} from "../../src/seo-config";
+
+describe("SEO configuration", () => {
+  it("gives every indexable route unique metadata and an absolute canonical URL", () => {
+    const titles = SEO_PAGE_KEYS.map((page) => SEO_PAGES[page].title);
+    const descriptions = SEO_PAGE_KEYS.map((page) => SEO_PAGES[page].description);
+
+    expect(new Set(titles).size).toBe(SEO_PAGE_KEYS.length);
+    expect(new Set(descriptions).size).toBe(SEO_PAGE_KEYS.length);
+    for (const page of SEO_PAGE_KEYS) {
+      expect(SEO_PAGES[page].title.length).toBeLessThanOrEqual(65);
+      expect(SEO_PAGES[page].description.length).toBeGreaterThanOrEqual(100);
+      expect(canonicalUrl(page)).toMatch(/^https:\/\/www\.pdfmech\.com\//);
+    }
+  });
+
+  it("includes suitable structured data for product and FAQ routes", () => {
+    const home = JSON.stringify(buildStructuredData("home"));
+    const faq = JSON.stringify(buildStructuredData("faq"));
+
+    expect(home).toContain("SoftwareApplication");
+    expect(home).toContain("Organization");
+    expect(faq).toContain("FAQPage");
+    expect(faq).toContain("BreadcrumbList");
+  });
+});
