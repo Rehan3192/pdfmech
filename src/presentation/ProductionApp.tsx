@@ -225,6 +225,8 @@ interface RecentRecoveryDetails {
   readonly byteLength: number;
 }
 
+type ColorPickTarget = "text" | "whiteout";
+
 interface TextAppearanceDraft {
   readonly fontFamily: TextObject["font"]["family"];
   readonly fontWeight: TextObject["font"]["weight"];
@@ -434,6 +436,7 @@ export function ProductionApp({
   now = defaultNow,
 }: ProductionAppProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const colorPickTargetRef = useRef<ColorPickTarget | null>(null);
   const productionShellRef = useRef<HTMLDivElement | null>(null);
   const renderPanelRef = useRef<HTMLElement | null>(null);
   const renderRequestId = useRef(0);
@@ -459,6 +462,9 @@ export function ProductionApp({
   const [propertiesVisible, setPropertiesVisible] = useState(false);
   const [textPropertiesMode, setTextPropertiesMode] = useState<"compact" | "full">(
     "compact",
+  );
+  const [colorPickTarget, setColorPickTarget] = useState<ColorPickTarget | null>(
+    null,
   );
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [mobileLayout, setMobileLayout] = useState(
@@ -1466,13 +1472,65 @@ function finishTutorial(): void {
     if (
       documentState === null ||
       selectedPageSize === null ||
-      panModeEnabled ||
-      event.target !== event.currentTarget
+      panModeEnabled
     ) {
       return;
     }
 
-    if (!editingEnabled || !placementArmed) {
+    const activeColorPickTarget = colorPickTargetRef.current;
+    if (activeColorPickTarget !== null) {
+      event.preventDefault();
+      event.stopPropagation();
+      const canvas = canvasRef.current;
+      const bounds = event.currentTarget.getBoundingClientRect();
+      if (canvas === null || bounds.width <= 0 || bounds.height <= 0) {
+        colorPickTargetRef.current = null;
+        setColorPickTarget(null);
+        setStatus({ kind: "error", text: "Could not sample a color from the PDF." });
+        return;
+      }
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (context === null) {
+        colorPickTargetRef.current = null;
+        setColorPickTarget(null);
+        setStatus({ kind: "error", text: "Could not sample a color from the PDF." });
+        return;
+      }
+
+      const pixelX = Math.min(
+        canvas.width - 1,
+        Math.max(0, Math.floor(((event.clientX - bounds.left) / bounds.width) * canvas.width)),
+      );
+      const pixelY = Math.min(
+        canvas.height - 1,
+        Math.max(0, Math.floor(((event.clientY - bounds.top) / bounds.height) * canvas.height)),
+      );
+      const [red = 0, green = 0, blue = 0] = context.getImageData(pixelX, pixelY, 1, 1).data;
+      const sampledColor = `#${[red, green, blue]
+        .map((component) => component.toString(16).padStart(2, "0"))
+        .join("")}`;
+
+      if (activeColorPickTarget === "text") {
+        applySelectedTextAppearanceChange(
+          { ...appearanceDraft, color: sampledColor },
+          "Matched selected text color from the PDF.",
+        );
+        setTextPropertiesMode("compact");
+      } else {
+        applySelectedWhiteoutColor(sampledColor);
+        setTextPropertiesMode("full");
+      }
+      colorPickTargetRef.current = null;
+      setColorPickTarget(null);
+      setPropertiesVisible(true);
+      return;
+    }
+
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (!placementArmed) {
       setSelectedObjectId(null);
       setEditingEnabled(false);
       setPlacementArmed(false);
@@ -1964,8 +2022,22 @@ function finishTutorial(): void {
     );
   }
 
-  async function pickSelectedTextColorFromPage(): Promise<void> {
-    if (selectedTextObject === null) {
+  async function beginColorPickFromPage(target: ColorPickTarget): Promise<void> {
+    if (
+      (target === "text" && selectedTextObject === null) ||
+      (target === "whiteout" && selectedWhiteoutObject === null)
+    ) {
+      return;
+    }
+
+    if (mobileLayout) {
+      colorPickTargetRef.current = target;
+      setColorPickTarget(target);
+      setPropertiesVisible(false);
+      setStatus({
+        kind: "ready",
+        text: `Tap the PDF to pick a color for the selected ${target} object.`,
+      });
       return;
     }
 
@@ -1977,22 +2049,23 @@ function finishTutorial(): void {
       }
     ).EyeDropper;
     if (EyeDropperConstructor === undefined) {
-      setStatus({
-        kind: "error",
-        text: "This browser does not support picking a color from the page. Use the color box instead.",
-      });
+      colorPickTargetRef.current = target;
+      setColorPickTarget(target);
+      setPropertiesVisible(false);
+      setStatus({ kind: "ready", text: "Click the PDF to sample a color." });
       return;
     }
 
     try {
       const color = await new EyeDropperConstructor().open();
-      applySelectedTextAppearanceChange(
-        {
-          ...appearanceDraft,
-          color: color.sRGBHex,
-        },
-        "Matched selected text color from the page.",
-      );
+      if (target === "text") {
+        applySelectedTextAppearanceChange(
+          { ...appearanceDraft, color: color.sRGBHex },
+          "Matched selected text color from the page.",
+        );
+      } else {
+        applySelectedWhiteoutColor(color.sRGBHex);
+      }
     } catch {
       setStatus({
         kind: "ready",
@@ -3092,6 +3165,15 @@ function finishTutorial(): void {
                         ))}
                       </div>
                       <button
+                        className="compact-pick-from-page"
+                        type="button"
+                        onClick={() => {
+                          void beginColorPickFromPage("text");
+                        }}
+                      >
+                        <span aria-hidden="true">⌾</span> Pick from PDF
+                      </button>
+                      <button
                         className="compact-more-properties"
                         type="button"
                         onClick={() => setTextPropertiesMode("full")}
@@ -3265,7 +3347,7 @@ function finishTutorial(): void {
                           data-testid="production-pick-text-color"
                           type="button"
                           onClick={() => {
-                            void pickSelectedTextColorFromPage();
+                            void beginColorPickFromPage("text");
                           }}
                           disabled={selectedTextObject === null}
                           aria-label="Pick color from page"
@@ -3373,6 +3455,15 @@ function finishTutorial(): void {
                             </button>
                           ))}
                         </div>
+                        <button
+                          className="color-pick-from-page"
+                          type="button"
+                          onClick={() => {
+                            void beginColorPickFromPage("whiteout");
+                          }}
+                        >
+                          <span aria-hidden="true">⌾</span> Pick from PDF
+                        </button>
                       </div>
                     ) : null}
                     {selectedRedactionObject !== null ? (
@@ -3421,6 +3512,23 @@ function finishTutorial(): void {
               </div>
             </>
           )}
+          {documentState !== null && colorPickTarget !== null ? (
+            <div className="document-color-pick-prompt" role="status">
+              <span>
+                Tap the PDF to pick a color for {colorPickTarget === "text" ? "Text" : "Whiteout"}.
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  colorPickTargetRef.current = null;
+                  setColorPickTarget(null);
+                  setPropertiesVisible(true);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : null}
           {documentState !== null ? (
             <section
               ref={renderPanelRef}
@@ -3462,6 +3570,7 @@ function finishTutorial(): void {
                 <div
                   className="overlay-layer"
                   data-testid="production-overlay-layer"
+                  data-color-picking={colorPickTarget === null ? "false" : "true"}
                   onPointerDown={addOverlayObject}
                 >
                   {selectedPageObjects.map((object) => {

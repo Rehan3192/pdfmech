@@ -1347,6 +1347,7 @@
   box-shadow: 0 0 0 2px rgb(37 99 235 / 16%) !important;
 }
 
+.compact-pick-from-page,
 .compact-more-properties {
   grid-column: 1 / -1;
   min-height: 42px;
@@ -1356,6 +1357,11 @@
   color: #175ca8;
   font-size: 13px;
   font-weight: 750;
+}
+
+.compact-pick-from-page {
+  background: #fff;
+  color: var(--editor-blue);
 }
 
 /* Remove the inherited legacy Properties heading; every sheet owns one title. */
@@ -1408,6 +1414,55 @@
   color: var(--editor-navy);
   font-size: 14px;
   font-weight: 750;
+}
+
+.context-properties-sheet .color-pick-from-page {
+  width: 100% !important;
+  min-height: 42px !important;
+  border-color: #bed7fa !important;
+  background: #edf5ff !important;
+  color: #175ca8 !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+}
+
+.document-color-pick-prompt {
+  position: fixed;
+  right: 50%;
+  bottom: 112px;
+  z-index: 370;
+  display: flex;
+  align-items: center;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 10px 12px 10px 16px;
+  gap: 14px;
+  border: 1px solid #9ec5ff;
+  border-radius: 999px;
+  background: #102a43;
+  color: #fff;
+  box-shadow: 0 14px 34px rgb(15 35 60 / 24%);
+  font-size: 13px;
+  font-weight: 700;
+  transform: translateX(50%);
+}
+
+.document-color-pick-prompt button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #173747;
+  font-weight: 750;
+}
+
+.overlay-layer[data-color-picking="true"] {
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.overlay-layer[data-color-picking="true"] .overlay-object {
+  pointer-events: none !important;
 }
 
 /* The action dock belongs to the editor shell and stays available in every state. */
@@ -1491,6 +1546,16 @@
     right: 12px;
     left: 12px;
     width: auto;
+  }
+
+  .document-color-pick-prompt {
+    right: 12px;
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    left: 12px;
+    justify-content: space-between;
+    max-width: none;
+    border-radius: 16px;
+    transform: none;
   }
 
   .recent-document-card {
