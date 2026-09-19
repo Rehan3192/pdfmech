@@ -403,7 +403,7 @@ const searchIntentCopy: Readonly<
   },
   faq: {
     title: "Answers for common free PDF editor tasks.",
-    text: "Find help before you add text to a PDF, delete or reorder PDF pages, use a visual cover, or download your edited file. The FAQ also explains local browser processing, recovery data, and the limits of visual whiteout and redact tools.",
+    text: "Find help before you add text to a PDF, delete or reorder PDF pages, use a visual cover, or download your edited file. The FAQ also explains the floating action dock, contextual sheets, local recovery, and the limits of visual whiteout.",
   },
   security: {
     title: "A browser-based PDF editor with local processing.",
@@ -531,7 +531,7 @@ function HomePage() {
           <FeatureCard title="Make Corrections" text="Move, resize, duplicate, or delete objects you added to the document." path="M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5" />
           <FeatureCard title="Undo Mistakes" text="Go backward or forward through meaningful document edits while you work." path="M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7" />
           <FeatureCard title="Recover Your Work" text="Local recovery can offer to restore your editing session after a browser reload." path="M12 8v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0" />
-          <FeatureCard title="Focused Workspace" text="Show or hide panels and thumbnails, or open the editor in fullscreen mode." path="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
+          <FeatureCard title="Focused Workspace" text="Keep the PDF central while tools, properties, and pages open only when you need them." path="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
           <FeatureCard title="Safer Placement" text="Each add tool places one object, then disarms to prevent an unwanted duplicate." path="m5 12 4 4L19 6" />
         </div>
       </section>
@@ -547,7 +547,7 @@ function HomePage() {
             </li>
             <li>
               <strong>Make your edits</strong>
-              <span>Choose a tool, place one object, refine it in Properties, and organize your pages.</span>
+              <span>Choose a dock tool, place one object, then refine it in its contextual sheet.</span>
             </li>
             <li>
               <strong>Download the result</strong>
@@ -600,10 +600,10 @@ function HomePage() {
           <FeatureRow feature="Undo and redo" description="Reverse or restore meaningful editing changes." path="M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7" />
           <FeatureRow feature="Session recovery" description="Restore the latest available browser-local session." path="M12 8v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0" />
           <FeatureRow feature="Checked download" description="Validate the generated PDF before saving it." path="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14" />
-          <FeatureRow feature="Panel controls" description="Show or hide tools, properties, thumbnails, and the toolbar." path="M4 4h16v16H4zM9 4v16M15 4v16" />
+          <FeatureRow feature="Contextual sheets" description="Open properties, page thumbnails, and additional actions only when needed." path="M4 4h16v16H4zM9 4v16M15 4v16" />
           <FeatureRow feature="Full-screen workspace" description="Give the document more room while keeping an exit control visible." path="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
           <FeatureRow feature="One-shot tools" description="Place one object per activation to avoid accidental duplicates." path="m5 12 4 4L19 6" />
-          <FeatureRow feature="Move pages" description="Move the selected page up or down from the thumbnail bar." path="m8 7 4-4 4 4m0 10-4 4-4-4M12 3v18" />
+          <FeatureRow feature="Move pages" description="Open Pages and move the selected thumbnail up or down." path="m8 7 4-4 4 4m0 10-4 4-4-4M12 3v18" />
         </div>
       </section>
 
@@ -765,7 +765,7 @@ function FeaturesPage() {
             { title: "Make Corrections", text: "Move, resize, duplicate, or delete objects you add to your document.", path: "M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5" },
             { title: "Undo Mistakes", text: "Step back through your changes or redo an edit while you work.", path: "M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7" },
             { title: "Recover Your Work", text: "Restore an available editing session after a browser reload.", path: "M12 8v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0" },
-            { title: "Focused Workspace", text: "Hide panels or enter Full screen to give your PDF more working space.", path: "M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" },
+            { title: "Focused Workspace", text: "Use a floating action dock and open page or property sheets only when needed.", path: "M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" },
             { title: "Safer Placement", text: "Place one object per activation so a later page click cannot add an unwanted duplicate.", path: "m5 12 4 4L19 6" },
           ].map((tool) => (
             <article className="feature-tool" key={tool.title}>
@@ -782,11 +782,11 @@ function FeaturesPage() {
         intro="Each PDFMech feature is designed to solve a focused editing task without crowding the document."
         cards={[
           { title: "Add and re-edit PDF text", items: ["Place a new text box anywhere on a supported PDF page.", "Choose font, size, color, bold style, and alignment.", "Reselect added text later and continue typing.", "Move, resize, duplicate, or delete the text box."] },
-          { title: "Visually cover PDF content", items: ["Use Whiteout for a clean visual cover.", "Use Redact for a redaction-style visual block.", "Pick or sample a color that matches the page.", "Treat covers as visual changes, not secure data removal."] },
+          { title: "Visually cover PDF content", items: ["Use Whiteout for a clean visual cover.", "Reselect the cover to open Whiteout Properties.", "Choose a preset or use Pick from PDF to match the page.", "Treat covers as visual changes, not secure data removal."] },
           { title: "Delete and reorder PDF pages", items: ["Delete a PDF page free from the edited copy.", "Move a PDF page up or down with dedicated controls.", "Rotate pages that were scanned sideways.", "Confirm the final order using page thumbnails."] },
-          { title: "Navigate and zoom comfortably", items: ["Use plus, minus, or percentage controls for zoom.", "Fit width for reading or Fit page for full-page review.", "Drag horizontally and vertically using Hand mode.", "Use Previous and Next without changing page order."] },
-          { title: "Create objects safely", items: ["Add Text, Whiteout, and Redact use one-shot placement.", "The creation tool disarms after one object is added.", "A later page click cannot create an accidental duplicate.", "Select the tool again only when another object is intentional."] },
-          { title: "Control the workspace", items: ["Hide the top toolbar, left tools, or right properties.", "Collapse the bottom thumbnail bar for extra height.", "Enter Full screen for maximum document space.", "Restore any hidden panel from the View menu."] },
+          { title: "Navigate and zoom comfortably", items: ["Use plus, minus, or the percentage control for zoom.", "Drag the document in Select mode when a zoomed page extends beyond the viewport.", "Open the Pages sheet to jump directly to another page.", "Use Previous and Next in Pages without changing document order."] },
+          { title: "Create objects safely", items: ["Text and Whiteout use one-shot placement.", "The creation tool disarms after one object is added.", "A later page click cannot create an accidental duplicate.", "Select the tool again only when another object is intentional."] },
+          { title: "Control the workspace", items: ["Keep the document visible behind the floating action dock.", "Open Properties only after selecting an added object.", "Open Pages as a temporary thumbnail sheet.", "Choose Fullscreen from More for maximum document space."] },
           { title: "Recover and reverse changes", items: ["Use Undo and Redo for meaningful object and page changes.", "Restore an available browser-local editing session.", "Clear the document and local checkpoint when finished.", "Keep recovery under your control in the current browser."] },
           { title: "Validate and download", items: ["Review text alignment, cover edges, page count, and order.", "Validate the generated file before download begins.", "Download a new edited PDF to your device.", "Keep the original source PDF unchanged as a reference."] },
         ]}
@@ -828,80 +828,70 @@ function HowItWorksPage() {
           <span className="hero-kicker">Editor controls</span>
           <h2 id="editor-controls-title">Every button, clearly explained.</h2>
           <p>
-            PDFMech keeps document actions in four predictable areas. Use this
-            guide to understand what each control changes and when to use it.
+            PDFMech keeps the document central and moves controls into a compact
+            app bar, floating dock, and temporary sheets. Here is the current layout.
           </p>
         </header>
         <div className="editor-control-groups">
           <ControlGuideGroup
             icon="⌘"
             eyebrow="Document and view"
-            title="Top command bar"
+            title="Document bar and zoom"
             controls={[
-              ["Menu button", "Open another PDF while a document is active. The filename, page count, file size, and local-save state appear beside it."],
-              ["Zoom − / +", "Decrease or increase magnification in comfortable steps. The percentage menu also lets you jump directly to a supported zoom level."],
-              ["Fit width", "Scale the current page to the available document width for easier reading."],
-              ["Fit page", "Scale the full page into the viewport so you can review its overall composition."],
-              ["Hand", "Turn on Drag View. Drag horizontally or vertically around a zoomed document without placing an object."],
-              ["Pointer", "Return to Select mode so page clicks inspect or select existing objects."],
-              ["Undo / Redo", "Step backward or forward through meaningful object and page changes."],
-              ["Hide pages / Show pages", "Collapse or restore the thumbnail bar. Hiding it immediately gives more height to the document."],
-              ["View", "Show or hide the top toolbar, left tools, right properties, or bottom pages. The menu also includes fullscreen."],
-              ["Full screen", "Open the editor as a focused fullscreen workspace. Use Exit full screen or the Escape key to return."],
-              ["Clear", "Close the current editing session and remove its local recovery checkpoint after confirmation. The original PDF is not changed."],
-              ["Download PDF", "Validate and create a new edited PDF. Your original file remains unchanged on your device."],
+              ["Open", "Choose another PDF while a document is active."],
+              ["Document details", "See the filename, page count, file size, and Saved locally state at the top."],
+              ["Undo / Redo", "On wider screens, step backward or forward through meaningful object and page changes from the document bar."],
+              ["Zoom − / +", "Use the floating zoom control to decrease or increase magnification."],
+              ["Zoom percentage", "Choose a supported zoom level directly from the percentage menu."],
+              ["Drag in Select", "When a zoomed page is larger than the viewport, drag the document horizontally or vertically while Select is active."],
             ]}
           />
           <ControlGuideGroup
             icon="T"
-            eyebrow="Create and organize"
-            title="Left tool rail"
+            eyebrow="Primary actions"
+            title="Floating action dock"
             controls={[
-              ["Select", "Safely inspect the page and select an object without arming a new placement."],
-              ["Add Text", "Arm one text placement. Click once on the page, type directly in the new box, then use Text Properties to format it."],
-              ["Whiteout", "Place one visual cover over visible content. This is a presentation cover, not guaranteed secure removal of underlying data."],
-              ["Redact", "Place one colored redaction-style cover. Review sensitive documents carefully because the current tool is visual."],
-              ["One-shot safety", "After any object is placed, the add tool automatically disarms. Select the tool again only when you intentionally want another object."],
-              ["Rotate", "Rotate the currently selected page."],
-              ["Move Pages", "Reorder the selected page. Dedicated up and down buttons are also available in the bottom page bar."],
-              ["Delete Pages", "Remove the currently selected page from the edited document."],
-              ["History", "Use the rail’s Undo and Redo actions when your attention is already on the left side of the workspace."],
+              ["Select", "Inspect the page, select an added object, or drag around a zoomed document without creating anything."],
+              ["Text", "Arm one text placement. Tap or click once on the PDF, then type in the new text box."],
+              ["Whiteout", "Place one visual cover over visible content. Whiteout is not secure removal of underlying PDF data."],
+              ["More", "Open page controls, history, fullscreen, and Clear Document in a temporary sheet."],
+              ["Download", "Validate and create a new edited PDF while leaving the original file unchanged."],
+              ["One-shot placement", "Text and Whiteout disarm after one object is placed, preventing an accidental second object."],
             ]}
           />
           <ControlGuideGroup
             icon="◫"
             eyebrow="Selected object"
-            title="Right properties panel"
+            title="Contextual properties sheet"
             controls={[
-              ["Document summary", "When nothing is selected, review the filename, page number, canvas size, and current zoom."],
-              ["Reselect text", "Click any text box you previously added to make it editable again. Type directly inside it or change its text from the panel."],
-              ["Font and size", "Choose a supported font family and set the selected text size."],
-              ["Bold and alignment", "Apply bold styling and align selected text left, center, or right."],
-              ["Color and picker", "Choose a text or cover color, or sample a color from the PDF page when the picker is available."],
-              ["Apply text", "Commit text entered through the Text field to the selected text object."],
-              ["Move and resize", "Drag a selected object or use its handles to position and size it precisely on the page."],
-              ["Duplicate", "Create a reusable copy of the selected object with a small positional offset."],
-              ["Delete", "Remove the selected text box, whiteout, or redaction-style cover."],
+              ["Quick text controls", "On phones, a compact sheet gives immediate access to color, size, bold, presets, and Pick from PDF."],
+              ["More Properties", "Expand the text sheet for font, exact size, alignment, and text content."],
+              ["Whiteout Properties", "Choose a cover color, use a preset, or sample a color directly from the PDF."],
+              ["Move and resize", "Drag a selected object or use its handles to position and size it precisely."],
+              ["Duplicate", "Create a copy of the selected object with a small positional offset."],
+              ["Delete", "Remove the selected text box or whiteout cover."],
+              ["Done", "Apply the current text content and close the sheet to return to the document."],
             ]}
           />
           <ControlGuideGroup
             icon="▦"
-            eyebrow="Pages and status"
-            title="Bottom page bar"
+            eyebrow="Additional actions"
+            title="More Tools and Pages sheets"
             controls={[
-              ["Page thumbnails", "Choose any page directly and see the current document order at a glance."],
-              ["Move up ↑", "Move the selected page one position earlier in the document."],
-              ["Move down ↓", "Move the selected page one position later in the document."],
-              ["Previous / Next", "Travel through pages without leaving the document canvas."],
-              ["Page position", "Confirm which page is selected and how many pages are in the document."],
-              ["Saved locally", "Confirms that the current recovery state remains in this browser rather than being uploaded to an editing server."],
-              ["Show / Hide", "Use the labeled control in the top command bar or the View menu to collapse and restore this entire bar."],
+              ["Pages", "Open a temporary sheet of page thumbnails instead of keeping a permanent page rail on screen."],
+              ["Rotate Page", "Rotate the current page when a scan or document is sideways."],
+              ["Move Page", "Move the current page; the Pages sheet also provides dedicated up and down controls."],
+              ["Delete Page", "Remove the current page from the edited copy."],
+              ["Undo / Redo", "Reverse or restore meaningful changes from the More Tools sheet on smaller screens."],
+              ["Fullscreen", "Give the document the largest available workspace."],
+              ["Clear Document", "Close the session and remove its local recovery checkpoint after confirmation."],
+              ["Page navigation", "Choose a thumbnail or use Previous and Next without changing page order."],
             ]}
           />
         </div>
         <aside className="placement-safety-card">
           <span>Comfortable editing</span>
-          <strong>Choose once → place once → refine safely.</strong>
+          <strong>Choose once → place once → refine in context.</strong>
           <p>
             A blank-page click after placement will not create a second object.
             Existing text remains reusable: select it again whenever you want to
@@ -914,11 +904,11 @@ function HowItWorksPage() {
         title="A clear path from first click to final file"
         intro="Use this practical checklist whenever you edit a document in PDFMech."
         cards={[
-          { title: "1. Open and inspect", items: ["Choose a PDF directly from your device.", "Check the page count and thumbnails before editing.", "Use Fit page or Fit width to choose a comfortable starting view."] },
-          { title: "2. Choose one tool", items: ["Use Select to inspect without creating anything.", "Choose Add Text, Whiteout, or Redact only when you are ready to place an object.", "Each placement tool disarms after one use to prevent accidental duplicates."] },
-          { title: "3. Refine the change", items: ["Reselect added text whenever you need to keep typing.", "Adjust font, size, color, alignment, position, or dimensions in Properties.", "Duplicate or delete the selected object without affecting the original PDF."] },
-          { title: "4. Organize PDF pages", items: ["Rotate a sideways PDF page.", "Use Move up or Move down to reorder PDF pages.", "Delete an unwanted PDF page from the downloaded copy."] },
-          { title: "5. Focus the workspace", items: ["Drag vertically or horizontally with Hand mode at higher zoom.", "Hide toolbars, side panels, or thumbnails when you need more document space.", "Open Full screen for a distraction-free PDFMech workspace."] },
+          { title: "1. Open and inspect", items: ["Choose a PDF directly from your device.", "Read its page count, file size, and Saved locally state in the document bar.", "Use the floating zoom control to choose a comfortable starting view."] },
+          { title: "2. Choose one dock tool", items: ["Use Select to inspect or drag the document without creating anything.", "Choose Text or Whiteout only when you are ready to place an object.", "Each placement tool disarms after one use to prevent accidental duplicates."] },
+          { title: "3. Refine the change", items: ["Select added text whenever you need to keep typing.", "Use the contextual sheet for font, size, color, alignment, and text content.", "Move, resize, duplicate, or delete the selected object without affecting the original PDF."] },
+          { title: "4. Organize PDF pages", items: ["Open More and choose Pages to see thumbnails.", "Use the Pages sheet to select, move up, move down, or navigate pages.", "Rotate or delete the current page from More Tools."] },
+          { title: "5. Focus the workspace", items: ["Drag vertically or horizontally in Select mode when zoomed in.", "Close temporary Properties, More Tools, or Pages sheets when finished.", "Choose Fullscreen from More for maximum document space."] },
           { title: "6. Review and download", items: ["Use Undo or Redo to compare changes.", "Review every page and remember that covers are visual, not secure redaction.", "Download a new edited PDF while your original file stays unchanged."] },
         ]}
       />
@@ -975,13 +965,13 @@ function FaqPage() {
         cards={[
           { title: "Is PDFMech a free PDF editor?", items: ["PDFMech is currently free to use.", "No account is required to start editing.", "Downloaded PDFs do not receive a PDFMech watermark.", "Supported work happens directly in your browser."] },
           { title: "Is my PDF uploaded?", items: ["PDFMech is designed for local browser processing.", "Your source PDF is not sent to an editing server for supported tasks.", "Local recovery data may remain in the browser you used.", "You can clear the document and its recovery checkpoint from the editor."] },
-          { title: "Can I add or change text?", items: ["Add Text creates a new editable text box on the PDF.", "Reselect the box later to continue typing or change formatting.", "Choose font, size, color, bold style, and alignment.", "PDFMech does not rewrite the original embedded PDF text layer yet."] },
-          { title: "Can I remove PDF text free?", items: ["Whiteout can visually cover text or other visible content.", "Redact adds a redaction-style visual cover.", "Choose or sample a cover color to match the page.", "These are visual covers and are not guaranteed secure data removal."] },
-          { title: "Can I delete PDF pages free?", items: ["Select the unwanted page from the thumbnail strip.", "Use Delete Pages to remove it from the edited document.", "Review the new page count before downloading.", "Your original PDF file remains unchanged on your device."] },
-          { title: "Can I move PDF pages up or down?", items: ["Choose a page from the bottom thumbnail bar.", "Move up sends the page one position earlier.", "Move down sends the page one position later.", "Previous and Next change the selected page without changing document order."] },
-          { title: "How do zoom and Drag View work?", items: ["Use plus, minus, or the percentage menu for zoom.", "Fit width prioritizes readable document width.", "Fit page displays the complete page composition.", "Hand mode lets you drag vertically and horizontally around a zoomed PDF."] },
-          { title: "Can I make more room for the PDF?", items: ["Hide the top toolbar, left tools, right properties, or bottom page strip.", "Use the labeled page-bar control when only thumbnails need to disappear.", "Open Full screen for the largest focused workspace.", "Restore each panel from the View menu whenever it is needed."] },
-          { title: "What happens after a placement?", items: ["Add Text, Whiteout, and Redact place one object per activation.", "The selected creation tool then disarms automatically.", "A later page click will not create an unwanted duplicate.", "Choose the tool again when you intentionally need another object."] },
+          { title: "Can I add or change text?", items: ["The Text tool creates a new editable text box on the PDF.", "Reselect the box later to continue typing or change formatting.", "Choose font, size, color, bold style, and alignment.", "PDFMech does not rewrite the original embedded PDF text layer yet."] },
+          { title: "Can I remove PDF text free?", items: ["Whiteout can visually cover text or other visible content.", "Select the cover to open Whiteout Properties.", "Choose a preset, use the color control, or sample a color from the PDF.", "Whiteout is a visual cover and is not guaranteed secure data removal."] },
+          { title: "Can I delete PDF pages free?", items: ["Open More, then choose Pages to view thumbnails.", "Select the unwanted page and use Delete Page from More Tools.", "Review the new page count before downloading.", "Your original PDF file remains unchanged on your device."] },
+          { title: "Can I move PDF pages up or down?", items: ["Open More, choose Pages, and select a thumbnail.", "Move up sends the page one position earlier.", "Move down sends the page one position later.", "Previous and Next change the selected page without changing document order."] },
+          { title: "How do zoom and document dragging work?", items: ["Use plus, minus, or the percentage menu for zoom.", "Keep Select active when you are not placing a new object.", "Drag vertically or horizontally when a zoomed page extends beyond the viewport.", "Open Pages when you want to jump to another page."] },
+          { title: "Can I make more room for the PDF?", items: ["The document-first layout has no permanent side rails.", "Properties, More Tools, and Pages open as temporary sheets.", "Close a sheet when its task is complete.", "Choose Fullscreen from More for the largest workspace."] },
+          { title: "What happens after a placement?", items: ["Text and Whiteout place one object per activation.", "The selected creation tool then disarms automatically.", "A later page click will not create an unwanted duplicate.", "Choose the tool again when you intentionally need another object."] },
           { title: "How do recovery and download work?", items: ["Local recovery can offer the latest browser-stored session after interruption.", "Undo and Redo handle meaningful object and page changes.", "Download validates and creates a new edited PDF.", "Always review the downloaded result in a PDF viewer before sharing."] },
         ]}
       />
@@ -1029,7 +1019,7 @@ function SecurityPage() {
       />
       <section className="trust-warning-card">
         <span aria-hidden="true">!</span>
-        <div><h2>Visual redaction is not secure redaction</h2><p>Whiteout and Redact add visual covers. Do not treat them as guaranteed removal of underlying PDF text, metadata, or other data. Use a specialist secure-redaction workflow for sensitive information.</p></div>
+        <div><h2>Visual whiteout is not secure redaction</h2><p>Whiteout adds a visual cover. Do not treat it as guaranteed removal of underlying PDF text, metadata, or other data. Use a specialist secure-redaction workflow for sensitive information.</p></div>
       </section>
     </main>
   );
@@ -1057,7 +1047,7 @@ function TermsPage() {
           { title: "3. Your documents and edits", items: ["Your PDFs and the edits you create remain your content.", "You are responsible for having permission to open, alter, and download each document.", "You are responsible for the accuracy, legality, and consequences of the edited result."] },
           { title: "4. Acceptable use", items: ["Do not use PDFMech for unlawful, harmful, fraudulent, or abusive activity.", "Do not attempt to disrupt, overload, reverse engineer, or bypass safeguards in the service.", "Do not use the service to infringe privacy, copyright, or other rights."] },
           { title: "5. Local processing and recovery", items: ["Supported editing is designed to occur in your browser.", "Local recovery may store the source PDF and editing state in the current browser.", "You are responsible for clearing local data on shared or untrusted devices."] },
-          { title: "6. Visual covers and review", items: ["Whiteout and Redact are visual-cover tools, not guaranteed secure redaction.", "Underlying content or metadata may remain in a PDF.", "Review the downloaded PDF in a suitable viewer before relying on or sharing it."] },
+          { title: "6. Visual covers and review", items: ["Whiteout is a visual-cover tool, not guaranteed secure redaction.", "Underlying content or metadata may remain in a PDF.", "Review the downloaded PDF in a suitable viewer before relying on or sharing it."] },
           { title: "7. Availability and changes", items: ["Features may be changed, limited, paused, or discontinued as PDFMech develops.", "The service may occasionally be unavailable because of maintenance or technical issues.", "These terms may be updated, with the revised date shown on this page."] },
           { title: "8. Disclaimers and liability", items: ["PDFMech is provided on an “as is” and “as available” basis where permitted by law.", "No guarantee is made that every PDF will open, render, edit, or export perfectly.", "To the extent permitted by law, PDFMech is not liable for indirect or consequential loss arising from use of the service."] },
           { title: "9. Ending use", items: ["You may stop using PDFMech at any time.", "Access may be limited when necessary to protect the service, users, or legal rights.", "Provisions that logically continue after use ends remain applicable."] },
@@ -1183,17 +1173,10 @@ function ProductMockup() {
           <i />
           <i />
         </span>
-        <strong>PDFMech</strong>
-        <button type="button" tabIndex={-1}>Download</button>
+        <strong>sample.pdf</strong>
+        <span className="mockup-saved">Saved locally</span>
       </div>
-      <div className="mockup-body">
-        <aside className="mockup-tools">
-          <span className="active">Add Text</span>
-          <span>Whiteout</span>
-          <span>Redact</span>
-          <span>Rotate</span>
-          <span>Move Pages</span>
-        </aside>
+      <div className="mockup-body mockup-document-first">
         <div className="mockup-document">
           <div className="mockup-text-box">
             <strong>Edit PDFs</strong>
@@ -1204,15 +1187,14 @@ function ProductMockup() {
           <span className="mockup-cover" />
           <span className="mockup-line short" />
         </div>
-        <aside className="mockup-properties">
-          <strong>Text Properties</strong>
-          <span>Font</span>
-          <em>Inter</em>
-          <span>Size</span>
-          <em>16</em>
-          <span>Color</span>
-          <i />
-        </aside>
+        <div className="mockup-zoom"><span>-</span><strong>100%</strong><span>+</span></div>
+        <div className="mockup-action-dock">
+          <span className="active">Select</span>
+          <span>Text</span>
+          <span>Whiteout</span>
+          <span>More</span>
+          <strong>Download</strong>
+        </div>
       </div>
     </div>
   );
@@ -1270,10 +1252,10 @@ function AboutPage() {
         cards={[
           { title: "Everyday document fixes", items: ["Add a date, name, note, label, or correction as a new text box.", "Visually cover outdated text, numbers, or other visible content.", "Rotate a sideways scan before sharing it.", "Download a clean new copy when the work is complete."] },
           { title: "Free PDF page organization", items: ["Delete a PDF page free from the edited copy.", "Move PDF pages up or down with dedicated controls.", "Use thumbnails to confirm page order at a glance.", "Navigate pages without accidentally changing their order."] },
-          { title: "A calmer editor layout", items: ["Find creation and page tools in the left rail.", "Keep the PDF large and readable in the center canvas.", "See context-aware settings in the right properties panel.", "Hide panels or use Full screen when more room matters."] },
+          { title: "A calmer editor layout", items: ["Find primary actions in a floating dock close to the document.", "Keep the PDF large and readable without permanent side rails.", "Open contextual settings only after selecting an object.", "Use temporary More Tools and Pages sheets for secondary tasks."] },
           { title: "Comfortable object editing", items: ["Place one object per tool activation to avoid misclick duplicates.", "Reselect added text and continue editing it later.", "Move, resize, duplicate, or delete added objects.", "Use Undo and Redo to compare meaningful changes."] },
           { title: "Privacy-minded by design", items: ["Supported PDF work runs directly in your browser.", "No PDFMech account is required.", "No cloud document library is created for your files.", "Local recovery can stay in the browser when available."] },
-          { title: "Clear and honest limits", items: ["Whiteout and Redact are visual cover tools, not secure data removal.", "Browser memory can affect very large PDF documents.", "PDFMech adds text boxes rather than rewriting original PDF text.", "Every downloaded file should be reviewed before it is shared."] },
+          { title: "Clear and honest limits", items: ["Whiteout is a visual cover tool, not secure data removal.", "Browser memory can affect very large PDF documents.", "PDFMech adds text boxes rather than rewriting original PDF text.", "Every downloaded file should be reviewed before it is shared."] },
           { title: "Reliable finishing steps", items: ["Validate the generated PDF before download begins.", "Confirm page count, page order, text alignment, and cover edges.", "Keep the original PDF unchanged as a reference.", "Open the downloaded copy in your normal viewer for a final check."] },
           { title: "What guides development", items: ["Make common actions easy to find and understand.", "Use status messages that explain what changed.", "Give users more document space when they need it.", "Prioritize useful PDFMech improvements over unnecessary complexity."] },
         ]}
@@ -1323,7 +1305,7 @@ function PrivacyPage() {
           { title: "Your privacy controls", items: ["Choose whether to restore an available session.", "Use Clear document to remove the active work and checkpoint.", "Clear browser site data for additional local cleanup.", "Avoid local recovery on a shared or public device."] },
           { title: "Basic website information", items: ["Normal web hosting may process technical requests needed to deliver the site.", "Browsers and hosting infrastructure may handle IP address, user-agent, and request timing data.", "PDFMech does not require an account profile for the editor.", "Do not send sensitive PDFs through general support email."] },
           { title: "Downloaded files", items: ["Downloads are saved wherever your browser or device directs them.", "PDFMech does not control files after they are downloaded.", "Protect sensitive output using suitable device and file controls.", "Delete unwanted copies from downloads, backups, and shared folders."] },
-          { title: "Before sharing", items: ["Review every edited page in a trusted PDF viewer.", "Check page order, added text, visual covers, and metadata.", "Whiteout and Redact are not guaranteed secure data removal.", "Use a specialist redaction tool for confidential information."] },
+          { title: "Before sharing", items: ["Review every edited page in a trusted PDF viewer.", "Check page order, added text, visual covers, and metadata.", "Whiteout is not guaranteed secure data removal.", "Use a specialist redaction tool for confidential information."] },
         ]}
       />
       <section className="trust-warning-card privacy-note">
@@ -1384,11 +1366,11 @@ function ContactPage() {
         intro="You can explain most PDFMech problems without sharing the source document."
         cards={[
           { title: "PDF will not open", items: ["Include the browser and operating system you used.", "Share the approximate PDF file size and page count.", "Tell us whether a different PDF opens successfully.", "Mention any message PDFMech displayed."] },
-          { title: "Text editing problem", items: ["Tell us whether you chose Add Text or reselected an existing text box.", "List the font, size, color, or alignment control that did not respond.", "Mention whether typing worked directly inside the selected box.", "A cropped interface screenshot is often enough for investigation."] },
-          { title: "Text remover or cover issue", items: ["Specify whether you used Whiteout or Redact.", "Explain whether placement, resizing, movement, or color caused the problem.", "Do not send private text just to demonstrate the issue.", "Remember that PDFMech covers content visually rather than securely removing source data."] },
-          { title: "PDF page delete help", items: ["Identify the selected page number and total page count.", "Tell us whether Delete Pages was disabled or produced the wrong result.", "Confirm whether the thumbnail disappeared before download.", "Keep the original PDF available as your safe reference copy."] },
-          { title: "PDF page move up or down", items: ["Share the page’s starting position and intended position.", "Specify whether you used Move up, Move down, or the left-rail page tool.", "Tell us whether thumbnails updated immediately.", "Confirm the order again in the downloaded PDF."] },
-          { title: "Zoom or vertical dragging", items: ["Include the active zoom percentage.", "Tell us whether Hand mode was selected.", "Specify mouse, touchpad, touchscreen, or keyboard use.", "Describe whether horizontal dragging worked while vertical dragging failed."] },
+          { title: "Text editing problem", items: ["Tell us whether you chose Text or reselected an existing text box.", "List the font, size, color, or alignment control that did not respond.", "Mention whether typing worked directly inside the selected box.", "A cropped interface screenshot is often enough for investigation."] },
+          { title: "Whiteout or cover issue", items: ["Tell us whether placement, resizing, movement, color, or Pick from PDF caused the problem.", "Mention whether the Whiteout Properties sheet opened after selection.", "Do not send private text just to demonstrate the issue.", "Remember that PDFMech covers content visually rather than securely removing source data."] },
+          { title: "PDF page delete help", items: ["Identify the selected page number and total page count.", "Tell us whether Delete Page was disabled or produced the wrong result.", "Confirm whether the thumbnail disappeared before download.", "Keep the original PDF available as your safe reference copy."] },
+          { title: "PDF page move up or down", items: ["Share the page’s starting position and intended position.", "Specify whether you used Move up or Move down in the Pages sheet.", "Tell us whether thumbnails updated immediately.", "Confirm the order again in the downloaded PDF."] },
+          { title: "Zoom or document dragging", items: ["Include the active zoom percentage.", "Confirm that Select was active and no placement tool was armed.", "Specify mouse, touchpad, touchscreen, or keyboard use.", "Describe whether horizontal dragging worked while vertical dragging failed."] },
           { title: "Download or export issue", items: ["Share the page where the downloaded result first looks different.", "Describe the affected text box, cover, rotation, or page order.", "Mention the PDF viewer used to inspect the result.", "Do not overwrite or discard the original source file."] },
           { title: "Privacy-safe reporting", items: ["Remove names, addresses, financial details, and confidential information from screenshots.", "Describe document structure instead of sending sensitive pages.", "A recreated sample PDF can demonstrate the same behavior safely.", "Email muhammadrehan3192@gmail.com when your report is ready."] },
         ]}

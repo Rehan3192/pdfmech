@@ -54,3 +54,18 @@ test("website shell has clear navigation and SEO support pages", async ({
     "Edit PDFs privately in your browser",
   );
 });
+
+test("marketing pages describe the current document-first editor", async ({ page }) => {
+  await page.goto("/how-it-works");
+
+  await expect(page.getByRole("heading", { name: "Floating action dock" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Contextual properties sheet" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "More Tools and Pages sheets" })).toBeVisible();
+  await expect(page.getByTestId("site-how-it-works")).not.toContainText("Left tool rail");
+  await expect(page.getByTestId("site-how-it-works")).not.toContainText("Right properties panel");
+  await expect(page.getByTestId("site-how-it-works")).not.toContainText("Bottom page bar");
+
+  await page.goto("/features");
+  await expect(page.getByTestId("site-features")).toContainText("Pick from PDF");
+  await expect(page.getByTestId("site-features")).not.toContainText("Redact for a redaction-style visual block");
+});

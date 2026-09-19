@@ -66,7 +66,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   security: {
     path: "/security",
     title: "PDF Editor Security & Local Processing | PDFMech",
-    description: "Learn how PDFMech processes supported PDF edits locally in your browser, what recovery data is stored, and the limits of visual whiteout and redaction.",
+    description: "Learn how PDFMech processes supported PDF edits locally in your browser, what recovery data is stored, and the limits of visual whiteout for sensitive information.",
     h1: "PDF editing built around local processing.",
     intro: "Understand PDFMech's browser-based security model, user controls, and important product limits.",
     schemaType: "WebPage",
@@ -118,15 +118,15 @@ export const FAQ_SCHEMA_ITEMS = [
   },
   {
     question: "Can I add or change text?",
-    answer: "Yes. Add Text creates a new editable text box whose font, size, color, style, and alignment you can adjust.",
+    answer: "Yes. The Text tool creates a new editable text box whose font, size, color, style, and alignment you can adjust.",
   },
   {
     question: "Can I delete PDF pages free?",
-    answer: "Yes. Select the unwanted page, use Delete Pages, and review the new page count before downloading. Your original PDF remains unchanged.",
+    answer: "Yes. Select the unwanted page, use Delete Page from More Tools, and review the new page count before downloading. Your original PDF remains unchanged.",
   },
   {
     question: "Can I remove PDF text free?",
-    answer: "No. Whiteout and Redact add visual covers and are not guaranteed to remove underlying PDF text, metadata, or other data.",
+    answer: "No. Whiteout adds a visual cover and is not guaranteed to remove underlying PDF text, metadata, or other data.",
   },
 ] as const;
 
