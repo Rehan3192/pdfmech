@@ -1521,41 +1521,235 @@
   font-weight: 750;
 }
 
-/* Keep desktop properties clear of the shared navigation and visually lighter. */
+/* Desktop uses a compact inspector; the bottom-sheet treatment is reserved for touch layouts. */
 @media (min-width: 1024px) {
   .context-properties-sheet {
-    top: 108px !important;
-    right: 22px !important;
+    top: 198px !important;
+    right: 24px !important;
     bottom: auto !important;
-    width: min(390px, calc(100vw - 44px)) !important;
-    max-height: min(580px, calc(100dvh - 128px)) !important;
-    padding: 21px 16px 16px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: min(360px, calc(100vw - 48px)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 222px) !important;
+    padding: 14px !important;
     gap: 8px !important;
-    border-radius: 20px !important;
+    overflow-y: auto !important;
+    border-color: #d8e5ef !important;
+    border-radius: 18px !important;
+    background:
+      linear-gradient(180deg, #fff 0%, #fbfdff 100%) !important;
+    box-shadow:
+      0 20px 54px rgb(15 35 60 / 14%),
+      0 3px 12px rgb(15 35 60 / 7%) !important;
+  }
+
+  .context-properties-sheet::after {
+    display: none !important;
   }
 
   .context-properties-sheet .mobile-properties-title {
-    margin-bottom: 1px !important;
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 40px !important;
+    margin: 0 44px 4px 0 !important;
+    gap: 10px !important;
     font-size: 17px !important;
+    line-height: 1.15 !important;
+  }
+
+  .context-properties-sheet .mobile-properties-title::before {
+    content: "T";
+    display: grid;
+    place-items: center;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #1baed2, #087ca5);
+    color: #fff;
+    box-shadow: 0 5px 12px rgb(8 124 165 / 22%);
+    font-size: 17px;
+    font-weight: 850;
+  }
+
+  .context-properties-sheet[data-tool="whiteout"] .mobile-properties-title::before {
+    content: "\25B1";
+  }
+
+  .context-properties-sheet[data-tool="redaction"] .mobile-properties-title::before {
+    content: "\2298";
   }
 
   .context-properties-sheet .properties-collapse-arrow {
-    top: 13px !important;
-    right: 13px !important;
-    width: 32px !important;
-    min-width: 32px !important;
-    height: 32px !important;
-    min-height: 32px !important;
+    top: 15px !important;
+    right: 14px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    border: 1px solid #d7e3ed !important;
+    background: #f5f8fb !important;
+    box-shadow: 0 3px 0 #dfe8ef !important;
+  }
+
+  .context-properties-sheet > label,
+  .context-properties-sheet > .property-field,
+  .context-properties-sheet > .document-properties,
+  .context-properties-sheet > .properties-empty-note,
+  .context-properties-sheet > .direct-color-field {
+    grid-column: 1 / -1 !important;
+  }
+
+  .context-properties-sheet > label,
+  .context-properties-sheet > .property-field {
+    grid-template-columns: 66px minmax(0, 1fr) !important;
+    align-items: center !important;
+    min-height: 36px !important;
+    gap: 9px !important;
+    padding: 0 !important;
+    font-size: 11px !important;
+    font-weight: 750 !important;
+  }
+
+  .context-properties-sheet > label > input,
+  .context-properties-sheet > label > select,
+  .context-properties-sheet > .property-field > .property-row,
+  .context-properties-sheet > .property-field > .direct-color-picker {
+    grid-column: 2 !important;
   }
 
   .context-properties-sheet input:not([type="checkbox"]),
   .context-properties-sheet select,
   .context-properties-sheet button {
-    min-height: 38px !important;
+    min-height: 36px !important;
+    border-radius: 9px !important;
+    font-size: 13px !important;
+  }
+
+  .context-properties-sheet input:not([type="checkbox"]),
+  .context-properties-sheet select {
+    padding-inline: 10px !important;
+    background-color: #f9fbfd !important;
+    font-size: 14px !important;
+    font-weight: 650 !important;
+  }
+
+  .context-properties-sheet .property-row {
+    gap: 5px !important;
+  }
+
+  .context-properties-sheet .property-size-style .property-row {
+    grid-template-columns: minmax(54px, 1fr) repeat(3, 42px) !important;
+  }
+
+  .context-properties-sheet .property-color-field {
+    align-items: start !important;
+  }
+
+  .context-properties-sheet .property-color-field > span {
+    padding-top: 10px !important;
+  }
+
+  .context-properties-sheet .property-color-field .property-row {
+    grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+  }
+
+  .context-properties-sheet .property-color-field input[type="color"] {
+    width: 42px !important;
+    padding: 4px !important;
+  }
+
+  .context-properties-sheet .color-preset-row {
+    grid-column: 2 !important;
+    justify-content: space-between !important;
+    margin-top: 2px !important;
+    gap: 4px !important;
+  }
+
+  .context-properties-sheet .color-preset-row button {
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 2px !important;
+  }
+
+  .context-properties-sheet .property-align-field .property-row {
+    padding: 2px !important;
+    border: 1px solid #dce6ee !important;
+    border-radius: 10px !important;
+    background: #f7fafc !important;
+  }
+
+  .context-properties-sheet .property-align-field button {
+    min-height: 31px !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .context-properties-sheet .property-align-field button[aria-pressed="true"] {
+    background: #fff !important;
+    box-shadow: 0 2px 7px rgb(15 35 60 / 10%) !important;
+  }
+
+  .context-properties-sheet .text-content-control {
+    padding-top: 3px !important;
+    border-top: 1px solid #e5edf3 !important;
+  }
+
+  .context-properties-sheet button[data-testid="production-duplicate-object"],
+  .context-properties-sheet button[data-testid="production-delete-object"] {
+    width: 100% !important;
+    min-height: 36px !important;
+    font-size: 12px !important;
+    font-weight: 750 !important;
+  }
+
+  .context-properties-sheet button[data-testid="production-duplicate-object"] {
+    grid-column: 1 !important;
+  }
+
+  .context-properties-sheet button[data-testid="production-delete-object"] {
+    grid-column: 2 !important;
+  }
+
+  .context-properties-sheet .mobile-properties-done {
+    grid-column: 1 / -1 !important;
+    min-height: 39px !important;
+    margin-top: 1px !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, #10a9d2, #087da7) !important;
+    box-shadow: 0 7px 16px rgb(8 125 167 / 22%) !important;
+    font-size: 13px !important;
   }
 
   .context-properties-sheet .property-icon-toggle span {
-    min-height: 36px !important;
+    min-height: 34px !important;
+  }
+
+  .context-properties-sheet[data-tool="whiteout"],
+  .context-properties-sheet[data-tool="redaction"] {
+    width: min(340px, calc(100vw - 48px)) !important;
+    padding: 14px !important;
+    border-radius: 18px !important;
+  }
+
+  .context-properties-sheet .direct-color-field {
+    grid-template-columns: 82px minmax(0, 1fr) !important;
+    align-items: center !important;
+  }
+
+  .context-properties-sheet .direct-color-field > span {
+    grid-column: 1 !important;
+  }
+
+  .context-properties-sheet .direct-color-field .direct-color-picker,
+  .context-properties-sheet .direct-color-field .color-preset-row,
+  .context-properties-sheet .direct-color-field .color-pick-from-page {
+    grid-column: 2 !important;
   }
 }
 
