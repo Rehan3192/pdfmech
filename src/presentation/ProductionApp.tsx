@@ -59,8 +59,15 @@ import {
   type ZoomLevel,
 } from "./viewer-controls";
 import { safeErrorMessage } from "./error-messages";
+import type {
+  ProductEvent,
+  ToolRouteDefinition,
+} from "../tool-routes";
 
 interface ProductionAppProps {
+  readonly initialFile?: File | undefined;
+  readonly routeIntent?: ToolRouteDefinition | undefined;
+  readonly onProductEvent?: (event: ProductEvent) => void;
   readonly openDocument: (file: File) => Promise<EditorDocument>;
   readonly renderPage: (
     document: EditorDocument,
@@ -413,6 +420,9 @@ function isEditableKeyboardTarget(target: EventTarget | null): boolean {
 }
 
 export function ProductionApp({
+  initialFile,
+  routeIntent,
+  onProductEvent,
   openDocument,
   renderPage,
   closeDocument,
@@ -446,6 +456,7 @@ export function ProductionApp({
   const pendingTextFocusIdRef = useRef<ObjectId | null>(null);
   const initialFitSourceIdRef = useRef<string | null>(null);
   const pinchDistanceRef = useRef<number | null>(null);
+  const initialFileHandledRef = useRef<File | null>(null);
   const [documentHistory, setDocumentHistory] = useState(() =>
     createDocumentHistory(),
   );
@@ -575,8 +586,10 @@ export function ProductionApp({
     }
 
     const frame = window.requestAnimationFrame(() => {
-      fitZoom("page");
       initialFitSourceIdRef.current = sourceId;
+      void fitZoom("page").then(() => {
+        activateRouteIntent();
+      });
     });
     return () => window.cancelAnimationFrame(frame);
   }, [activeSource?.id, selectedPageSize?.height, selectedPageSize?.width]);
@@ -948,6 +961,45 @@ function finishTutorial(): void {
     };
   }, [documentState, now, recoveryStore]);
 
+  useEffect(() => {
+    if (
+      initialFile === undefined ||
+      initialFileHandledRef.current === initialFile
+    ) {
+      return;
+    }
+
+    initialFileHandledRef.current = initialFile;
+    void openSelectedPdf(initialFile);
+  }, [initialFile]);
+
+  function emitProductEvent(name: ProductEvent["name"]): void {
+    onProductEvent?.({
+      name,
+      tool: routeIntent?.initialAction ?? "general",
+    });
+  }
+
+  function activateRouteIntent(): void {
+    if (
+      routeIntent?.editorMode !== "text" ||
+      routeIntent.initialAction !== "add-text"
+    ) {
+      return;
+    }
+
+    setCreationTool("text");
+    setEditingEnabled(true);
+    setPlacementArmed(true);
+    setPanModeEnabled(false);
+    setSelectedObjectId(null);
+    setPropertiesVisible(false);
+    setStatus({
+      kind: "ready",
+      text: "Text tool ready. Click or tap the PDF where you want to add text.",
+    });
+  }
+
   async function renderSelectedPage(
     document: EditorDocument,
     pageIndex: number,
@@ -970,7 +1022,12 @@ function finishTutorial(): void {
       setRenderState({ kind: "ready", pageIndex, renderedPage });
       setStatus({
         kind: "ready",
-        text: `Rendered page ${pageIndex + 1} locally at ${formatZoom(nextZoom)}.`,
+        text:
+          routeIntent?.editorMode === "text" &&
+          routeIntent.initialAction === "add-text" &&
+          placementArmed
+            ? "Text tool ready. Click or tap the PDF where you want to add text."
+            : `Rendered page ${pageIndex + 1} locally at ${formatZoom(nextZoom)}.`,
       });
     } catch (error) {
       if (requestId !== renderRequestId.current) {
@@ -1010,6 +1067,7 @@ function finishTutorial(): void {
     setZoom(1);
     setSelectedObjectId(null);
     setStatus({ kind: "working", text: "Opening locally..." });
+    emitProductEvent("pdf_selected");
 
     try {
       const opened = await openDocument(file);
@@ -1046,6 +1104,8 @@ function finishTutorial(): void {
         } locally. View mode is on. Click Edit PDF when you want to add text or covers.`,
       });
       await renderSelectedPage(opened, 0, 1);
+      activateRouteIntent();
+      emitProductEvent("editor_loaded");
     } catch (error) {
       setStatus({ kind: "error", text: safeErrorMessage(error) });
     }
@@ -1176,6 +1236,8 @@ function finishTutorial(): void {
         } from local recovery. View mode is on. Click Edit PDF when you want to edit.`,
       });
       await renderSelectedPage(restored, 0, 1);
+      activateRouteIntent();
+      emitProductEvent("editor_loaded");
     } catch (error) {
       const text = safeErrorMessage(error);
       setRecoveryStatus({ kind: "error", text });
@@ -1242,6 +1304,7 @@ function finishTutorial(): void {
 
     const source = Object.values(documentState.sources)[0] ?? null;
     const editedFilename = createEditedFilename(source?.originalName ?? null);
+    emitProductEvent("export_clicked");
     setIsDownloading(true);
     setStatus({ kind: "working", text: "Generating PDF locally..." });
 
@@ -1266,6 +1329,7 @@ function finishTutorial(): void {
         kind: "ready",
         text: `Download ready locally as ${editedFilename} (${formatBytes(generated.bytes.byteLength)}).`,
       });
+      emitProductEvent("export_success");
     } catch (error) {
       setStatus({ kind: "error", text: safeErrorMessage(error) });
     } finally {
@@ -1395,7 +1459,7 @@ function finishTutorial(): void {
     }
   }
 
-  function fitZoom(mode: "width" | "page"): void {
+  async function fitZoom(mode: "width" | "page"): Promise<void> {
     if (
       documentState === null ||
       selectedPageSize === null ||
@@ -1413,7 +1477,7 @@ function finishTutorial(): void {
       mode,
     });
     setZoom(nextZoom);
-    void renderSelectedPage(documentState, selectedPageIndex, nextZoom);
+    await renderSelectedPage(documentState, selectedPageIndex, nextZoom);
   }
 
   function zoomDocumentWithWheel(
@@ -1580,6 +1644,7 @@ function finishTutorial(): void {
               frame,
             });
     commitDocument(result.document);
+    emitProductEvent("edit_action");
     setSelectedObjectId(result.objectId);
     setPlacementArmed(false);
     if (mobileLayout) {
@@ -2175,6 +2240,8 @@ function finishTutorial(): void {
     <div
       ref={productionShellRef}
       className="production-shell"
+      data-route-mode={routeIntent?.editorMode ?? "general"}
+      data-route-action={routeIntent?.initialAction ?? "general"}
       data-has-document={documentState === null ? "false" : "true"}
       data-pages-open={pageStripVisible ? "true" : "false"}
       data-toolbar-open={toolbarVisible ? "true" : "false"}
@@ -2449,6 +2516,7 @@ function finishTutorial(): void {
             </button>
             <button
               className="mobile-download-button"
+              data-testid="production-dock-download"
               type="button"
               onClick={() => void downloadDocument()}
               disabled={isDownloading}

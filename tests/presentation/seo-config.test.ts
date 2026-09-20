@@ -24,9 +24,24 @@ describe("SEO configuration", () => {
     const home = JSON.stringify(buildStructuredData("home"));
     const faq = JSON.stringify(buildStructuredData("faq"));
 
-    expect(home).toContain("SoftwareApplication");
+    expect(home).toContain("WebApplication");
     expect(home).toContain("Organization");
     expect(faq).toContain("FAQPage");
     expect(faq).toContain("BreadcrumbList");
+  });
+
+  it("uses self-referencing metadata and honest product schema for add text", () => {
+    const config = SEO_PAGES.addTextToPdf;
+    const structuredData = JSON.stringify(buildStructuredData("addTextToPdf"));
+
+    expect(config.path).toBe("/add-text-to-pdf");
+    expect(canonicalUrl("addTextToPdf")).toBe(
+      "https://www.pdfmech.com/add-text-to-pdf",
+    );
+    expect(structuredData).toContain(canonicalUrl("addTextToPdf"));
+    expect(structuredData).toContain(config.description);
+    expect(structuredData).toContain('"price":"0"');
+    expect(structuredData).not.toContain("aggregateRating");
+    expect(structuredData).not.toContain("review");
   });
 });

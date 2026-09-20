@@ -4,6 +4,7 @@ export const SOCIAL_IMAGE_PATH = "/PDFMechLogo.png";
 export type SeoPageKey =
   | "home"
   | "editor"
+  | "addTextToPdf"
   | "features"
   | "howItWorks"
   | "faq"
@@ -37,6 +38,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Open a PDF and edit it free in your browser. Add text, cover content, rotate, reorder, or delete pages without uploading your file or creating an account.",
     h1: "Free browser PDF editor",
     intro: "Choose a PDF from your device and make common document edits locally in your browser.",
+    schemaType: "WebPage",
+  },
+  addTextToPdf: {
+    path: "/add-text-to-pdf",
+    title: "Add Text to PDF Online Free - No Upload | PDFMech",
+    description: "Add text to a PDF online for free with PDFMech. Choose a file, place editable text, adjust its font, size, color, and alignment, then download locally.",
+    h1: "Add text to a PDF online for free.",
+    intro: "Type on a PDF directly in your browser without sending the source document to an editing server or creating an account.",
     schemaType: "WebPage",
   },
   features: {
@@ -179,16 +188,16 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     });
   }
 
-  if (page === "home" || page === "editor") {
+  if (page === "home" || page === "editor" || page === "addTextToPdf") {
     graph.push({
-      "@type": "SoftwareApplication",
+      "@type": "WebApplication",
       name: "PDFMech",
-      url: `${SITE_ORIGIN}/editor`,
+      url,
       applicationCategory: "BusinessApplication",
       applicationSubCategory: "PDF editor",
       operatingSystem: "Any operating system with a modern web browser",
       browserRequirements: "Requires JavaScript and a modern web browser",
-      description: SEO_PAGES.editor.description,
+      description: config.description,
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     });
   }

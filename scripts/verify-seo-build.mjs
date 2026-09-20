@@ -45,6 +45,16 @@ for (const page of SEO_PAGE_KEYS) {
   if ((html.match(/<h1>/gi) ?? []).length !== 1) {
     throw new Error(`${filename} must contain exactly one crawlable H1.`);
   }
+  if (
+    page === "addTextToPdf" &&
+    (!html.includes("How to add text to a PDF") ||
+      !html.includes("Local browser processing") ||
+      !html.includes('/add-text-to-pdf#add-text-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable task instructions and a same-route action.`,
+    );
+  }
   JSON.parse(jsonLd);
   titles.add(title);
   descriptions.add(description);

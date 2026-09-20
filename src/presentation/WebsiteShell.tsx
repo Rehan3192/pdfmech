@@ -1,21 +1,38 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+  type ReactNode,
+} from "react";
 import {
   buildStructuredData,
   canonicalUrl,
   SEO_PAGES,
   type SeoPageKey,
 } from "../seo-config";
+import {
+  TOOL_ROUTES,
+  type ProductEvent,
+  type ToolRouteDefinition,
+} from "../tool-routes";
 
 type WebsitePage = SeoPageKey | "notFound";
 type MarketingPageKey = Exclude<SeoPageKey, "editor">;
 
 interface WebsiteShellProps {
-  readonly editor: ReactNode;
+  readonly renderEditor: (options: {
+    readonly initialFile?: File | undefined;
+    readonly routeIntent?: ToolRouteDefinition | undefined;
+    readonly onProductEvent: (event: ProductEvent) => void;
+  }) => ReactNode;
 }
 
 const routes: Readonly<Record<string, WebsitePage>> = {
   "/": "home",
   "/editor": "editor",
+  [TOOL_ROUTES.addTextToPdf.slug]: "addTextToPdf",
   "/features": "features",
   "/how-it-works": "howItWorks",
   "/faq": "faq",
@@ -39,15 +56,20 @@ function navigateTo(pathname: string): void {
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 
-export function WebsiteShell({ editor }: WebsiteShellProps) {
+export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
   const [page, setPage] = useState<WebsitePage>(() =>
     pageFromPath(window.location.pathname),
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [toolEditorSession, setToolEditorSession] = useState<{
+    readonly route: ToolRouteDefinition;
+    readonly initialFile?: File | undefined;
+  } | null>(null);
 
   useEffect(() => {
     function syncRoute(): void {
       setPage(pageFromPath(window.location.pathname));
+      setToolEditorSession(null);
       setMobileMenuOpen(false);
     }
 
@@ -131,8 +153,46 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
     [],
   );
 
+  const activeToolRoute =
+    page === "addTextToPdf" ? TOOL_ROUTES.addTextToPdf : null;
+  const toolEditorActive =
+    activeToolRoute !== null &&
+    toolEditorSession?.route.key === activeToolRoute.key;
+  const editorExperienceActive = page === "editor" || toolEditorActive;
+
+  function recordProductEvent(event: ProductEvent): void {
+    const detail = {
+      event: `pdfmech_${event.name}`,
+      tool: event.tool,
+      landingPage: window.location.pathname,
+      device: window.matchMedia("(max-width: 720px)").matches
+        ? "mobile"
+        : "desktop",
+    };
+    window.dispatchEvent(
+      new CustomEvent("pdfmech:product-event", { detail }),
+    );
+    const analyticsWindow = window as Window & {
+      dataLayer?: Array<Record<string, unknown>>;
+    };
+    analyticsWindow.dataLayer?.push(detail);
+  }
+
+  useEffect(() => {
+    if (page === "addTextToPdf" && !toolEditorActive) {
+      recordProductEvent({
+        name: "tool_landing_view",
+        tool: TOOL_ROUTES.addTextToPdf.initialAction,
+      });
+    }
+  }, [page, toolEditorActive]);
+
   return (
-    <div className="website-shell" data-page={page}>
+    <div
+      className="website-shell"
+      data-page={editorExperienceActive ? "editor" : page}
+      data-route={page}
+    >
       <header className="site-header" data-menu-open={mobileMenuOpen ? "true" : "false"}>
         <a
           className="site-brand"
@@ -168,7 +228,12 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
             <a
               key={item.path}
               href={item.path}
-              aria-current={page === item.page ? "page" : undefined}
+              aria-current={
+                page === item.page ||
+                (editorExperienceActive && item.page === "editor")
+                  ? "page"
+                  : undefined
+              }
               onClick={(event) => {
                 event.preventDefault();
                 navigateTo(item.path);
@@ -179,7 +244,7 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
             </a>
           ))}
         </nav>
-        {page === "editor" ? (
+        {editorExperienceActive ? (
           <span className="editor-trust-badge">
             <strong>No upload</strong>
             <small>Your files stay in your browser</small>
@@ -199,13 +264,24 @@ export function WebsiteShell({ editor }: WebsiteShellProps) {
       </header>
 
       {page === "editor" ? (
-        editor
+        renderEditor({ onProductEvent: recordProductEvent })
+      ) : toolEditorActive && toolEditorSession !== null ? (
+        renderEditor({
+          initialFile: toolEditorSession.initialFile,
+          routeIntent: toolEditorSession.route,
+          onProductEvent: recordProductEvent,
+        })
       ) : page === "notFound" ? (
         <NotFoundPage />
       ) : (
         <>
           {page !== "home" ? <Breadcrumbs page={page} /> : null}
-          <MarketingPage page={page} />
+          <MarketingPage
+            page={page}
+            onStartTool={(route, initialFile) => {
+              setToolEditorSession({ route, initialFile });
+            }}
+          />
           <SearchIntentSection page={page} />
           <InternalLinkSilo page={page} />
         </>
@@ -270,6 +346,7 @@ function SiteFooter() {
       <nav className="footer-column" aria-label="Product links">
         <strong>Product</strong>
         <SiteLink path="/editor">PDFMech App</SiteLink>
+        <SiteLink path={TOOL_ROUTES.addTextToPdf.slug}>Add Text to PDF</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
         <SiteLink path="/how-it-works">How It Works</SiteLink>
         <SiteLink path="/faq">FAQ</SiteLink>
@@ -316,11 +393,13 @@ const internalLinkClusters: Readonly<
   Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Popular tool", title: "Add text to a PDF", description: "Type on a PDF privately without uploading it." },
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
     { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Open a PDF with the Text tool ready to place." },
     { path: "/editor", eyebrow: "Use the tools", title: "Open the PDF editor", description: "Try the features on a PDF from your device." },
     { path: "/how-it-works", eyebrow: "Learn the workflow", title: "See how PDFMech works", description: "Follow the path from opening a file to downloading it." },
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
@@ -359,6 +438,11 @@ const internalLinkClusters: Readonly<
     { path: "/faq", eyebrow: "Self-service help", title: "Browse common questions", description: "Find answers for common editing, download, and privacy topics." },
     { path: "/how-it-works", eyebrow: "Product guide", title: "Learn the editing workflow", description: "Follow the steps and controls before reporting an issue." },
     { path: "/privacy", eyebrow: "Share safely", title: "Read the privacy overview", description: "Learn how to report an issue without sharing sensitive PDFs." },
+  ],
+  addTextToPdf: [
+    { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use text, whiteout, and page organization tools together." },
+    { path: "/how-it-works", eyebrow: "Editor guide", title: "Learn the complete workflow", description: "See how local editing, contextual properties, and download work." },
+    { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
 };
 
@@ -425,6 +509,10 @@ const searchIntentCopy: Readonly<
     title: "Help with free PDF editor tasks and browser issues.",
     text: "Contact PDFMech if you need help adding text to a PDF, deleting or moving PDF pages, using a visual cover, or downloading an edited file. For privacy, describe the issue without sending a sensitive source document.",
   },
+  addTextToPdf: {
+    title: "Type on a PDF without sending it to an editing server.",
+    text: "The Text tool adds a new editable text box above the original PDF page. You can change its font, size, color, bold style, alignment, position, and dimensions before downloading a separate edited copy.",
+  },
 };
 
 function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
@@ -439,7 +527,16 @@ function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
   );
 }
 
-function MarketingPage({ page }: { readonly page: MarketingPageKey }) {
+function MarketingPage({
+  page,
+  onStartTool,
+}: {
+  readonly page: MarketingPageKey;
+  readonly onStartTool: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
   switch (page) {
     case "home":
       return <HomePage />;
@@ -459,7 +556,154 @@ function MarketingPage({ page }: { readonly page: MarketingPageKey }) {
       return <PrivacyPage />;
     case "contact":
       return <ContactPage />;
+    case "addTextToPdf":
+      return <AddTextToPdfPage onStart={onStartTool} />;
   }
+}
+
+function AddTextToPdfPage({
+  onStart,
+}: {
+  readonly onStart: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
+  const [dragActive, setDragActive] = useState(false);
+  const route = TOOL_ROUTES.addTextToPdf;
+
+  function startWithFile(file: File | undefined): void {
+    if (file !== undefined) {
+      onStart(route, file);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    const [file] = event.currentTarget.files ?? [];
+    startWithFile(file);
+    event.currentTarget.value = "";
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>): void {
+    event.preventDefault();
+    setDragActive(false);
+    const [file] = event.dataTransfer.files;
+    startWithFile(file);
+  }
+
+  return (
+    <main className="site-page tool-route-page" data-testid="site-add-text-to-pdf">
+      <section className="tool-route-hero">
+        <div className="tool-route-copy">
+          <span className="hero-kicker">Free PDF text tool</span>
+          <h1>Add text to a PDF online for free.</h1>
+          <p>
+            Place editable text anywhere on a PDF, match its style, and download
+            a separate copy. Your source PDF is processed in this browser and is
+            not sent to PDFMech for editing.
+          </p>
+          <ul className="tool-route-benefits">
+            <li>No account or watermark</li>
+            <li>Font, size, color, bold, and alignment controls</li>
+            <li>Original PDF remains unchanged</li>
+          </ul>
+        </div>
+        <section
+          id="add-text-tool"
+          className="tool-route-upload"
+          data-drag-active={dragActive ? "true" : "false"}
+          aria-label="Open a PDF to add text"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+        >
+          <span className="tool-route-file-icon" aria-hidden="true">PDF</span>
+          <h2>Choose a PDF to start</h2>
+          <p>The Text tool will be ready as soon as your document opens.</p>
+          <label className="tool-route-file-control">
+            <span>Choose PDF File</span>
+            <input
+              data-testid="add-text-file-input"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handleFileChange}
+            />
+          </label>
+          <small>or drag and drop a PDF here</small>
+          <button
+            type="button"
+            className="tool-route-recovery"
+            onClick={() => onStart(route)}
+          >
+            Continue a locally saved document
+          </button>
+          <p className="tool-route-storage-note">
+            Local recovery may store a browser copy and editing state on this
+            device. You can clear it from the editor.
+          </p>
+        </section>
+      </section>
+
+      <section className="tool-route-steps" aria-labelledby="add-text-steps-title">
+        <header>
+          <span className="hero-kicker">How it works</span>
+          <h2 id="add-text-steps-title">Type on your PDF in four steps.</h2>
+        </header>
+        <ol>
+          <li><span>1</span><div><strong>Open your PDF</strong><p>Choose a file from your device. PDFMech reads it locally in your browser.</p></div></li>
+          <li><span>2</span><div><strong>Place the text box</strong><p>The Text tool is armed automatically. Click or tap where the new text should appear.</p></div></li>
+          <li><span>3</span><div><strong>Match the document</strong><p>Edit the words and adjust font, size, color, bold style, alignment, position, and dimensions.</p></div></li>
+          <li><span>4</span><div><strong>Download a new copy</strong><p>Review the page and export an edited PDF while keeping the original unchanged.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="tool-route-details">
+        <article>
+          <span className="hero-kicker">What this tool does</span>
+          <h2>Add a new editable text layer.</h2>
+          <p>
+            PDFMech places a new text object above the PDF page. Reselect it to
+            continue typing, duplicate it, move it, resize it, or change its
+            appearance before export.
+          </p>
+        </article>
+        <article>
+          <span className="hero-kicker">Important limitation</span>
+          <h2>It does not rewrite embedded PDF text.</h2>
+          <p>
+            This workflow is intended for names, dates, notes, labels, and
+            corrections added as new text boxes. It does not directly replace
+            words already stored in the PDF's original text layer.
+          </p>
+        </article>
+      </section>
+
+      <section className="tool-route-faq" aria-labelledby="add-text-faq-title">
+        <span className="hero-kicker">Add text FAQ</span>
+        <h2 id="add-text-faq-title">Useful answers before you begin.</h2>
+        <details open>
+          <summary>Is my PDF uploaded?</summary>
+          <p>No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.</p>
+        </details>
+        <details>
+          <summary>Can I edit text that is already inside the PDF?</summary>
+          <p>Not directly. PDFMech currently adds new editable text boxes above the original page.</p>
+        </details>
+        <details>
+          <summary>Can I match the existing text color?</summary>
+          <p>Yes. Use a preset, enter a color, or use Pick from PDF to sample a visible page color.</p>
+        </details>
+        <details>
+          <summary>Will PDFMech replace my original file?</summary>
+          <p>No. Download creates a separate edited PDF and leaves the source file unchanged.</p>
+        </details>
+      </section>
+    </main>
+  );
 }
 
 function HomePage() {

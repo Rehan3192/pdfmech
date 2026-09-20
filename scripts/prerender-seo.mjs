@@ -28,9 +28,19 @@ function replaceMeta(html, selector, value) {
 
 function renderSnapshot(page) {
   const config = SEO_PAGES[page];
+  const routeLabels = {
+    home: "Home",
+    editor: "PDF Editor",
+    addTextToPdf: "Add Text to PDF",
+    features: "Features",
+    howItWorks: "How It Works",
+    faq: "FAQ",
+    about: "About",
+    contact: "Contact",
+  };
   const nav = SEO_PAGE_KEYS
     .filter((key) => !["security", "privacy", "terms"].includes(key))
-    .map((key) => `<a href="${SEO_PAGES[key].path}">${key === "howItWorks" ? "How It Works" : key === "editor" ? "PDF Editor" : key[0].toUpperCase() + key.slice(1)}</a>`)
+    .map((key) => `<a href="${SEO_PAGES[key].path}">${routeLabels[key] ?? key}</a>`)
     .join("");
   const related = SEO_PAGE_KEYS
     .filter((key) => key !== page)
@@ -38,7 +48,14 @@ function renderSnapshot(page) {
     .map((key) => `<a href="${SEO_PAGES[key].path}">${escapeHtml(SEO_PAGES[key].h1)}</a>`)
     .join("");
 
-  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="/editor">Open PDFMech</a></section><nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
+  const isAddTextTool = page === "addTextToPdf";
+  const toolContent = isAddTextTool
+    ? `<section><h2>How to add text to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where the new text should appear.</li><li>Adjust font, size, color, bold style, and alignment.</li><li>Review and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>What the Text tool changes</h2><p>PDFMech adds a new editable text box above the PDF page. It does not rewrite text already embedded in the original PDF.</p></section>`
+    : "";
+  const actionPath = isAddTextTool ? "/add-text-to-pdf#add-text-tool" : "/editor";
+  const actionLabel = isAddTextTool ? "Choose a PDF to add text" : "Open PDFMech";
+
+  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="${actionPath}">${actionLabel}</a></section>${toolContent}<nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
 }
 
 function renderRoute(page) {
@@ -81,7 +98,7 @@ notFound = replaceMeta(notFound, "twitter:title", notFoundTitle);
 notFound = replaceMeta(notFound, "twitter:description", "The requested PDFMech page could not be found.");
 await writeFile(join(outputDirectory, "404.html"), notFound);
 
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>2026-09-14</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>2026-09-20</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
 await writeFile(join(outputDirectory, "sitemap.xml"), sitemap);
 
 if (!template.includes(`content="${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}"`)) {

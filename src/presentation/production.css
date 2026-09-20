@@ -8513,3 +8513,324 @@ button[data-testid="production-apply-text"] {
     font-size: 11px;
   }
 }
+
+/* Search landing page that becomes the shared editor without changing routes. */
+.tool-route-page {
+  padding: 18px 0 80px;
+  background:
+    radial-gradient(circle at 10% 8%, rgb(22 186 226 / 10%), transparent 26rem),
+    radial-gradient(circle at 90% 12%, rgb(37 99 235 / 8%), transparent 28rem),
+    #f5fbfd;
+}
+
+.tool-route-hero,
+.tool-route-steps,
+.tool-route-details,
+.tool-route-faq {
+  width: min(calc(100% - 48px), 1180px);
+  margin-inline: auto;
+}
+
+.tool-route-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(380px, .92fr);
+  gap: clamp(26px, 5vw, 68px);
+  align-items: center;
+  min-height: 570px;
+  padding: clamp(42px, 7vw, 82px);
+  border: 1px solid #cce8ef;
+  border-radius: 34px;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 24px 65px rgb(13 76 99 / 12%);
+}
+
+.tool-route-copy h1 {
+  max-width: 660px;
+  margin: 18px 0;
+  color: #0c3044;
+  font-size: clamp(44px, 5.4vw, 70px);
+  line-height: 1.02;
+  letter-spacing: -.055em;
+}
+
+.tool-route-copy > p {
+  max-width: 660px;
+  color: #486b7c;
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.7;
+}
+
+.tool-route-benefits {
+  display: grid;
+  gap: 11px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #163b50;
+  font-weight: 750;
+}
+
+.tool-route-benefits li {
+  position: relative;
+  padding-left: 30px;
+}
+
+.tool-route-benefits li::before {
+  content: "";
+  position: absolute;
+  top: .3em;
+  left: 0;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: #13bca8;
+  box-shadow: inset 0 0 0 5px #e4fbf7;
+}
+
+.tool-route-upload {
+  display: grid;
+  justify-items: center;
+  min-height: 410px;
+  padding: 42px 36px;
+  border: 2px dashed #9ed8e7;
+  border-radius: 26px;
+  background: linear-gradient(160deg, #f7fdff, #edf9fc);
+  text-align: center;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.tool-route-upload[data-drag-active="true"] {
+  border-color: #098db4;
+  box-shadow: 0 18px 38px rgb(10 145 180 / 18%);
+  transform: translateY(-3px);
+}
+
+.tool-route-file-icon {
+  display: grid;
+  width: 72px;
+  height: 82px;
+  place-items: center;
+  border-radius: 13px 22px 13px 13px;
+  background: linear-gradient(145deg, #18c2eb, #0876d7);
+  color: #fff;
+  box-shadow: 0 14px 28px rgb(8 118 215 / 24%);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.tool-route-upload h2 {
+  margin: 22px 0 6px;
+  color: #0c3044;
+  font-size: 27px;
+}
+
+.tool-route-upload > p:not(.tool-route-storage-note) {
+  margin: 0 0 22px;
+  color: #587787;
+}
+
+.tool-route-file-control {
+  position: relative;
+  display: grid;
+  width: min(100%, 300px);
+  min-height: 56px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #10bce6, #0879d9);
+  color: #fff;
+  box-shadow: 0 13px 26px rgb(8 121 217 / 22%);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.tool-route-file-control input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.tool-route-upload > small {
+  margin: 12px 0 18px;
+  color: #6b8795;
+}
+
+.tool-route-recovery {
+  border: 0;
+  background: transparent;
+  color: #087da4;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tool-route-storage-note {
+  max-width: 370px;
+  margin: 14px 0 0;
+  color: #66828f;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tool-route-steps,
+.tool-route-faq {
+  margin-top: 64px;
+  padding: clamp(36px, 6vw, 64px);
+  border: 1px solid #d4e9ef;
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 18px 44px rgb(13 76 99 / 9%);
+}
+
+.tool-route-steps header,
+.tool-route-faq > .hero-kicker,
+.tool-route-faq > h2 {
+  text-align: center;
+}
+
+.tool-route-steps h2,
+.tool-route-faq h2,
+.tool-route-details h2 {
+  margin: 12px 0;
+  color: #0c3044;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+}
+
+.tool-route-steps ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 38px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-route-steps li {
+  padding: 24px;
+  border-radius: 20px;
+  background: #eff9fc;
+}
+
+.tool-route-steps li > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 18px;
+  place-items: center;
+  border-radius: 12px;
+  background: #0aa3c9;
+  color: #fff;
+  font-weight: 900;
+}
+
+.tool-route-steps strong {
+  color: #15394d;
+  font-size: 17px;
+}
+
+.tool-route-steps p,
+.tool-route-details p,
+.tool-route-faq p {
+  color: #557483;
+  line-height: 1.65;
+}
+
+.tool-route-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  margin-top: 28px;
+}
+
+.tool-route-details article {
+  padding: clamp(32px, 5vw, 54px);
+  border: 1px solid #d4e9ef;
+  border-radius: 26px;
+  background: #fff;
+}
+
+.tool-route-details article:last-child {
+  background: linear-gradient(145deg, #0b4056, #087e9d);
+}
+
+.tool-route-details article:last-child h2,
+.tool-route-details article:last-child p {
+  color: #fff;
+}
+
+.tool-route-faq {
+  max-width: 980px;
+}
+
+.tool-route-faq details {
+  border-bottom: 1px solid #d8e8ed;
+}
+
+.tool-route-faq summary {
+  padding: 22px 4px;
+  color: #12374b;
+  font-size: 17px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.tool-route-faq details p {
+  margin: -4px 4px 22px;
+}
+
+@media (max-width: 900px) {
+  .tool-route-hero {
+    grid-template-columns: 1fr;
+    padding: 48px;
+  }
+
+  .tool-route-steps ol {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .tool-route-page { padding-top: 8px; }
+
+  .tool-route-hero,
+  .tool-route-steps,
+  .tool-route-details,
+  .tool-route-faq {
+    width: calc(100% - 24px);
+  }
+
+  .tool-route-hero {
+    gap: 30px;
+    min-height: auto;
+    padding: 34px 22px 22px;
+    border-radius: 24px;
+  }
+
+  .tool-route-copy h1 {
+    font-size: clamp(38px, 12vw, 52px);
+  }
+
+  .tool-route-upload {
+    min-height: 390px;
+    padding: 34px 18px;
+    border-radius: 21px;
+  }
+
+  .tool-route-steps,
+  .tool-route-faq {
+    margin-top: 30px;
+    padding: 32px 20px;
+    border-radius: 23px;
+  }
+
+  .tool-route-steps ol,
+  .tool-route-details {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-route-details { margin-top: 18px; }
+  .tool-route-details article { padding: 30px 22px; }
+}

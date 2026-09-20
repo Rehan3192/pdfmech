@@ -121,7 +121,11 @@ async function restoreRecoveredDocument(
 createRoot(rootElement).render(
   <StrictMode>
     <WebsiteShell
-      editor={<ProductionApp
+      renderEditor={({ initialFile, routeIntent, onProductEvent }) => (
+        <ProductionApp
+      initialFile={initialFile}
+      routeIntent={routeIntent}
+      onProductEvent={onProductEvent}
       openDocument={(file) =>
         openLocalDocument(
           {
@@ -262,7 +266,8 @@ createRoot(rootElement).render(
       }
       recoveryStore={recoveryStore}
       restoreRecoveredDocument={restoreRecoveredDocument}
-    />}
+    />
+      )}
     />
   </StrictMode>,
 );
