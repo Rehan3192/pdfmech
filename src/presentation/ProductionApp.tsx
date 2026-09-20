@@ -123,6 +123,8 @@ interface ProductionAppProps {
     input: {
       readonly fontFamily: TextObject["font"]["family"];
       readonly fontWeight: TextObject["font"]["weight"];
+      readonly fontStyle: TextObject["font"]["style"];
+      readonly underline: boolean;
       readonly fontSize: number;
       readonly color: RgbaColor;
       readonly horizontalAlignment: TextObject["horizontalAlignment"];
@@ -237,6 +239,8 @@ type ColorPickTarget = "text" | "whiteout";
 interface TextAppearanceDraft {
   readonly fontFamily: TextObject["font"]["family"];
   readonly fontWeight: TextObject["font"]["weight"];
+  readonly fontStyle: TextObject["font"]["style"];
+  readonly underline: boolean;
   readonly fontSize: string;
   readonly color: string;
   readonly horizontalAlignment: TextObject["horizontalAlignment"];
@@ -274,6 +278,8 @@ const quickColorOptions = [
 const defaultAppearanceDraft: TextAppearanceDraft = {
   fontFamily: "helvetica",
   fontWeight: "regular",
+  fontStyle: "normal",
+  underline: false,
   fontSize: "14",
   color: "#121726",
   horizontalAlignment: "left",
@@ -687,6 +693,8 @@ function finishTutorial(): void {
         : {
             fontFamily: selectedTextObject.font.family,
             fontWeight: selectedTextObject.font.weight,
+            fontStyle: selectedTextObject.font.style,
+            underline: selectedTextObject.underline ?? false,
             fontSize: selectedTextObject.fontSize.toString(),
             color: rgbaColorToHex(selectedTextObject.color),
             horizontalAlignment: selectedTextObject.horizontalAlignment,
@@ -696,6 +704,8 @@ function finishTutorial(): void {
     selectedTextObject?.id,
     selectedTextObject?.font.family,
     selectedTextObject?.font.weight,
+    selectedTextObject?.font.style,
+    selectedTextObject?.underline,
     selectedTextObject?.fontSize,
     selectedTextObject?.color,
     selectedTextObject?.horizontalAlignment,
@@ -2056,6 +2066,8 @@ function finishTutorial(): void {
         {
           fontFamily: nextDraft.fontFamily,
           fontWeight: nextDraft.fontWeight,
+          fontStyle: nextDraft.fontStyle,
+          underline: nextDraft.underline,
           fontSize,
           color: hexToRgbaColor(nextDraft.color),
           horizontalAlignment: nextDraft.horizontalAlignment,
@@ -3193,26 +3205,64 @@ function finishTutorial(): void {
                           </button>
                         </div>
                       </div>
-                      <div className="compact-bold-control">
-                        <span>Bold</span>
-                        <button
-                          type="button"
-                          aria-pressed={appearanceDraft.fontWeight === "bold"}
-                          onClick={() => {
-                            applySelectedTextAppearanceChange(
-                              {
-                                ...appearanceDraft,
-                                fontWeight:
-                                  appearanceDraft.fontWeight === "bold"
-                                    ? "regular"
-                                    : "bold",
-                              },
-                              "Updated selected text bold style.",
-                            );
-                          }}
-                        >
-                          B
-                        </button>
+                      <div className="compact-style-control">
+                        <span>Style</span>
+                        <div>
+                          <button
+                            type="button"
+                            aria-label="Toggle bold"
+                            aria-pressed={appearanceDraft.fontWeight === "bold"}
+                            onClick={() => {
+                              applySelectedTextAppearanceChange(
+                                {
+                                  ...appearanceDraft,
+                                  fontWeight:
+                                    appearanceDraft.fontWeight === "bold"
+                                      ? "regular"
+                                      : "bold",
+                                },
+                                "Updated selected text bold style.",
+                              );
+                            }}
+                          >
+                            B
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Toggle italic"
+                            aria-pressed={appearanceDraft.fontStyle === "italic"}
+                            onClick={() => {
+                              applySelectedTextAppearanceChange(
+                                {
+                                  ...appearanceDraft,
+                                  fontStyle:
+                                    appearanceDraft.fontStyle === "italic"
+                                      ? "normal"
+                                      : "italic",
+                                },
+                                "Updated selected text italic style.",
+                              );
+                            }}
+                          >
+                            <em>I</em>
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Toggle underline"
+                            aria-pressed={appearanceDraft.underline}
+                            onClick={() => {
+                              applySelectedTextAppearanceChange(
+                                {
+                                  ...appearanceDraft,
+                                  underline: !appearanceDraft.underline,
+                                },
+                                "Updated selected text underline style.",
+                              );
+                            }}
+                          >
+                            <u>U</u>
+                          </button>
+                        </div>
                       </div>
                       <div className="compact-color-presets" aria-label="Text color presets">
                         {quickColorOptions.map((color) => (
@@ -3356,31 +3406,67 @@ function finishTutorial(): void {
                             );
                           }}
                         />
-                        <label className="property-icon-toggle">
-                          <input
-                            data-testid="production-text-bold"
-                            type="checkbox"
-                            checked={appearanceDraft.fontWeight === "bold"}
-                            disabled={selectedTextObject === null}
-                            onChange={(event) => {
-                              const fontWeight = event.currentTarget.checked
-                                ? "bold"
-                                : "regular";
-                              applySelectedTextAppearanceChange(
-                                {
-                                  ...appearanceDraft,
-                                  fontWeight,
-                                },
-                                "Updated selected text bold style.",
-                              );
-                            }}
-                          />
-                          <span>B</span>
-                        </label>
-                        <button type="button" disabled title="Italic is not available yet">
+                        <button
+                          className="property-style-toggle"
+                          data-testid="production-text-bold"
+                          type="button"
+                          aria-label="Toggle bold"
+                          aria-pressed={appearanceDraft.fontWeight === "bold"}
+                          disabled={selectedTextObject === null}
+                          onClick={() => {
+                            applySelectedTextAppearanceChange(
+                              {
+                                ...appearanceDraft,
+                                fontWeight:
+                                  appearanceDraft.fontWeight === "bold"
+                                    ? "regular"
+                                    : "bold",
+                              },
+                              "Updated selected text bold style.",
+                            );
+                          }}
+                        >
+                          B
+                        </button>
+                        <button
+                          className="property-style-toggle"
+                          data-testid="production-text-italic"
+                          type="button"
+                          aria-label="Toggle italic"
+                          aria-pressed={appearanceDraft.fontStyle === "italic"}
+                          disabled={selectedTextObject === null}
+                          onClick={() => {
+                            applySelectedTextAppearanceChange(
+                              {
+                                ...appearanceDraft,
+                                fontStyle:
+                                  appearanceDraft.fontStyle === "italic"
+                                    ? "normal"
+                                    : "italic",
+                              },
+                              "Updated selected text italic style.",
+                            );
+                          }}
+                        >
                           <em>I</em>
                         </button>
-                        <button type="button" disabled title="Underline is not available yet">
+                        <button
+                          className="property-style-toggle"
+                          data-testid="production-text-underline"
+                          type="button"
+                          aria-label="Toggle underline"
+                          aria-pressed={appearanceDraft.underline}
+                          disabled={selectedTextObject === null}
+                          onClick={() => {
+                            applySelectedTextAppearanceChange(
+                              {
+                                ...appearanceDraft,
+                                underline: !appearanceDraft.underline,
+                              },
+                              "Updated selected text underline style.",
+                            );
+                          }}
+                        >
                           <u>U</u>
                         </button>
                       </div>
@@ -3686,7 +3772,17 @@ function finishTutorial(): void {
                                 : undefined,
                             fontWeight:
                               object.kind === "text"
-                                ? object.font.weight
+                                ? object.font.weight === "bold"
+                                  ? 700
+                                  : 400
+                                : undefined,
+                            fontStyle:
+                              object.kind === "text"
+                                ? object.font.style
+                                : undefined,
+                            textDecoration:
+                              object.kind === "text" && object.underline
+                                ? "underline"
                                 : undefined,
                             fontSize:
                               object.kind === "text"

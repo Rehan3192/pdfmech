@@ -83,6 +83,7 @@ export interface TextObject extends EditObjectBase {
   readonly color: RgbaColor;
   readonly horizontalAlignment: "left" | "center" | "right";
   readonly lineHeight: number;
+  readonly underline?: boolean;
 }
 
 export interface WhiteoutObject extends EditObjectBase {

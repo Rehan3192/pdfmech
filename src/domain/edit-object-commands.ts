@@ -14,6 +14,7 @@ import type { ObjectId } from "./primitives";
 type TextAlignment = TextObject["horizontalAlignment"];
 type TextFontFamily = FontReference["family"];
 type TextFontWeight = FontReference["weight"];
+type TextFontStyle = FontReference["style"];
 
 const textFontFamilies = [
   "arial",
@@ -30,6 +31,7 @@ const textFontFamilies = [
   "source-sans-pro",
 ] as const;
 const textFontWeights = ["regular", "bold"] as const;
+const textFontStyles = ["normal", "italic"] as const;
 const textAlignments = ["left", "center", "right"] as const;
 const MINIMUM_TEXT_FONT_SIZE = 2;
 const MAXIMUM_TEXT_FONT_SIZE = 96;
@@ -97,6 +99,8 @@ export interface UpdateTextObjectAppearanceInput {
   readonly objectId: ObjectId;
   readonly fontFamily: TextFontFamily;
   readonly fontWeight: TextFontWeight;
+  readonly fontStyle?: TextFontStyle;
+  readonly underline?: boolean;
   readonly fontSize: number;
   readonly color: RgbaColor;
   readonly horizontalAlignment: TextAlignment;
@@ -151,6 +155,12 @@ function assertTextFontFamily(fontFamily: TextFontFamily): void {
 function assertTextFontWeight(fontWeight: TextFontWeight): void {
   if (!textFontWeights.includes(fontWeight)) {
     throw new RangeError("Text font weight is not supported.");
+  }
+}
+
+function assertTextFontStyle(fontStyle: TextFontStyle): void {
+  if (!textFontStyles.includes(fontStyle)) {
+    throw new RangeError("Text font style is not supported.");
   }
 }
 
@@ -397,6 +407,9 @@ export function updateTextObjectAppearance(
 
   assertTextFontFamily(input.fontFamily);
   assertTextFontWeight(input.fontWeight);
+  const fontStyle = input.fontStyle ?? target.font.style;
+  const underline = input.underline ?? target.underline ?? false;
+  assertTextFontStyle(fontStyle);
   assertTextAlignment(input.horizontalAlignment);
   assertTextColor(input.color);
   const fontSize = normalizeTextFontSize(input.fontSize);
@@ -404,6 +417,8 @@ export function updateTextObjectAppearance(
   if (
     target.font.family === input.fontFamily &&
     target.font.weight === input.fontWeight &&
+    target.font.style === fontStyle &&
+    (target.underline ?? false) === underline &&
     target.fontSize === fontSize &&
     target.color.red === input.color.red &&
     target.color.green === input.color.green &&
@@ -426,7 +441,9 @@ export function updateTextObjectAppearance(
           ...target.font,
           family: input.fontFamily,
           weight: input.fontWeight,
+          style: fontStyle,
         },
+        underline,
         fontSize,
         color: input.color,
         horizontalAlignment: input.horizontalAlignment,

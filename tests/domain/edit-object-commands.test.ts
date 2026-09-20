@@ -409,6 +409,8 @@ describe("edit object commands", () => {
       objectId,
       fontFamily: "arial",
       fontWeight: "bold",
+      fontStyle: "italic",
+      underline: true,
       fontSize: 2,
       color: {
         red: 1,
@@ -431,7 +433,8 @@ describe("edit object commands", () => {
     expect(next.objects[objectId]).toMatchObject({
       text: "Text",
       frame: document.objects[objectId]?.frame,
-      font: { family: "arial", weight: "bold" },
+      font: { family: "arial", weight: "bold", style: "italic" },
+      underline: true,
       fontSize: 2,
       color: {
         red: 1,
@@ -442,6 +445,27 @@ describe("edit object commands", () => {
       horizontalAlignment: "center",
     });
     expect(next.objectOrderByPage[document.pages[0]!.id]).toEqual([objectId]);
+
+    const toggledOff = updateTextObjectAppearance(next, {
+      objectId,
+      fontFamily: "arial",
+      fontWeight: "regular",
+      fontStyle: "normal",
+      underline: false,
+      fontSize: 2,
+      color: {
+        red: 1,
+        green: 0,
+        blue: 0.2,
+        alpha: asUnitInterval(1),
+      },
+      horizontalAlignment: "center",
+      now: "2026-08-01T00:00:03.000Z",
+    });
+    expect(toggledOff.objects[objectId]).toMatchObject({
+      font: { family: "arial", weight: "regular", style: "normal" },
+      underline: false,
+    });
   });
 
   it("duplicates an object with a fresh id, preserved content, and deterministic z-order", () => {

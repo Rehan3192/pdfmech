@@ -212,6 +212,8 @@ createRoot(rootElement).render(
           objectId,
           fontFamily: input.fontFamily,
           fontWeight: input.fontWeight,
+          fontStyle: input.fontStyle,
+          underline: input.underline,
           fontSize: input.fontSize,
           color: input.color,
           horizontalAlignment: input.horizontalAlignment,

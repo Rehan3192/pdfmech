@@ -1238,7 +1238,7 @@
 
 .compact-color-control,
 .compact-size-control,
-.compact-bold-control {
+.compact-style-control {
   display: grid;
   align-items: center;
   grid-template-columns: 1fr auto;
@@ -1267,7 +1267,7 @@
 }
 
 .compact-size-control button,
-.compact-bold-control button {
+.compact-style-control button {
   min-height: 34px;
   border: 0;
   background: #fff;
@@ -1282,13 +1282,18 @@
   text-align: center;
 }
 
-.compact-bold-control button {
-  width: 38px;
+.compact-style-control > div {
+  display: flex;
+  gap: 4px;
+}
+
+.compact-style-control button {
+  width: 34px;
   border: 1px solid var(--editor-border);
   border-radius: 9px;
 }
 
-.compact-bold-control button[aria-pressed="true"] {
+.compact-style-control button[aria-pressed="true"] {
   border-color: #b8d6ff;
   background: #eaf3ff;
   color: var(--editor-blue);
@@ -1514,6 +1519,44 @@
   color: #175ca8;
   font-size: 11px;
   font-weight: 750;
+}
+
+/* Keep desktop properties clear of the shared navigation and visually lighter. */
+@media (min-width: 1024px) {
+  .context-properties-sheet {
+    top: 108px !important;
+    right: 22px !important;
+    bottom: auto !important;
+    width: min(390px, calc(100vw - 44px)) !important;
+    max-height: min(580px, calc(100dvh - 128px)) !important;
+    padding: 21px 16px 16px !important;
+    gap: 8px !important;
+    border-radius: 20px !important;
+  }
+
+  .context-properties-sheet .mobile-properties-title {
+    margin-bottom: 1px !important;
+    font-size: 17px !important;
+  }
+
+  .context-properties-sheet .properties-collapse-arrow {
+    top: 13px !important;
+    right: 13px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .context-properties-sheet input:not([type="checkbox"]),
+  .context-properties-sheet select,
+  .context-properties-sheet button {
+    min-height: 38px !important;
+  }
+
+  .context-properties-sheet .property-icon-toggle span {
+    min-height: 36px !important;
+  }
 }
 
 @media (min-width: 640px) and (max-width: 1023px) {

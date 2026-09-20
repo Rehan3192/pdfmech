@@ -305,6 +305,23 @@ async function drawTextObject({
         lineHeight,
         maxWidth: object.frame.width,
       });
+      if (object.underline && line.length > 0) {
+        const underlineY = baselineY - Math.max(1, fontSize * 0.12);
+        const underlineWidth = Math.min(measuredWidth, object.frame.width);
+        pdfPage.drawLine({
+          start: {
+            x: cropBox.x + object.frame.x + alignmentOffset,
+            y: underlineY,
+          },
+          end: {
+            x: cropBox.x + object.frame.x + alignmentOffset + underlineWidth,
+            y: underlineY,
+          },
+          thickness: Math.max(0.6, fontSize * 0.06),
+          color: rgbaToRgb(object.color),
+          opacity: object.opacity * object.color.alpha,
+        });
+      }
     } catch (error) {
       throw createTextEncodingError(error);
     }

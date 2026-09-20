@@ -60,6 +60,65 @@ test("add-text landing opens the real editor on the same URL with Text armed", a
   );
   await expect(page).toHaveURL(/\/add-text-to-pdf$/);
 
+  const textOverlay = page.getByTestId("production-overlay-text");
+  await textOverlay.locator(".overlay-text-content").click();
+  const propertiesSheet = page.locator(".context-properties-sheet");
+  await expect(propertiesSheet).toBeVisible();
+  const [headerBox, propertiesBox] = await Promise.all([
+    page.locator(".site-header").boundingBox(),
+    propertiesSheet.boundingBox(),
+  ]);
+  expect(headerBox).not.toBeNull();
+  expect(propertiesBox).not.toBeNull();
+  expect(propertiesBox!.y).toBeGreaterThanOrEqual(
+    headerBox!.y + headerBox!.height + 4,
+  );
+  expect(propertiesBox!.width).toBeLessThanOrEqual(400);
+  expect(propertiesBox!.height).toBeLessThanOrEqual(590);
+
+  const bold = page.getByTestId("production-text-bold");
+  await bold.click();
+  await expect(bold).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(() => textOverlay.evaluate((element) => getComputedStyle(element).fontWeight))
+    .toMatch(/700|bold/);
+  await bold.click();
+  await expect(bold).toHaveAttribute("aria-pressed", "false");
+  await expect
+    .poll(() => textOverlay.evaluate((element) => getComputedStyle(element).fontWeight))
+    .toMatch(/400|normal/);
+
+  const italic = page.getByTestId("production-text-italic");
+  await italic.click();
+  await expect(italic).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(() => textOverlay.evaluate((element) => getComputedStyle(element).fontStyle))
+    .toBe("italic");
+  await italic.click();
+  await expect(italic).toHaveAttribute("aria-pressed", "false");
+  await expect
+    .poll(() => textOverlay.evaluate((element) => getComputedStyle(element).fontStyle))
+    .toBe("normal");
+
+  const underline = page.getByTestId("production-text-underline");
+  await underline.click();
+  await expect(underline).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(() => textOverlay.evaluate((element) => getComputedStyle(element).textDecorationLine))
+    .toContain("underline");
+  await underline.click();
+  await expect(underline).toHaveAttribute("aria-pressed", "false");
+  await expect
+    .poll(() => textOverlay.evaluate((element) => getComputedStyle(element).textDecorationLine))
+    .toBe("none");
+
+  await bold.click();
+  await italic.click();
+  await underline.click();
+  await expect(bold).toHaveAttribute("aria-pressed", "true");
+  await expect(italic).toHaveAttribute("aria-pressed", "true");
+  await expect(underline).toHaveAttribute("aria-pressed", "true");
+
   const downloadPromise = page.waitForEvent("download");
   await page.getByTestId("production-dock-download").click();
   const download = await downloadPromise;
