@@ -6,14 +6,21 @@ import {
 } from "../../src/tool-routes";
 
 describe("tool route registry", () => {
-  it("publishes only the fully implemented add-text route", () => {
+  it("publishes the fully implemented task routes", () => {
     expect(ACTIVE_TOOL_ROUTES.map((route) => route.key)).toEqual([
       "addTextToPdf",
+      "deletePdfPages",
     ]);
     expect(TOOL_ROUTES.addTextToPdf).toMatchObject({
       slug: "/add-text-to-pdf",
       editorMode: "text",
       initialAction: "add-text",
+      status: "active",
+    });
+    expect(TOOL_ROUTES.deletePdfPages).toMatchObject({
+      slug: "/delete-pdf-pages",
+      editorMode: "pages",
+      initialAction: "delete",
       status: "active",
     });
   });
@@ -22,7 +29,10 @@ describe("tool route registry", () => {
     expect(activeToolRouteFromPath("/add-text-to-pdf/")?.key).toBe(
       "addTextToPdf",
     );
-    expect(activeToolRouteFromPath("/delete-pdf-pages")).toBeNull();
+    expect(activeToolRouteFromPath("/delete-pdf-pages/")?.key).toBe(
+      "deletePdfPages",
+    );
+    expect(activeToolRouteFromPath("/reorder-pdf-pages")).toBeNull();
     expect(activeToolRouteFromPath("/not-a-tool")).toBeNull();
   });
 });

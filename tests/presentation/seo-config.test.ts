@@ -44,4 +44,17 @@ describe("SEO configuration", () => {
     expect(structuredData).not.toContain("aggregateRating");
     expect(structuredData).not.toContain("review");
   });
+
+  it("uses self-referencing metadata and product schema for deleting pages", () => {
+    const config = SEO_PAGES.deletePdfPages;
+    const structuredData = JSON.stringify(buildStructuredData("deletePdfPages"));
+
+    expect(config.path).toBe("/delete-pdf-pages");
+    expect(canonicalUrl("deletePdfPages")).toBe(
+      "https://www.pdfmech.com/delete-pdf-pages",
+    );
+    expect(structuredData).toContain(canonicalUrl("deletePdfPages"));
+    expect(structuredData).toContain('"price":"0"');
+    expect(structuredData).not.toContain("aggregateRating");
+  });
 });

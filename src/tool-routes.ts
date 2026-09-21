@@ -53,7 +53,7 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "delete",
     category: "organize",
     seoIntent: "delete PDF pages online",
-    status: "planned",
+    status: "active",
   },
   reorderPdfPages: {
     key: "reorderPdfPages",

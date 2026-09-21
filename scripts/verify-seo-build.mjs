@@ -55,6 +55,16 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable task instructions and a same-route action.`,
     );
   }
+  if (
+    page === "deletePdfPages" &&
+    (!html.includes("How to delete PDF pages") ||
+      !html.includes("Local browser processing") ||
+      !html.includes('/delete-pdf-pages#delete-pages-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable page-deletion instructions and a same-route action.`,
+    );
+  }
   JSON.parse(jsonLd);
   titles.add(title);
   descriptions.add(description);

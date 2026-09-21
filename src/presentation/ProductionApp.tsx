@@ -991,29 +991,51 @@ function finishTutorial(): void {
   }
 
   function activateRouteIntent(): void {
-    if (
-      routeIntent?.editorMode !== "text" ||
-      routeIntent.initialAction !== "add-text"
-    ) {
+    if (routeIntent === undefined) {
       return;
     }
 
-    setCreationTool("text");
-    setEditingEnabled(true);
-    setPlacementArmed(true);
-    setPanModeEnabled(false);
-    setSelectedObjectId(null);
-    setPropertiesVisible(false);
-    setStatus({
-      kind: "ready",
-      text: "Text tool ready. Click or tap the PDF where you want to add text.",
-    });
+    if (
+      routeIntent.editorMode === "text" &&
+      routeIntent.initialAction === "add-text"
+    ) {
+      setCreationTool("text");
+      setEditingEnabled(true);
+      setPlacementArmed(true);
+      setPanModeEnabled(false);
+      setSelectedObjectId(null);
+      setPropertiesVisible(false);
+      setPageStripVisible(false);
+      setStatus({
+        kind: "ready",
+        text: "Text tool ready. Click or tap the PDF where you want to add text.",
+      });
+      return;
+    }
+
+    if (
+      routeIntent.editorMode === "pages" &&
+      routeIntent.initialAction === "delete"
+    ) {
+      setEditingEnabled(false);
+      setPlacementArmed(false);
+      setPanModeEnabled(false);
+      setSelectedObjectId(null);
+      setPropertiesVisible(false);
+      setMobileMoreOpen(false);
+      setPageStripVisible(true);
+      setStatus({
+        kind: "ready",
+        text: "Page deletion ready. Select a page thumbnail, then choose Delete selected page.",
+      });
+    }
   }
 
   async function renderSelectedPage(
     document: EditorDocument,
     pageIndex: number,
     nextZoom: ZoomLevel,
+    readyStatusText?: string,
   ): Promise<void> {
     const requestId = (renderRequestId.current += 1);
     setRenderState({ kind: "loading", pageIndex });
@@ -1033,11 +1055,12 @@ function finishTutorial(): void {
       setStatus({
         kind: "ready",
         text:
-          routeIntent?.editorMode === "text" &&
+          readyStatusText ??
+          (routeIntent?.editorMode === "text" &&
           routeIntent.initialAction === "add-text" &&
           placementArmed
             ? "Text tool ready. Click or tap the PDF where you want to add text."
-            : `Rendered page ${pageIndex + 1} locally at ${formatZoom(nextZoom)}.`,
+            : `Rendered page ${pageIndex + 1} locally at ${formatZoom(nextZoom)}.`),
       });
     } catch (error) {
       if (requestId !== renderRequestId.current) {
@@ -1422,6 +1445,14 @@ function finishTutorial(): void {
       return;
     }
 
+    if (documentState.pages.length <= 1) {
+      setStatus({
+        kind: "error",
+        text: "The final page cannot be deleted because a PDF must contain at least one page.",
+      });
+      return;
+    }
+
     const deletedPageNumber = selectedPageIndex + 1;
     const nextDocument = deleteDocumentPage(documentState, selectedPageIndex);
     const nextPageIndex = Math.min(
@@ -1429,11 +1460,13 @@ function finishTutorial(): void {
       Math.max(0, nextDocument.pages.length - 1),
     );
     commitDocument(nextDocument);
+    emitProductEvent("edit_action");
     setSelectedPageIndex(nextPageIndex);
     setSelectedObjectId(null);
+    const deleteStatusText = `Deleted page ${deletedPageNumber}. ${nextDocument.pages.length} page${nextDocument.pages.length === 1 ? "" : "s"} remain.`;
     setStatus({
       kind: "ready",
-      text: `Deleted page ${deletedPageNumber}.`,
+      text: deleteStatusText,
     });
 
     if (nextDocument.pages.length === 0) {
@@ -1441,7 +1474,7 @@ function finishTutorial(): void {
       return;
     }
 
-    void renderSelectedPage(nextDocument, nextPageIndex, zoom);
+    void renderSelectedPage(nextDocument, nextPageIndex, zoom, deleteStatusText);
   }
 
   function movePage(direction: -1 | 1): void {
@@ -2873,6 +2906,24 @@ function finishTutorial(): void {
                   disabled={selectedPageIndex === documentState.pages.length - 1}
                 >
                   ↓
+                </button>
+                <button
+                  className="page-strip-delete"
+                  data-testid="production-delete-selected-page"
+                  type="button"
+                  onClick={deleteCurrentPage}
+                  disabled={documentState.pages.length <= 1}
+                >
+                  Delete selected page
+                </button>
+                <button
+                  className="page-strip-undo"
+                  data-testid="production-page-strip-undo"
+                  type="button"
+                  onClick={undoLastChange}
+                  disabled={!canUndo}
+                >
+                  Undo
                 </button>
                 <strong>Page {selectedPageIndex + 1} of {documentState.pages.length}</strong>
                 <button

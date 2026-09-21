@@ -641,6 +641,32 @@
   border-top: 1px solid var(--editor-border);
 }
 
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-delete,
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-undo {
+  width: auto !important;
+  min-width: max-content !important;
+  padding: 0 12px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-delete {
+  border-color: #fecaca !important;
+  background: #fff5f5 !important;
+  color: #c93636 !important;
+}
+
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-delete:hover:not(:disabled) {
+  border-color: #fca5a5 !important;
+  background: #fee2e2 !important;
+}
+
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-undo {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #175ca8 !important;
+}
+
 .website-shell[data-page="editor"] .page-view-mode,
 .website-shell[data-page="editor"] .page-list-mode,
 .website-shell[data-page="editor"] .page-save-state {

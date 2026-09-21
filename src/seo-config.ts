@@ -5,6 +5,7 @@ export type SeoPageKey =
   | "home"
   | "editor"
   | "addTextToPdf"
+  | "deletePdfPages"
   | "features"
   | "howItWorks"
   | "faq"
@@ -46,6 +47,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Add text to a PDF online for free with PDFMech. Choose a file, place editable text, adjust its font, size, color, and alignment, then download locally.",
     h1: "Add text to a PDF online for free.",
     intro: "Type on a PDF directly in your browser without sending the source document to an editing server or creating an account.",
+    schemaType: "WebPage",
+  },
+  deletePdfPages: {
+    path: "/delete-pdf-pages",
+    title: "Delete PDF Pages Online Free - No Upload | PDFMech",
+    description: "Delete unwanted PDF pages online for free with PDFMech. Select pages, remove them locally in your browser, and download a new PDF without uploading your file.",
+    h1: "Delete PDF pages online for free.",
+    intro: "Remove unwanted pages from a PDF locally in your browser, review the remaining document, and download a separate copy.",
     schemaType: "WebPage",
   },
   features: {
@@ -188,7 +197,12 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     });
   }
 
-  if (page === "home" || page === "editor" || page === "addTextToPdf") {
+  if (
+    page === "home" ||
+    page === "editor" ||
+    page === "addTextToPdf" ||
+    page === "deletePdfPages"
+  ) {
     graph.push({
       "@type": "WebApplication",
       name: "PDFMech",

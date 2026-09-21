@@ -33,6 +33,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/": "home",
   "/editor": "editor",
   [TOOL_ROUTES.addTextToPdf.slug]: "addTextToPdf",
+  [TOOL_ROUTES.deletePdfPages.slug]: "deletePdfPages",
   "/features": "features",
   "/how-it-works": "howItWorks",
   "/faq": "faq",
@@ -154,7 +155,11 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
   );
 
   const activeToolRoute =
-    page === "addTextToPdf" ? TOOL_ROUTES.addTextToPdf : null;
+    page === "addTextToPdf"
+      ? TOOL_ROUTES.addTextToPdf
+      : page === "deletePdfPages"
+        ? TOOL_ROUTES.deletePdfPages
+        : null;
   const toolEditorActive =
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
@@ -179,10 +184,10 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
   }
 
   useEffect(() => {
-    if (page === "addTextToPdf" && !toolEditorActive) {
+    if (activeToolRoute !== null && !toolEditorActive) {
       recordProductEvent({
         name: "tool_landing_view",
-        tool: TOOL_ROUTES.addTextToPdf.initialAction,
+        tool: activeToolRoute.initialAction,
       });
     }
   }, [page, toolEditorActive]);
@@ -347,6 +352,7 @@ function SiteFooter() {
         <strong>Product</strong>
         <SiteLink path="/editor">PDFMech App</SiteLink>
         <SiteLink path={TOOL_ROUTES.addTextToPdf.slug}>Add Text to PDF</SiteLink>
+        <SiteLink path={TOOL_ROUTES.deletePdfPages.slug}>Delete PDF Pages</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
         <SiteLink path="/how-it-works">How It Works</SiteLink>
         <SiteLink path="/faq">FAQ</SiteLink>
@@ -394,12 +400,14 @@ const internalLinkClusters: Readonly<
 > = {
   home: [
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Popular tool", title: "Add text to a PDF", description: "Type on a PDF privately without uploading it." },
+    { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted pages and download a new PDF copy." },
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
     { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Open a PDF with the Text tool ready to place." },
+    { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Open a PDF with page thumbnails ready for removal." },
     { path: "/editor", eyebrow: "Use the tools", title: "Open the PDF editor", description: "Try the features on a PDF from your device." },
     { path: "/how-it-works", eyebrow: "Learn the workflow", title: "See how PDFMech works", description: "Follow the path from opening a file to downloading it." },
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
@@ -440,8 +448,15 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Share safely", title: "Read the privacy overview", description: "Learn how to report an issue without sharing sensitive PDFs." },
   ],
   addTextToPdf: [
+    { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages from a PDF locally." },
     { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use text, whiteout, and page organization tools together." },
     { path: "/how-it-works", eyebrow: "Editor guide", title: "Learn the complete workflow", description: "See how local editing, contextual properties, and download work." },
+    { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
+  ],
+  deletePdfPages: [
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
+    { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use page organization, text, and visual cover tools together." },
+    { path: "/how-it-works", eyebrow: "Editor guide", title: "Learn the complete workflow", description: "See how local editing, page controls, and download work." },
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
 };
@@ -513,6 +528,10 @@ const searchIntentCopy: Readonly<
     title: "Type on a PDF without sending it to an editing server.",
     text: "The Text tool adds a new editable text box above the original PDF page. You can change its font, size, color, bold style, alignment, position, and dimensions before downloading a separate edited copy.",
   },
+  deletePdfPages: {
+    title: "Remove unwanted PDF pages without uploading the document.",
+    text: "The Delete Pages tool opens page thumbnails so you can select and remove complete pages from the working document. Review the remaining page count, undo mistakes, and download a separate PDF while the original file stays unchanged.",
+  },
 };
 
 function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
@@ -558,6 +577,8 @@ function MarketingPage({
       return <ContactPage />;
     case "addTextToPdf":
       return <AddTextToPdfPage onStart={onStartTool} />;
+    case "deletePdfPages":
+      return <DeletePdfPagesPage onStart={onStartTool} />;
   }
 }
 
@@ -700,6 +721,151 @@ function AddTextToPdfPage({
         <details>
           <summary>Will PDFMech replace my original file?</summary>
           <p>No. Download creates a separate edited PDF and leaves the source file unchanged.</p>
+        </details>
+      </section>
+    </main>
+  );
+}
+
+function DeletePdfPagesPage({
+  onStart,
+}: {
+  readonly onStart: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
+  const [dragActive, setDragActive] = useState(false);
+  const route = TOOL_ROUTES.deletePdfPages;
+
+  function startWithFile(file: File | undefined): void {
+    if (file !== undefined) {
+      onStart(route, file);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    const [file] = event.currentTarget.files ?? [];
+    startWithFile(file);
+    event.currentTarget.value = "";
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>): void {
+    event.preventDefault();
+    setDragActive(false);
+    const [file] = event.dataTransfer.files;
+    startWithFile(file);
+  }
+
+  return (
+    <main className="site-page tool-route-page" data-testid="site-delete-pdf-pages">
+      <section className="tool-route-hero">
+        <div className="tool-route-copy">
+          <span className="hero-kicker">Free PDF page remover</span>
+          <h1>Delete PDF pages online for free.</h1>
+          <p>
+            Remove unwanted pages from a PDF, check what remains, and download
+            a separate copy. Your source PDF is processed locally in this
+            browser and is not sent to PDFMech for editing.
+          </p>
+          <ul className="tool-route-benefits">
+            <li>Page thumbnails open automatically</li>
+            <li>Undo an accidental deletion before download</li>
+            <li>No account, upload queue, or watermark</li>
+          </ul>
+        </div>
+        <section
+          id="delete-pages-tool"
+          className="tool-route-upload"
+          data-drag-active={dragActive ? "true" : "false"}
+          aria-label="Open a PDF to delete pages"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+        >
+          <span className="tool-route-file-icon" aria-hidden="true">PDF</span>
+          <h2>Choose a PDF to start</h2>
+          <p>The Pages panel will open as soon as your document is ready.</p>
+          <label className="tool-route-file-control">
+            <span>Choose PDF File</span>
+            <input
+              data-testid="delete-pages-file-input"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handleFileChange}
+            />
+          </label>
+          <small>or drag and drop a PDF here</small>
+          <button
+            type="button"
+            className="tool-route-recovery"
+            onClick={() => onStart(route)}
+          >
+            Continue a locally saved document
+          </button>
+          <p className="tool-route-storage-note">
+            Local recovery may store a browser copy and editing state on this
+            device. You can clear it from the editor.
+          </p>
+        </section>
+      </section>
+
+      <section className="tool-route-steps" aria-labelledby="delete-pages-steps-title">
+        <header>
+          <span className="hero-kicker">How it works</span>
+          <h2 id="delete-pages-steps-title">Remove PDF pages in four steps.</h2>
+        </header>
+        <ol>
+          <li><span>1</span><div><strong>Open your PDF</strong><p>Choose a document from your device. PDFMech reads it locally in your browser.</p></div></li>
+          <li><span>2</span><div><strong>Select a page</strong><p>Use the page thumbnails that open automatically to choose the unwanted page.</p></div></li>
+          <li><span>3</span><div><strong>Delete and review</strong><p>Remove the selected page, repeat if needed, and use Undo if you make a mistake.</p></div></li>
+          <li><span>4</span><div><strong>Download a new copy</strong><p>Export the remaining pages as a new PDF while keeping your original file unchanged.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="tool-route-details">
+        <article>
+          <span className="hero-kicker">What this tool does</span>
+          <h2>Remove complete pages from the exported PDF.</h2>
+          <p>
+            Select a thumbnail and choose Delete selected page. The page is
+            removed from the working document, and the page count updates so
+            you can review the result before export.
+          </p>
+        </article>
+        <article>
+          <span className="hero-kicker">Your original stays safe</span>
+          <h2>Deletion only affects the new downloaded copy.</h2>
+          <p>
+            PDFMech does not overwrite the source PDF on your device. Until
+            you download, you can undo page changes inside the current editing
+            session.
+          </p>
+        </article>
+      </section>
+
+      <section className="tool-route-faq" aria-labelledby="delete-pages-faq-title">
+        <span className="hero-kicker">Delete pages FAQ</span>
+        <h2 id="delete-pages-faq-title">Useful answers before you begin.</h2>
+        <details open>
+          <summary>Is my PDF uploaded?</summary>
+          <p>No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.</p>
+        </details>
+        <details>
+          <summary>Can I remove more than one PDF page?</summary>
+          <p>Yes. Select and delete unwanted pages one at a time, reviewing the page count after each change.</p>
+        </details>
+        <details>
+          <summary>What if I delete the wrong page?</summary>
+          <p>Use Undo before downloading to restore the most recently deleted page.</p>
+        </details>
+        <details>
+          <summary>Does this change my original PDF?</summary>
+          <p>No. PDFMech downloads a separate edited PDF and leaves the source file on your device unchanged.</p>
         </details>
       </section>
     </main>
