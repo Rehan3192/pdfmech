@@ -70,4 +70,17 @@ describe("SEO configuration", () => {
     expect(structuredData).toContain('"price":"0"');
     expect(structuredData).not.toContain("aggregateRating");
   });
+
+  it("uses self-referencing metadata and product schema for rotating pages", () => {
+    const config = SEO_PAGES.rotatePdfPages;
+    const structuredData = JSON.stringify(buildStructuredData("rotatePdfPages"));
+
+    expect(config.path).toBe("/rotate-pdf-pages");
+    expect(canonicalUrl("rotatePdfPages")).toBe(
+      "https://www.pdfmech.com/rotate-pdf-pages",
+    );
+    expect(structuredData).toContain(canonicalUrl("rotatePdfPages"));
+    expect(structuredData).toContain('"price":"0"');
+    expect(structuredData).not.toContain("aggregateRating");
+  });
 });

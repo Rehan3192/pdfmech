@@ -7,6 +7,7 @@ export type SeoPageKey =
   | "addTextToPdf"
   | "deletePdfPages"
   | "reorderPdfPages"
+  | "rotatePdfPages"
   | "features"
   | "howItWorks"
   | "faq"
@@ -64,6 +65,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Reorder PDF pages online for free with PDFMech. Select a page, move it earlier or later locally in your browser, and download a new PDF without uploading it.",
     h1: "Reorder PDF pages online for free.",
     intro: "Rearrange PDF pages locally in your browser, review the new sequence, and download a separate organized copy.",
+    schemaType: "WebPage",
+  },
+  rotatePdfPages: {
+    path: "/rotate-pdf-pages",
+    title: "Rotate PDF Pages Online Free - No Upload | PDFMech",
+    description: "Rotate PDF pages online for free with PDFMech. Turn sideways or upside-down pages locally in your browser and download a new PDF without uploading it.",
+    h1: "Rotate PDF pages online for free.",
+    intro: "Turn PDF pages clockwise in your browser, review their orientation, and download a separate corrected copy.",
     schemaType: "WebPage",
   },
   features: {
@@ -211,7 +220,8 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "editor" ||
     page === "addTextToPdf" ||
     page === "deletePdfPages" ||
-    page === "reorderPdfPages"
+    page === "reorderPdfPages" ||
+    page === "rotatePdfPages"
   ) {
     graph.push({
       "@type": "WebApplication",

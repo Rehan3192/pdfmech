@@ -643,7 +643,8 @@
 
 .website-shell[data-page="editor"] .page-strip-actions .page-strip-delete,
 .website-shell[data-page="editor"] .page-strip-actions .page-strip-undo,
-.website-shell[data-page="editor"] .page-strip-actions .page-strip-move {
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-move,
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-rotate {
   width: auto !important;
   min-width: max-content !important;
   padding: 0 12px !important;
@@ -663,7 +664,8 @@
 }
 
 .website-shell[data-page="editor"] .page-strip-actions .page-strip-undo,
-.website-shell[data-page="editor"] .page-strip-actions .page-strip-move {
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-move,
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-rotate {
   border-color: #bfdbfe !important;
   background: #eff6ff !important;
   color: #175ca8 !important;

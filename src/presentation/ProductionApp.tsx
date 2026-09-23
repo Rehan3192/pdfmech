@@ -1046,6 +1046,24 @@ function finishTutorial(): void {
         kind: "ready",
         text: "Page reordering ready. Select a page thumbnail, then use Move up or Move down.",
       });
+      return;
+    }
+
+    if (
+      routeIntent.editorMode === "pages" &&
+      routeIntent.initialAction === "rotate"
+    ) {
+      setEditingEnabled(false);
+      setPlacementArmed(false);
+      setPanModeEnabled(false);
+      setSelectedObjectId(null);
+      setPropertiesVisible(false);
+      setMobileMoreOpen(false);
+      setPageStripVisible(true);
+      setStatus({
+        kind: "ready",
+        text: "Page rotation ready. Select a page thumbnail, then choose Rotate clockwise.",
+      });
     }
   }
 
@@ -1405,12 +1423,19 @@ function finishTutorial(): void {
 
     const nextDocument = rotateDocumentPage(documentState, selectedPageIndex, 90);
     commitDocument(nextDocument);
+    emitProductEvent("edit_action");
     setSelectedObjectId(null);
+    const rotateStatusText = `Rotated page ${selectedPageIndex + 1} clockwise.`;
     setStatus({
       kind: "ready",
-      text: `Rotated page ${selectedPageIndex + 1} clockwise.`,
+      text: rotateStatusText,
     });
-    void renderSelectedPage(nextDocument, selectedPageIndex, zoom);
+    void renderSelectedPage(
+      nextDocument,
+      selectedPageIndex,
+      zoom,
+      rotateStatusText,
+    );
   }
 
   function moveCurrentPageEarlier(): void {
@@ -2909,6 +2934,14 @@ function finishTutorial(): void {
                 <span className="page-view-mode"><span aria-hidden="true">▦</span> Thumbnails</span>
                 <span className="page-list-mode"><span aria-hidden="true">☷</span> List</span>
                 <span className="page-save-state"><span aria-hidden="true">●</span> Saved locally</span>
+                <button
+                  className="page-strip-rotate"
+                  data-testid="production-page-strip-rotate"
+                  type="button"
+                  onClick={rotateCurrentPage}
+                >
+                  <span aria-hidden="true">↻</span> Rotate clockwise
+                </button>
                 <button
                   className="page-strip-move"
                   data-testid="production-move-page-up"

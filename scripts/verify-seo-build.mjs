@@ -75,6 +75,16 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable page-reordering instructions and a same-route action.`,
     );
   }
+  if (
+    page === "rotatePdfPages" &&
+    (!html.includes("How to rotate PDF pages") ||
+      !html.includes("Local browser processing") ||
+      !html.includes('/rotate-pdf-pages#rotate-pages-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable page-rotation instructions and a same-route action.`,
+    );
+  }
   JSON.parse(jsonLd);
   titles.add(title);
   descriptions.add(description);

@@ -71,7 +71,7 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "rotate",
     category: "organize",
     seoIntent: "rotate PDF pages online",
-    status: "planned",
+    status: "active",
   },
   whiteoutPdf: {
     key: "whiteoutPdf",
