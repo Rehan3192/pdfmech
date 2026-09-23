@@ -57,4 +57,17 @@ describe("SEO configuration", () => {
     expect(structuredData).toContain('"price":"0"');
     expect(structuredData).not.toContain("aggregateRating");
   });
+
+  it("uses self-referencing metadata and product schema for reordering pages", () => {
+    const config = SEO_PAGES.reorderPdfPages;
+    const structuredData = JSON.stringify(buildStructuredData("reorderPdfPages"));
+
+    expect(config.path).toBe("/reorder-pdf-pages");
+    expect(canonicalUrl("reorderPdfPages")).toBe(
+      "https://www.pdfmech.com/reorder-pdf-pages",
+    );
+    expect(structuredData).toContain(canonicalUrl("reorderPdfPages"));
+    expect(structuredData).toContain('"price":"0"');
+    expect(structuredData).not.toContain("aggregateRating");
+  });
 });

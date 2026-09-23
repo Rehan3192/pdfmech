@@ -520,7 +520,7 @@
   position: fixed !important;
   top: auto !important;
   right: 28px !important;
-  bottom: 28px !important;
+  bottom: 104px !important;
   left: auto !important;
   z-index: 290 !important;
   box-sizing: border-box !important;
@@ -529,7 +529,7 @@
   grid-template-rows: auto minmax(0, 1fr) auto !important;
   align-items: stretch !important;
   width: min(620px, calc(100vw - 56px)) !important;
-  height: min(680px, calc(100dvh - 56px)) !important;
+  height: min(680px, calc(100dvh - 132px)) !important;
   padding: 20px !important;
   gap: 16px !important;
   overflow: hidden !important;
@@ -642,7 +642,8 @@
 }
 
 .website-shell[data-page="editor"] .page-strip-actions .page-strip-delete,
-.website-shell[data-page="editor"] .page-strip-actions .page-strip-undo {
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-undo,
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-move {
   width: auto !important;
   min-width: max-content !important;
   padding: 0 12px !important;
@@ -661,7 +662,8 @@
   background: #fee2e2 !important;
 }
 
-.website-shell[data-page="editor"] .page-strip-actions .page-strip-undo {
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-undo,
+.website-shell[data-page="editor"] .page-strip-actions .page-strip-move {
   border-color: #bfdbfe !important;
   background: #eff6ff !important;
   color: #175ca8 !important;

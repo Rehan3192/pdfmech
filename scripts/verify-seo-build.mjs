@@ -65,6 +65,16 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable page-deletion instructions and a same-route action.`,
     );
   }
+  if (
+    page === "reorderPdfPages" &&
+    (!html.includes("How to reorder PDF pages") ||
+      !html.includes("Local browser processing") ||
+      !html.includes('/reorder-pdf-pages#reorder-pages-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable page-reordering instructions and a same-route action.`,
+    );
+  }
   JSON.parse(jsonLd);
   titles.add(title);
   descriptions.add(description);

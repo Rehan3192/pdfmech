@@ -34,6 +34,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/editor": "editor",
   [TOOL_ROUTES.addTextToPdf.slug]: "addTextToPdf",
   [TOOL_ROUTES.deletePdfPages.slug]: "deletePdfPages",
+  [TOOL_ROUTES.reorderPdfPages.slug]: "reorderPdfPages",
   "/features": "features",
   "/how-it-works": "howItWorks",
   "/faq": "faq",
@@ -159,7 +160,9 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
       ? TOOL_ROUTES.addTextToPdf
       : page === "deletePdfPages"
         ? TOOL_ROUTES.deletePdfPages
-        : null;
+        : page === "reorderPdfPages"
+          ? TOOL_ROUTES.reorderPdfPages
+          : null;
   const toolEditorActive =
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
@@ -353,6 +356,7 @@ function SiteFooter() {
         <SiteLink path="/editor">PDFMech App</SiteLink>
         <SiteLink path={TOOL_ROUTES.addTextToPdf.slug}>Add Text to PDF</SiteLink>
         <SiteLink path={TOOL_ROUTES.deletePdfPages.slug}>Delete PDF Pages</SiteLink>
+        <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
         <SiteLink path="/how-it-works">How It Works</SiteLink>
         <SiteLink path="/faq">FAQ</SiteLink>
@@ -401,6 +405,7 @@ const internalLinkClusters: Readonly<
   home: [
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Popular tool", title: "Add text to a PDF", description: "Type on a PDF privately without uploading it." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted pages and download a new PDF copy." },
+    { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move pages into a better sequence directly in your browser." },
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
     { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
@@ -408,6 +413,7 @@ const internalLinkClusters: Readonly<
   features: [
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Open a PDF with the Text tool ready to place." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Open a PDF with page thumbnails ready for removal." },
+    { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Select pages and move them earlier or later." },
     { path: "/editor", eyebrow: "Use the tools", title: "Open the PDF editor", description: "Try the features on a PDF from your device." },
     { path: "/how-it-works", eyebrow: "Learn the workflow", title: "See how PDFMech works", description: "Follow the path from opening a file to downloading it." },
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
@@ -449,11 +455,20 @@ const internalLinkClusters: Readonly<
   ],
   addTextToPdf: [
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages from a PDF locally." },
+    { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Rearrange a document using local page controls." },
     { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use text, whiteout, and page organization tools together." },
     { path: "/how-it-works", eyebrow: "Editor guide", title: "Learn the complete workflow", description: "See how local editing, contextual properties, and download work." },
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
   deletePdfPages: [
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
+    { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move remaining pages into the sequence you need." },
+    { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use page organization, text, and visual cover tools together." },
+    { path: "/how-it-works", eyebrow: "Editor guide", title: "Learn the complete workflow", description: "See how local editing, page controls, and download work." },
+    { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
+  ],
+  reorderPdfPages: [
+    { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages before organizing the final copy." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
     { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use page organization, text, and visual cover tools together." },
     { path: "/how-it-works", eyebrow: "Editor guide", title: "Learn the complete workflow", description: "See how local editing, page controls, and download work." },
@@ -532,6 +547,10 @@ const searchIntentCopy: Readonly<
     title: "Remove unwanted PDF pages without uploading the document.",
     text: "The Delete Pages tool opens page thumbnails so you can select and remove complete pages from the working document. Review the remaining page count, undo mistakes, and download a separate PDF while the original file stays unchanged.",
   },
+  reorderPdfPages: {
+    title: "Rearrange PDF pages without uploading the document.",
+    text: "The Reorder Pages tool opens page thumbnails so you can move selected pages earlier or later in the working document. Review the new sequence, undo mistakes, and download a separate PDF while the source file stays unchanged.",
+  },
 };
 
 function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
@@ -579,6 +598,8 @@ function MarketingPage({
       return <AddTextToPdfPage onStart={onStartTool} />;
     case "deletePdfPages":
       return <DeletePdfPagesPage onStart={onStartTool} />;
+    case "reorderPdfPages":
+      return <ReorderPdfPagesPage onStart={onStartTool} />;
   }
 }
 
@@ -866,6 +887,151 @@ function DeletePdfPagesPage({
         <details>
           <summary>Does this change my original PDF?</summary>
           <p>No. PDFMech downloads a separate edited PDF and leaves the source file on your device unchanged.</p>
+        </details>
+      </section>
+    </main>
+  );
+}
+
+function ReorderPdfPagesPage({
+  onStart,
+}: {
+  readonly onStart: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
+  const [dragActive, setDragActive] = useState(false);
+  const route = TOOL_ROUTES.reorderPdfPages;
+
+  function startWithFile(file: File | undefined): void {
+    if (file !== undefined) {
+      onStart(route, file);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    const [file] = event.currentTarget.files ?? [];
+    startWithFile(file);
+    event.currentTarget.value = "";
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>): void {
+    event.preventDefault();
+    setDragActive(false);
+    const [file] = event.dataTransfer.files;
+    startWithFile(file);
+  }
+
+  return (
+    <main className="site-page tool-route-page" data-testid="site-reorder-pdf-pages">
+      <section className="tool-route-hero">
+        <div className="tool-route-copy">
+          <span className="hero-kicker">Free PDF page organizer</span>
+          <h1>Reorder PDF pages online for free.</h1>
+          <p>
+            Rearrange PDF pages into the sequence you need, review the result,
+            and download a separate copy. Your source PDF is processed locally
+            in this browser and is not sent to PDFMech for editing.
+          </p>
+          <ul className="tool-route-benefits">
+            <li>Page thumbnails open automatically</li>
+            <li>Move selected pages earlier or later</li>
+            <li>No account, upload queue, or watermark</li>
+          </ul>
+        </div>
+        <section
+          id="reorder-pages-tool"
+          className="tool-route-upload"
+          data-drag-active={dragActive ? "true" : "false"}
+          aria-label="Open a PDF to reorder pages"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+        >
+          <span className="tool-route-file-icon" aria-hidden="true">PDF</span>
+          <h2>Choose a PDF to start</h2>
+          <p>The Pages panel and move controls will open with your document.</p>
+          <label className="tool-route-file-control">
+            <span>Choose PDF File</span>
+            <input
+              data-testid="reorder-pages-file-input"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handleFileChange}
+            />
+          </label>
+          <small>or drag and drop a PDF here</small>
+          <button
+            type="button"
+            className="tool-route-recovery"
+            onClick={() => onStart(route)}
+          >
+            Continue a locally saved document
+          </button>
+          <p className="tool-route-storage-note">
+            Local recovery may store a browser copy and editing state on this
+            device. You can clear it from the editor.
+          </p>
+        </section>
+      </section>
+
+      <section className="tool-route-steps" aria-labelledby="reorder-pages-steps-title">
+        <header>
+          <span className="hero-kicker">How it works</span>
+          <h2 id="reorder-pages-steps-title">Rearrange PDF pages in four steps.</h2>
+        </header>
+        <ol>
+          <li><span>1</span><div><strong>Open your PDF</strong><p>Choose a document from your device. PDFMech reads it locally in your browser.</p></div></li>
+          <li><span>2</span><div><strong>Select a page</strong><p>Choose a page from the thumbnails that open automatically.</p></div></li>
+          <li><span>3</span><div><strong>Move it into place</strong><p>Use Move up or Move down until the pages appear in the sequence you need.</p></div></li>
+          <li><span>4</span><div><strong>Download a new copy</strong><p>Review the order and export a new PDF while keeping your original unchanged.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="tool-route-details">
+        <article>
+          <span className="hero-kicker">What this tool does</span>
+          <h2>Move complete pages into a new sequence.</h2>
+          <p>
+            Select a page thumbnail and move it earlier or later. The selected
+            page stays highlighted, the page numbering updates, and you can
+            repeat the action until the document is organized correctly.
+          </p>
+        </article>
+        <article>
+          <span className="hero-kicker">Review before export</span>
+          <h2>Reordering only affects the downloaded copy.</h2>
+          <p>
+            PDFMech does not overwrite the source PDF on your device. You can
+            undo or redo page moves inside the current session before saving
+            the reorganized document.
+          </p>
+        </article>
+      </section>
+
+      <section className="tool-route-faq" aria-labelledby="reorder-pages-faq-title">
+        <span className="hero-kicker">Reorder pages FAQ</span>
+        <h2 id="reorder-pages-faq-title">Useful answers before you begin.</h2>
+        <details open>
+          <summary>Is my PDF uploaded?</summary>
+          <p>No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.</p>
+        </details>
+        <details>
+          <summary>Can I move a PDF page more than once?</summary>
+          <p>Yes. Keep the page selected and use Move up or Move down repeatedly until it reaches the correct position.</p>
+        </details>
+        <details>
+          <summary>Can I undo a page move?</summary>
+          <p>Yes. Use Undo before downloading to reverse the most recent page-order change.</p>
+        </details>
+        <details>
+          <summary>Does reordering replace my original PDF?</summary>
+          <p>No. PDFMech downloads a separate organized PDF and leaves the source file unchanged.</p>
         </details>
       </section>
     </main>

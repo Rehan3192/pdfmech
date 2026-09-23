@@ -1028,6 +1028,24 @@ function finishTutorial(): void {
         kind: "ready",
         text: "Page deletion ready. Select a page thumbnail, then choose Delete selected page.",
       });
+      return;
+    }
+
+    if (
+      routeIntent.editorMode === "pages" &&
+      routeIntent.initialAction === "reorder"
+    ) {
+      setEditingEnabled(false);
+      setPlacementArmed(false);
+      setPanModeEnabled(false);
+      setSelectedObjectId(null);
+      setPropertiesVisible(false);
+      setMobileMoreOpen(false);
+      setPageStripVisible(true);
+      setStatus({
+        kind: "ready",
+        text: "Page reordering ready. Select a page thumbnail, then use Move up or Move down.",
+      });
     }
   }
 
@@ -1407,13 +1425,15 @@ function finishTutorial(): void {
       nextPageIndex,
     );
     commitDocument(nextDocument);
+    emitProductEvent("edit_action");
     setSelectedPageIndex(nextPageIndex);
     setSelectedObjectId(null);
+    const moveStatusText = `Moved selected page earlier to position ${nextPageIndex + 1}.`;
     setStatus({
       kind: "ready",
-      text: `Moved page ${selectedPageIndex + 1} earlier.`,
+      text: moveStatusText,
     });
-    void renderSelectedPage(nextDocument, nextPageIndex, zoom);
+    void renderSelectedPage(nextDocument, nextPageIndex, zoom, moveStatusText);
   }
 
   function moveCurrentPageLater(): void {
@@ -1431,13 +1451,15 @@ function finishTutorial(): void {
       nextPageIndex,
     );
     commitDocument(nextDocument);
+    emitProductEvent("edit_action");
     setSelectedPageIndex(nextPageIndex);
     setSelectedObjectId(null);
+    const moveStatusText = `Moved selected page later to position ${nextPageIndex + 1}.`;
     setStatus({
       kind: "ready",
-      text: `Moved page ${selectedPageIndex + 1} later.`,
+      text: moveStatusText,
     });
-    void renderSelectedPage(nextDocument, nextPageIndex, zoom);
+    void renderSelectedPage(nextDocument, nextPageIndex, zoom, moveStatusText);
   }
 
   function deleteCurrentPage(): void {
@@ -2888,6 +2910,7 @@ function finishTutorial(): void {
                 <span className="page-list-mode"><span aria-hidden="true">☷</span> List</span>
                 <span className="page-save-state"><span aria-hidden="true">●</span> Saved locally</span>
                 <button
+                  className="page-strip-move"
                   data-testid="production-move-page-up"
                   type="button"
                   aria-label="Move selected page up"
@@ -2895,9 +2918,10 @@ function finishTutorial(): void {
                   onClick={moveCurrentPageEarlier}
                   disabled={selectedPageIndex === 0}
                 >
-                  ↑
+                  <span aria-hidden="true">↑</span> Move up
                 </button>
                 <button
+                  className="page-strip-move"
                   data-testid="production-move-page-down"
                   type="button"
                   aria-label="Move selected page down"
@@ -2905,7 +2929,7 @@ function finishTutorial(): void {
                   onClick={moveCurrentPageLater}
                   disabled={selectedPageIndex === documentState.pages.length - 1}
                 >
-                  ↓
+                  <span aria-hidden="true">↓</span> Move down
                 </button>
                 <button
                   className="page-strip-delete"

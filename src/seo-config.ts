@@ -6,6 +6,7 @@ export type SeoPageKey =
   | "editor"
   | "addTextToPdf"
   | "deletePdfPages"
+  | "reorderPdfPages"
   | "features"
   | "howItWorks"
   | "faq"
@@ -55,6 +56,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Delete unwanted PDF pages online for free with PDFMech. Select pages, remove them locally in your browser, and download a new PDF without uploading your file.",
     h1: "Delete PDF pages online for free.",
     intro: "Remove unwanted pages from a PDF locally in your browser, review the remaining document, and download a separate copy.",
+    schemaType: "WebPage",
+  },
+  reorderPdfPages: {
+    path: "/reorder-pdf-pages",
+    title: "Reorder PDF Pages Online Free - No Upload | PDFMech",
+    description: "Reorder PDF pages online for free with PDFMech. Select a page, move it earlier or later locally in your browser, and download a new PDF without uploading it.",
+    h1: "Reorder PDF pages online for free.",
+    intro: "Rearrange PDF pages locally in your browser, review the new sequence, and download a separate organized copy.",
     schemaType: "WebPage",
   },
   features: {
@@ -201,7 +210,8 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "home" ||
     page === "editor" ||
     page === "addTextToPdf" ||
-    page === "deletePdfPages"
+    page === "deletePdfPages" ||
+    page === "reorderPdfPages"
   ) {
     graph.push({
       "@type": "WebApplication",

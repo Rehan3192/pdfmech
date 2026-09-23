@@ -62,7 +62,7 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "reorder",
     category: "organize",
     seoIntent: "reorder PDF pages online",
-    status: "planned",
+    status: "active",
   },
   rotatePdfPages: {
     key: "rotatePdfPages",
