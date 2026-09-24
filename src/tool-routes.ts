@@ -80,7 +80,7 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "draw",
     category: "edit",
     seoIntent: "white out PDF content online",
-    status: "planned",
+    status: "active",
   },
 };
 

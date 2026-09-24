@@ -8,6 +8,7 @@ export type SeoPageKey =
   | "deletePdfPages"
   | "reorderPdfPages"
   | "rotatePdfPages"
+  | "whiteoutPdf"
   | "features"
   | "howItWorks"
   | "faq"
@@ -73,6 +74,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Rotate PDF pages online for free with PDFMech. Turn sideways or upside-down pages locally in your browser and download a new PDF without uploading it.",
     h1: "Rotate PDF pages online for free.",
     intro: "Turn PDF pages clockwise in your browser, review their orientation, and download a separate corrected copy.",
+    schemaType: "WebPage",
+  },
+  whiteoutPdf: {
+    path: "/whiteout-pdf",
+    title: "White Out PDF Online Free - Visual Cover | PDFMech",
+    description: "White out visible PDF content online for free with PDFMech. Add a visual cover locally in your browser and download a new copy without uploading your file.",
+    h1: "White out PDF content online for free.",
+    intro: "Place a visual cover over visible PDF content in your browser, adjust its color and position, and download a separate copy.",
     schemaType: "WebPage",
   },
   features: {
@@ -221,7 +230,8 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "addTextToPdf" ||
     page === "deletePdfPages" ||
     page === "reorderPdfPages" ||
-    page === "rotatePdfPages"
+    page === "rotatePdfPages" ||
+    page === "whiteoutPdf"
   ) {
     graph.push({
       "@type": "WebApplication",

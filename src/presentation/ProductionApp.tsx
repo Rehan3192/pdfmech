@@ -1064,6 +1064,25 @@ function finishTutorial(): void {
         kind: "ready",
         text: "Page rotation ready. Select a page thumbnail, then choose Rotate clockwise.",
       });
+      return;
+    }
+
+    if (
+      routeIntent.editorMode === "whiteout" &&
+      routeIntent.initialAction === "draw"
+    ) {
+      setEditingEnabled(true);
+      setPlacementArmed(true);
+      setPanModeEnabled(false);
+      setCreationTool("whiteout");
+      setSelectedObjectId(null);
+      setPropertiesVisible(false);
+      setMobileMoreOpen(false);
+      setPageStripVisible(false);
+      setStatus({
+        kind: "ready",
+        text: "Whiteout tool ready. Click or tap the PDF where you want to add a visual cover.",
+      });
     }
   }
 

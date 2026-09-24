@@ -36,6 +36,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.deletePdfPages.slug]: "deletePdfPages",
   [TOOL_ROUTES.reorderPdfPages.slug]: "reorderPdfPages",
   [TOOL_ROUTES.rotatePdfPages.slug]: "rotatePdfPages",
+  [TOOL_ROUTES.whiteoutPdf.slug]: "whiteoutPdf",
   "/features": "features",
   "/how-it-works": "howItWorks",
   "/faq": "faq",
@@ -165,7 +166,9 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
           ? TOOL_ROUTES.reorderPdfPages
           : page === "rotatePdfPages"
             ? TOOL_ROUTES.rotatePdfPages
-            : null;
+            : page === "whiteoutPdf"
+              ? TOOL_ROUTES.whiteoutPdf
+              : null;
   const toolEditorActive =
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
@@ -361,6 +364,7 @@ function SiteFooter() {
         <SiteLink path={TOOL_ROUTES.deletePdfPages.slug}>Delete PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
+        <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
         <SiteLink path="/how-it-works">How It Works</SiteLink>
         <SiteLink path="/faq">FAQ</SiteLink>
@@ -411,6 +415,7 @@ const internalLinkClusters: Readonly<
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted pages and download a new PDF copy." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move pages into a better sequence directly in your browser." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Fix orientation", title: "Rotate PDF pages", description: "Turn sideways or upside-down pages clockwise." },
+    { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Cover visible content without uploading the source PDF." },
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
     { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
@@ -420,6 +425,7 @@ const internalLinkClusters: Readonly<
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Open a PDF with page thumbnails ready for removal." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Select pages and move them earlier or later." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Fix orientation", title: "Rotate PDF pages", description: "Select a page and turn it clockwise in the browser." },
+    { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Add a colored cover over visible page content." },
     { path: "/editor", eyebrow: "Use the tools", title: "Open the PDF editor", description: "Try the features on a PDF from your device." },
     { path: "/how-it-works", eyebrow: "Learn the workflow", title: "See how PDFMech works", description: "Follow the path from opening a file to downloading it." },
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
@@ -488,6 +494,13 @@ const internalLinkClusters: Readonly<
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages from the working PDF." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
     { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use page organization, text, and visual cover tools together." },
+    { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
+  ],
+  whiteoutPdf: [
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place replacement text above a PDF after covering an outdated detail." },
+    { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Page orientation", title: "Rotate PDF pages", description: "Correct sideways pages before adding visual covers." },
+    { path: "/security", eyebrow: "Important limit", title: "Understand visual whiteout", description: "Learn why a visual cover is not secure redaction." },
+    { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use visual covers, text, and page tools together." },
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
 };
@@ -571,6 +584,10 @@ const searchIntentCopy: Readonly<
     title: "Correct sideways PDF pages without uploading the document.",
     text: "The Rotate Pages tool opens page thumbnails so you can select a page and turn it clockwise. Rotate again when needed, undo orientation mistakes, and download a separate PDF while the source file stays unchanged.",
   },
+  whiteoutPdf: {
+    title: "Visually cover PDF content without uploading the document.",
+    text: "The Whiteout tool adds an opaque visual cover above visible page content. You can move, resize, recolor, duplicate, or delete the cover before downloading, but it is not secure redaction and does not guarantee removal of underlying data.",
+  },
 };
 
 function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
@@ -622,6 +639,8 @@ function MarketingPage({
       return <ReorderPdfPagesPage onStart={onStartTool} />;
     case "rotatePdfPages":
       return <RotatePdfPagesPage onStart={onStartTool} />;
+    case "whiteoutPdf":
+      return <WhiteoutPdfPage onStart={onStartTool} />;
   }
 }
 
@@ -1199,6 +1218,151 @@ function RotatePdfPagesPage({
         <details>
           <summary>Does rotation replace my original PDF?</summary>
           <p>No. PDFMech downloads a separate corrected PDF and leaves the source file unchanged.</p>
+        </details>
+      </section>
+    </main>
+  );
+}
+
+function WhiteoutPdfPage({
+  onStart,
+}: {
+  readonly onStart: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
+  const [dragActive, setDragActive] = useState(false);
+  const route = TOOL_ROUTES.whiteoutPdf;
+
+  function startWithFile(file: File | undefined): void {
+    if (file !== undefined) {
+      onStart(route, file);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    const [file] = event.currentTarget.files ?? [];
+    startWithFile(file);
+    event.currentTarget.value = "";
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>): void {
+    event.preventDefault();
+    setDragActive(false);
+    const [file] = event.dataTransfer.files;
+    startWithFile(file);
+  }
+
+  return (
+    <main className="site-page tool-route-page" data-testid="site-whiteout-pdf">
+      <section className="tool-route-hero">
+        <div className="tool-route-copy">
+          <span className="hero-kicker">Free visual PDF cover tool</span>
+          <h1>White out PDF content online for free.</h1>
+          <p>
+            Add an opaque visual cover over visible PDF content, match the page
+            color, and download a separate copy. Your source PDF is processed
+            locally in this browser and is not sent to PDFMech for editing.
+          </p>
+          <ul className="tool-route-benefits">
+            <li>Whiteout tool opens ready to place</li>
+            <li>Move, resize, recolor, duplicate, or delete covers</li>
+            <li>No account, upload queue, or watermark</li>
+          </ul>
+        </div>
+        <section
+          id="whiteout-pdf-tool"
+          className="tool-route-upload"
+          data-drag-active={dragActive ? "true" : "false"}
+          aria-label="Open a PDF to add a visual whiteout cover"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+        >
+          <span className="tool-route-file-icon" aria-hidden="true">PDF</span>
+          <h2>Choose a PDF to start</h2>
+          <p>The Whiteout tool will open ready for you to place a visual cover.</p>
+          <label className="tool-route-file-control">
+            <span>Choose PDF File</span>
+            <input
+              data-testid="whiteout-pdf-file-input"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handleFileChange}
+            />
+          </label>
+          <small>or drag and drop a PDF here</small>
+          <button
+            type="button"
+            className="tool-route-recovery"
+            onClick={() => onStart(route)}
+          >
+            Continue a locally saved document
+          </button>
+          <p className="tool-route-storage-note">
+            Local recovery may store a browser copy and editing state on this
+            device. You can clear it from the editor.
+          </p>
+        </section>
+      </section>
+
+      <section className="tool-route-steps" aria-labelledby="whiteout-pdf-steps-title">
+        <header>
+          <span className="hero-kicker">How it works</span>
+          <h2 id="whiteout-pdf-steps-title">Add a visual PDF cover in four steps.</h2>
+        </header>
+        <ol>
+          <li><span>1</span><div><strong>Open your PDF</strong><p>Choose a document from your device. PDFMech reads it locally in your browser.</p></div></li>
+          <li><span>2</span><div><strong>Place a cover</strong><p>Click or tap the page where visible content should be covered.</p></div></li>
+          <li><span>3</span><div><strong>Refine the whiteout</strong><p>Move or resize the cover and choose white or a sampled page color.</p></div></li>
+          <li><span>4</span><div><strong>Download a new copy</strong><p>Review the visual result and export a separate PDF while keeping your original unchanged.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="tool-route-details">
+        <article>
+          <span className="hero-kicker">What this tool does</span>
+          <h2>Place an opaque visual cover above the PDF page.</h2>
+          <p>
+            Whiteout creates a movable and resizable rectangle over visible
+            content. Use white for a clean page or sample a nearby page color
+            when the document background is off-white or scanned.
+          </p>
+        </article>
+        <article>
+          <span className="hero-kicker">Important security limit</span>
+          <h2>Visual whiteout is not secure redaction.</h2>
+          <p>
+            A whiteout cover can hide content visually, but it does not
+            guarantee removal of underlying text, metadata, or other PDF data.
+            Use a specialist redaction workflow for sensitive information.
+          </p>
+        </article>
+      </section>
+
+      <section className="tool-route-faq" aria-labelledby="whiteout-pdf-faq-title">
+        <span className="hero-kicker">Whiteout PDF FAQ</span>
+        <h2 id="whiteout-pdf-faq-title">Useful answers before you begin.</h2>
+        <details open>
+          <summary>Is my PDF uploaded?</summary>
+          <p>No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.</p>
+        </details>
+        <details>
+          <summary>Can I match an off-white page color?</summary>
+          <p>Yes. Select a whiteout cover and use its color controls or the page color picker to choose a better visual match.</p>
+        </details>
+        <details>
+          <summary>Does whiteout securely remove private text?</summary>
+          <p>No. Whiteout is a visual cover, not secure redaction. It does not guarantee removal of underlying PDF data.</p>
+        </details>
+        <details>
+          <summary>Does whiteout replace my original PDF?</summary>
+          <p>No. PDFMech downloads a separate visually edited PDF and leaves the source file unchanged.</p>
         </details>
       </section>
     </main>

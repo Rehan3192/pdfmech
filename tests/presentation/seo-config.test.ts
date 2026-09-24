@@ -83,4 +83,18 @@ describe("SEO configuration", () => {
     expect(structuredData).toContain('"price":"0"');
     expect(structuredData).not.toContain("aggregateRating");
   });
+
+  it("uses self-referencing metadata and honest product schema for whiteout", () => {
+    const config = SEO_PAGES.whiteoutPdf;
+    const structuredData = JSON.stringify(buildStructuredData("whiteoutPdf"));
+
+    expect(config.path).toBe("/whiteout-pdf");
+    expect(canonicalUrl("whiteoutPdf")).toBe(
+      "https://www.pdfmech.com/whiteout-pdf",
+    );
+    expect(config.description.toLowerCase()).toContain("visual cover");
+    expect(structuredData).toContain(canonicalUrl("whiteoutPdf"));
+    expect(structuredData).toContain('"price":"0"');
+    expect(structuredData).not.toContain("aggregateRating");
+  });
 });

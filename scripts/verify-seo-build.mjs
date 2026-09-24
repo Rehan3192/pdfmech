@@ -85,6 +85,16 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable page-rotation instructions and a same-route action.`,
     );
   }
+  if (
+    page === "whiteoutPdf" &&
+    (!html.includes("How to white out PDF content") ||
+      !html.includes("Visual cover, not secure redaction") ||
+      !html.includes('/whiteout-pdf#whiteout-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable whiteout instructions, its security limit, and a same-route action.`,
+    );
+  }
   JSON.parse(jsonLd);
   titles.add(title);
   descriptions.add(description);
