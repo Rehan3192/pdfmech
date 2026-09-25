@@ -175,6 +175,114 @@ export const FAQ_SCHEMA_ITEMS = [
   },
 ] as const;
 
+export interface SeoFaqItem {
+  readonly question: string;
+  readonly answer: string;
+}
+
+export const TOOL_ROUTE_FAQS: Readonly<
+  Partial<Record<SeoPageKey, readonly SeoFaqItem[]>>
+> = {
+  addTextToPdf: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.",
+    },
+    {
+      question: "Can I edit text that is already inside the PDF?",
+      answer: "Not directly. PDFMech currently adds new editable text boxes above the original page.",
+    },
+    {
+      question: "Can I match the existing text color?",
+      answer: "Yes. Use a preset, enter a color, or use Pick from PDF to sample a visible page color.",
+    },
+    {
+      question: "Will PDFMech replace my original file?",
+      answer: "No. Download creates a separate edited PDF and leaves the source file unchanged.",
+    },
+  ],
+  deletePdfPages: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.",
+    },
+    {
+      question: "Can I remove more than one PDF page?",
+      answer: "Yes. Select and delete unwanted pages one at a time, reviewing the page count after each change.",
+    },
+    {
+      question: "What if I delete the wrong page?",
+      answer: "Use Undo before downloading to restore the most recently deleted page.",
+    },
+    {
+      question: "Does this change my original PDF?",
+      answer: "No. PDFMech downloads a separate edited PDF and leaves the source file on your device unchanged.",
+    },
+  ],
+  reorderPdfPages: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.",
+    },
+    {
+      question: "Can I move a PDF page more than once?",
+      answer: "Yes. Keep the page selected and use Move up or Move down repeatedly until it reaches the correct position.",
+    },
+    {
+      question: "Can I undo a page move?",
+      answer: "Yes. Use Undo before downloading to reverse the most recent page-order change.",
+    },
+    {
+      question: "Does reordering replace my original PDF?",
+      answer: "No. PDFMech downloads a separate organized PDF and leaves the source file unchanged.",
+    },
+  ],
+  rotatePdfPages: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.",
+    },
+    {
+      question: "How far does each rotation turn a page?",
+      answer: "Each action rotates the selected PDF page 90 degrees clockwise. Use it twice for a 180-degree correction.",
+    },
+    {
+      question: "Can I rotate only one PDF page?",
+      answer: "Yes. Rotation applies to the currently selected page, so other pages keep their existing orientation.",
+    },
+    {
+      question: "Does rotation replace my original PDF?",
+      answer: "No. PDFMech downloads a separate corrected PDF and leaves the source file unchanged.",
+    },
+  ],
+  whiteoutPdf: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. Supported editing happens locally in your browser. Local recovery may save a copy in this browser on your device.",
+    },
+    {
+      question: "Can I match an off-white page color?",
+      answer: "Yes. Select a whiteout cover and use its color controls or the page color picker to choose a better visual match.",
+    },
+    {
+      question: "Does whiteout securely remove private text?",
+      answer: "No. Whiteout is a visual cover, not secure redaction. It does not guarantee removal of underlying PDF data.",
+    },
+    {
+      question: "Does whiteout replace my original PDF?",
+      answer: "No. PDFMech downloads a separate visually edited PDF and leaves the source file unchanged.",
+    },
+  ],
+};
+
+export const TOOL_SEO_PAGE_KEYS = [
+  "addTextToPdf",
+  "deletePdfPages",
+  "reorderPdfPages",
+  "rotatePdfPages",
+  "whiteoutPdf",
+] as const satisfies readonly SeoPageKey[];
+
 export function canonicalUrl(page: SeoPageKey): string {
   return `${SITE_ORIGIN}${SEO_PAGES[page].path}`;
 }
@@ -246,13 +354,30 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     });
   }
 
-  if (page === "faq") {
+  const faqItems = page === "faq" ? FAQ_SCHEMA_ITEMS : TOOL_ROUTE_FAQS[page];
+  if (faqItems !== undefined) {
     graph.push({
       "@type": "FAQPage",
-      mainEntity: FAQ_SCHEMA_ITEMS.map((item) => ({
+      "@id": `${url}#faq`,
+      mainEntity: faqItems.map((item) => ({
         "@type": "Question",
         name: item.question,
         acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    });
+  }
+
+  if (page === "features") {
+    graph.push({
+      "@type": "ItemList",
+      "@id": `${url}#pdf-tools`,
+      name: "PDFMech free PDF tools",
+      numberOfItems: TOOL_SEO_PAGE_KEYS.length,
+      itemListElement: TOOL_SEO_PAGE_KEYS.map((toolPage, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: SEO_PAGES[toolPage].h1,
+        url: canonicalUrl(toolPage),
       })),
     });
   }

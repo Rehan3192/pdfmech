@@ -4,6 +4,8 @@ import {
   canonicalUrl,
   SEO_PAGE_KEYS,
   SEO_PAGES,
+  TOOL_ROUTE_FAQS,
+  TOOL_SEO_PAGE_KEYS,
 } from "../../src/seo-config";
 
 describe("SEO configuration", () => {
@@ -96,5 +98,28 @@ describe("SEO configuration", () => {
     expect(structuredData).toContain(canonicalUrl("whiteoutPdf"));
     expect(structuredData).toContain('"price":"0"');
     expect(structuredData).not.toContain("aggregateRating");
+  });
+
+  it("publishes FAQ schema that matches every focused tool route", () => {
+    for (const page of TOOL_SEO_PAGE_KEYS) {
+      const structuredData = JSON.stringify(buildStructuredData(page));
+
+      expect(structuredData).toContain('"@type":"FAQPage"');
+      expect(structuredData).toContain(`${canonicalUrl(page)}#faq`);
+      for (const item of TOOL_ROUTE_FAQS[page] ?? []) {
+        expect(structuredData).toContain(item.question);
+        expect(structuredData).toContain(item.answer);
+      }
+    }
+  });
+
+  it("describes the Features page as the hub for every focused PDF tool", () => {
+    const structuredData = JSON.stringify(buildStructuredData("features"));
+
+    expect(structuredData).toContain('"@type":"ItemList"');
+    expect(structuredData).toContain('"numberOfItems":5');
+    for (const page of TOOL_SEO_PAGE_KEYS) {
+      expect(structuredData).toContain(canonicalUrl(page));
+    }
   });
 });

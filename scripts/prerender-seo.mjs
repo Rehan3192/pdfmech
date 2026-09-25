@@ -7,6 +7,7 @@ import {
   SEO_PAGES,
   SITE_ORIGIN,
   SOCIAL_IMAGE_PATH,
+  TOOL_ROUTE_FAQS,
 } from "../src/seo-config.ts";
 
 const outputDirectory = join(process.cwd(), "dist");
@@ -68,6 +69,10 @@ function renderSnapshot(page) {
           : isWhiteoutTool
             ? `<section><h2>How to white out PDF content</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where a visual cover should appear.</li><li>Move, resize, and recolor the whiteout cover.</li><li>Review the page and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>Visual cover, not secure redaction</h2><p>Whiteout places an opaque cover over visible content. It does not guarantee removal of underlying PDF text, metadata, or other data.</p></section>`
             : "";
+  const routeFaqs = TOOL_ROUTE_FAQS[page] ?? [];
+  const faqContent = routeFaqs.length > 0
+    ? `<section aria-label="Frequently asked questions"><h2>${escapeHtml(config.h1.replace(/\.$/, ""))} FAQ</h2>${routeFaqs.map((item) => `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p>`).join("")}</section>`
+    : "";
   const actionPath = isAddTextTool
     ? "/add-text-to-pdf#add-text-tool"
     : isDeletePagesTool
@@ -91,7 +96,7 @@ function renderSnapshot(page) {
             ? "Choose a PDF to white out content"
             : "Open PDFMech";
 
-  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="${actionPath}">${actionLabel}</a></section>${toolContent}<nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
+  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="${actionPath}">${actionLabel}</a></section>${toolContent}${faqContent}<nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
 }
 
 function renderRoute(page) {
@@ -134,7 +139,7 @@ notFound = replaceMeta(notFound, "twitter:title", notFoundTitle);
 notFound = replaceMeta(notFound, "twitter:description", "The requested PDFMech page could not be found.");
 await writeFile(join(outputDirectory, "404.html"), notFound);
 
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>2026-09-24</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>2026-09-25</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
 await writeFile(join(outputDirectory, "sitemap.xml"), sitemap);
 
 if (!template.includes(`content="${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}"`)) {

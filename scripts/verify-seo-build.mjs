@@ -1,6 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { canonicalUrl, SEO_PAGE_KEYS, SEO_PAGES } from "../src/seo-config.ts";
+import {
+  canonicalUrl,
+  SEO_PAGE_KEYS,
+  SEO_PAGES,
+  TOOL_ROUTE_FAQS,
+  TOOL_SEO_PAGE_KEYS,
+} from "../src/seo-config.ts";
 
 const outputDirectory = join(process.cwd(), "dist");
 const titles = new Set();
@@ -10,6 +16,14 @@ function match(html, pattern, label, filename) {
   const value = html.match(pattern)?.[1];
   if (!value) throw new Error(`${filename} is missing ${label}.`);
   return value;
+}
+
+function escapeForHtmlCheck(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 for (const page of SEO_PAGE_KEYS) {
@@ -95,7 +109,39 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable whiteout instructions, its security limit, and a same-route action.`,
     );
   }
-  JSON.parse(jsonLd);
+  const structuredData = JSON.parse(jsonLd);
+  const graph = structuredData["@graph"];
+  if (!Array.isArray(graph)) {
+    throw new Error(`${filename} must expose a Schema.org graph.`);
+  }
+  if (TOOL_SEO_PAGE_KEYS.includes(page)) {
+    const faqSchema = graph.find((item) => item["@type"] === "FAQPage");
+    const routeFaqs = TOOL_ROUTE_FAQS[page] ?? [];
+    if (
+      faqSchema === undefined ||
+      faqSchema.mainEntity?.length !== routeFaqs.length ||
+      routeFaqs.some(
+        (item) =>
+          !html.includes(escapeForHtmlCheck(item.question)) ||
+          !html.includes(escapeForHtmlCheck(item.answer)),
+      )
+    ) {
+      throw new Error(`${filename} must expose matching visible and structured FAQ content.`);
+    }
+  }
+  if (page === "features") {
+    const toolList = graph.find((item) => item["@type"] === "ItemList");
+    if (
+      toolList === undefined ||
+      toolList.numberOfItems !== TOOL_SEO_PAGE_KEYS.length ||
+      TOOL_SEO_PAGE_KEYS.some(
+        (toolPage) =>
+          !JSON.stringify(toolList).includes(canonicalUrl(toolPage)),
+      )
+    ) {
+      throw new Error(`${filename} must identify every focused PDF tool in its ItemList schema.`);
+    }
+  }
   titles.add(title);
   descriptions.add(description);
 }
