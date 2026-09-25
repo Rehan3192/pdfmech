@@ -13,6 +13,7 @@ describe("tool route registry", () => {
       "reorderPdfPages",
       "rotatePdfPages",
       "whiteoutPdf",
+      "privatePdfEditor",
     ]);
     expect(TOOL_ROUTES.addTextToPdf).toMatchObject({
       slug: "/add-text-to-pdf",
@@ -44,6 +45,12 @@ describe("tool route registry", () => {
       initialAction: "draw",
       status: "active",
     });
+    expect(TOOL_ROUTES.privatePdfEditor).toMatchObject({
+      slug: "/private-pdf-editor",
+      editorMode: "general",
+      initialAction: "general",
+      status: "active",
+    });
   });
 
   it("normalizes trailing slashes and does not expose planned routes", () => {
@@ -61,6 +68,9 @@ describe("tool route registry", () => {
     );
     expect(activeToolRouteFromPath("/whiteout-pdf/")?.key).toBe(
       "whiteoutPdf",
+    );
+    expect(activeToolRouteFromPath("/private-pdf-editor/")?.key).toBe(
+      "privatePdfEditor",
     );
     expect(activeToolRouteFromPath("/not-a-tool")).toBeNull();
   });

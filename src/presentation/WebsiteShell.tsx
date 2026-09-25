@@ -37,6 +37,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.reorderPdfPages.slug]: "reorderPdfPages",
   [TOOL_ROUTES.rotatePdfPages.slug]: "rotatePdfPages",
   [TOOL_ROUTES.whiteoutPdf.slug]: "whiteoutPdf",
+  [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   "/features": "features",
   "/how-it-works": "howItWorks",
   "/faq": "faq",
@@ -168,7 +169,9 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
             ? TOOL_ROUTES.rotatePdfPages
             : page === "whiteoutPdf"
               ? TOOL_ROUTES.whiteoutPdf
-              : null;
+              : page === "privatePdfEditor"
+                ? TOOL_ROUTES.privatePdfEditor
+                : null;
   const toolEditorActive =
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
@@ -365,6 +368,7 @@ function SiteFooter() {
         <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
+        <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
         <SiteLink path="/how-it-works">How It Works</SiteLink>
         <SiteLink path="/faq">FAQ</SiteLink>
@@ -416,6 +420,7 @@ const internalLinkClusters: Readonly<
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move pages into a better sequence directly in your browser." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Fix orientation", title: "Rotate PDF pages", description: "Turn sideways or upside-down pages clockwise." },
     { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Cover visible content without uploading the source PDF." },
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Privacy", title: "Use the private PDF editor", description: "See how browser-local editing works and verify the workflow." },
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
     { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
@@ -426,6 +431,7 @@ const internalLinkClusters: Readonly<
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Select pages and move them earlier or later." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Fix orientation", title: "Rotate PDF pages", description: "Select a page and turn it clockwise in the browser." },
     { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Add a colored cover over visible page content." },
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Privacy", title: "Private PDF editor", description: "Open a PDF without sending it to an editing server." },
     { path: "/editor", eyebrow: "Use the tools", title: "Open the PDF editor", description: "Try the features on a PDF from your device." },
     { path: "/how-it-works", eyebrow: "Learn the workflow", title: "See how PDFMech works", description: "Follow the path from opening a file to downloading it." },
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
@@ -441,6 +447,7 @@ const internalLinkClusters: Readonly<
     { path: "/security", eyebrow: "Trust & safety", title: "Read the security overview", description: "Understand local processing and product limits." },
   ],
   security: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editor", title: "Try the local workflow", description: "Open and edit a PDF while keeping the same private-editor URL." },
     { path: "/privacy", eyebrow: "Privacy details", title: "Read the privacy overview", description: "Learn what stays in your browser and what you control." },
     { path: "/editor", eyebrow: "Use PDFMech", title: "Open the PDF editor", description: "Start a browser-based editing session without an account." },
     { path: "/faq", eyebrow: "Common questions", title: "Find practical answers", description: "Review guidance for recovery, downloads, and visual covers." },
@@ -456,6 +463,7 @@ const internalLinkClusters: Readonly<
     { path: "/contact", eyebrow: "Get in touch", title: "Contact PDFMech", description: "Share feedback, questions, or an issue you found." },
   ],
   privacy: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editor", title: "Edit without an upload", description: "Use the working browser-local PDF editor and review its technical flow." },
     { path: "/security", eyebrow: "Security overview", title: "Understand local processing", description: "Review how PDFMech approaches browser-based editing." },
     { path: "/editor", eyebrow: "Start privately", title: "Open the PDF editor", description: "Edit a PDF from your device without an account." },
     { path: "/terms", eyebrow: "Terms of use", title: "Read the terms", description: "Review the basic conditions for using PDFMech." },
@@ -466,6 +474,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Share safely", title: "Read the privacy overview", description: "Learn how to report an issue without sharing sensitive PDFs." },
   ],
   addTextToPdf: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editing", title: "How local PDF editing works", description: "Review the browser-local workflow and recovery controls." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages from a PDF locally." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Rearrange a document using local page controls." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Page orientation", title: "Rotate PDF pages", description: "Correct sideways pages before downloading." },
@@ -474,6 +483,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
   deletePdfPages: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editing", title: "How local PDF editing works", description: "Review the browser-local workflow and recovery controls." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move remaining pages into the sequence you need." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Page orientation", title: "Rotate PDF pages", description: "Correct sideways pages in the same local editor." },
@@ -482,6 +492,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
   reorderPdfPages: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editing", title: "How local PDF editing works", description: "Review the browser-local workflow and recovery controls." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages before organizing the final copy." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Page orientation", title: "Rotate PDF pages", description: "Turn incorrectly oriented pages before export." },
@@ -490,6 +501,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
   rotatePdfPages: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editing", title: "How local PDF editing works", description: "Review the browser-local workflow and recovery controls." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move corrected pages into the sequence you need." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove complete unwanted pages from the working PDF." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place editable text above a PDF page without uploading it." },
@@ -497,11 +509,19 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
   whiteoutPdf: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editing", title: "How local PDF editing works", description: "Review the browser-local workflow and recovery controls." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place replacement text above a PDF after covering an outdated detail." },
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Page orientation", title: "Rotate PDF pages", description: "Correct sideways pages before adding visual covers." },
     { path: "/security", eyebrow: "Important limit", title: "Understand visual whiteout", description: "Learn why a visual cover is not secure redaction." },
     { path: "/editor", eyebrow: "All tools", title: "Open the general PDF editor", description: "Use visual covers, text, and page tools together." },
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
+  ],
+  privatePdfEditor: [
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place a new editable text box without uploading the source PDF." },
+    { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Cover visible content locally while understanding the limits." },
+    { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted complete pages in the browser." },
+    { path: "/security", eyebrow: "Technical details", title: "Review PDFMech security", description: "Understand local processing, browser storage, and tool limits." },
+    { path: "/privacy", eyebrow: "Privacy policy", title: "Read the privacy overview", description: "See how local recovery and contact data are handled." },
   ],
 };
 
@@ -588,6 +608,10 @@ const searchIntentCopy: Readonly<
     title: "Visually cover PDF content without uploading the document.",
     text: "The Whiteout tool adds an opaque visual cover above visible page content. You can move, resize, recolor, duplicate, or delete the cover before downloading, but it is not secure redaction and does not guarantee removal of underlying data.",
   },
+  privatePdfEditor: {
+    title: "Private PDF editing with browser-local processing.",
+    text: "PDFMech reads the selected source PDF in your browser, applies supported edits locally, and generates the downloaded copy on your device. Optional recovery may keep an IndexedDB checkpoint in the current browser until you clear the document.",
+  },
 };
 
 function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
@@ -641,6 +665,8 @@ function MarketingPage({
       return <RotatePdfPagesPage onStart={onStartTool} />;
     case "whiteoutPdf":
       return <WhiteoutPdfPage onStart={onStartTool} />;
+    case "privatePdfEditor":
+      return <PrivatePdfEditorPage onStart={onStartTool} />;
   }
 }
 
@@ -1363,6 +1389,151 @@ function WhiteoutPdfPage({
         <details>
           <summary>Does whiteout replace my original PDF?</summary>
           <p>No. PDFMech downloads a separate visually edited PDF and leaves the source file unchanged.</p>
+        </details>
+      </section>
+    </main>
+  );
+}
+
+function PrivatePdfEditorPage({
+  onStart,
+}: {
+  readonly onStart: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
+  const [dragActive, setDragActive] = useState(false);
+  const route = TOOL_ROUTES.privatePdfEditor;
+
+  function startWithFile(file: File | undefined): void {
+    if (file !== undefined) {
+      onStart(route, file);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    const [file] = event.currentTarget.files ?? [];
+    startWithFile(file);
+    event.currentTarget.value = "";
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>): void {
+    event.preventDefault();
+    setDragActive(false);
+    const [file] = event.dataTransfer.files;
+    startWithFile(file);
+  }
+
+  return (
+    <main className="site-page tool-route-page" data-testid="site-private-pdf-editor">
+      <section className="tool-route-hero">
+        <div className="tool-route-copy">
+          <span className="hero-kicker">Private browser PDF editor</span>
+          <h1>Edit PDFs privately without uploading them.</h1>
+          <p>
+            Open a PDF from your device, make supported edits in this browser,
+            and download a separate copy. PDFMech does not send your source
+            document to an editing server.
+          </p>
+          <ul className="tool-route-benefits">
+            <li>Source PDF processing stays in this browser</li>
+            <li>No PDFMech account or cloud document library</li>
+            <li>Local recovery remains under your browser control</li>
+          </ul>
+        </div>
+        <section
+          id="private-pdf-editor-tool"
+          className="tool-route-upload"
+          data-drag-active={dragActive ? "true" : "false"}
+          aria-label="Open a PDF in the private editor"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+        >
+          <span className="tool-route-file-icon" aria-hidden="true">PDF</span>
+          <h2>Choose a PDF to edit</h2>
+          <p>The general editor opens here without changing this page URL.</p>
+          <label className="tool-route-file-control">
+            <span>Choose PDF File</span>
+            <input
+              data-testid="private-editor-file-input"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handleFileChange}
+            />
+          </label>
+          <small>or drag and drop a PDF here</small>
+          <button
+            type="button"
+            className="tool-route-recovery"
+            onClick={() => onStart(route)}
+          >
+            Continue a locally saved document
+          </button>
+          <p className="tool-route-storage-note">
+            Recovery may save the source PDF and editing state in IndexedDB in
+            this browser. Clear the document when using a shared device.
+          </p>
+        </section>
+      </section>
+
+      <section className="tool-route-steps" aria-labelledby="private-editor-steps-title">
+        <header>
+          <span className="hero-kicker">What happens to your file</span>
+          <h2 id="private-editor-steps-title">A local workflow from open to export.</h2>
+        </header>
+        <ol>
+          <li><span>1</span><div><strong>You choose a local file</strong><p>The browser grants PDFMech access only to the PDF you select.</p></div></li>
+          <li><span>2</span><div><strong>The browser reads it</strong><p>PDF parsing and page rendering run on your device for supported workflows.</p></div></li>
+          <li><span>3</span><div><strong>You make local edits</strong><p>Text, visual covers, and page changes are applied in the browser editor.</p></div></li>
+          <li><span>4</span><div><strong>Your browser exports</strong><p>PDFMech validates and generates a separate edited PDF for download.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="tool-route-details">
+        <article>
+          <span className="hero-kicker">Recovery is local too</span>
+          <h2>Your browser can keep a resumable checkpoint.</h2>
+          <p>
+            When available, local recovery stores the source PDF and editing
+            state in this browser&apos;s IndexedDB. It belongs to this browser and
+            device, and Clear Document removes the current checkpoint.
+          </p>
+        </article>
+        <article>
+          <span className="hero-kicker">Verify the claim</span>
+          <h2>Inspect the browser network activity yourself.</h2>
+          <p>
+            Open developer tools, select the Network panel, then choose and edit
+            a test PDF. The source document is processed locally rather than
+            posted to a PDFMech editing endpoint.
+          </p>
+        </article>
+      </section>
+
+      <section className="tool-route-faq" aria-labelledby="private-editor-faq-title">
+        <span className="hero-kicker">Private PDF editor FAQ</span>
+        <h2 id="private-editor-faq-title">Clear answers about local editing.</h2>
+        <details open>
+          <summary>Does PDFMech upload my source PDF?</summary>
+          <p>No. Supported PDF editing is designed to run in your browser rather than sending the source document to a PDFMech editing server.</p>
+        </details>
+        <details>
+          <summary>Can PDFMech save recovery data?</summary>
+          <p>Yes. Local recovery may store the source PDF and editing state in this browser on this device. You can clear that checkpoint from the editor.</p>
+        </details>
+        <details>
+          <summary>Does PDFMech need an account?</summary>
+          <p>No. You can open the editor and use supported tools without creating a PDFMech account.</p>
+        </details>
+        <details>
+          <summary>Does downloading replace my original PDF?</summary>
+          <p>No. PDFMech creates a separate edited PDF for download and leaves the original source file unchanged.</p>
         </details>
       </section>
     </main>

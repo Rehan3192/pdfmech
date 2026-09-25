@@ -9,6 +9,7 @@ export type SeoPageKey =
   | "reorderPdfPages"
   | "rotatePdfPages"
   | "whiteoutPdf"
+  | "privatePdfEditor"
   | "features"
   | "howItWorks"
   | "faq"
@@ -82,6 +83,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "White out visible PDF content online for free with PDFMech. Add a visual cover locally in your browser and download a new copy without uploading your file.",
     h1: "White out PDF content online for free.",
     intro: "Place a visual cover over visible PDF content in your browser, adjust its color and position, and download a separate copy.",
+    schemaType: "WebPage",
+  },
+  privatePdfEditor: {
+    path: "/private-pdf-editor",
+    title: "Private PDF Editor Online - No Upload | PDFMech",
+    description: "Edit PDFs privately in your browser with PDFMech. Add text, visually cover content, organize pages, and export locally without an editing-server upload.",
+    h1: "Edit PDFs privately without uploading them.",
+    intro: "Open, edit, recover, and export supported PDF changes in your browser while the source document stays on your device.",
     schemaType: "WebPage",
   },
   features: {
@@ -273,6 +282,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech downloads a separate visually edited PDF and leaves the source file unchanged.",
     },
   ],
+  privatePdfEditor: [
+    {
+      question: "Does PDFMech upload my source PDF?",
+      answer: "No. Supported PDF editing is designed to run in your browser rather than sending the source document to a PDFMech editing server.",
+    },
+    {
+      question: "Can PDFMech save recovery data?",
+      answer: "Yes. Local recovery may store the source PDF and editing state in this browser on this device. You can clear that checkpoint from the editor.",
+    },
+    {
+      question: "Does PDFMech need an account?",
+      answer: "No. You can open the editor and use supported tools without creating a PDFMech account.",
+    },
+    {
+      question: "Does downloading replace my original PDF?",
+      answer: "No. PDFMech creates a separate edited PDF for download and leaves the original source file unchanged.",
+    },
+  ],
 };
 
 export const TOOL_SEO_PAGE_KEYS = [
@@ -281,6 +308,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "reorderPdfPages",
   "rotatePdfPages",
   "whiteoutPdf",
+  "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
 export function canonicalUrl(page: SeoPageKey): string {
@@ -339,7 +367,8 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "deletePdfPages" ||
     page === "reorderPdfPages" ||
     page === "rotatePdfPages" ||
-    page === "whiteoutPdf"
+    page === "whiteoutPdf" ||
+    page === "privatePdfEditor"
   ) {
     graph.push({
       "@type": "WebApplication",

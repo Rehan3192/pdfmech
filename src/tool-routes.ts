@@ -3,22 +3,24 @@ export type ToolRouteKey =
   | "deletePdfPages"
   | "reorderPdfPages"
   | "rotatePdfPages"
-  | "whiteoutPdf";
+  | "whiteoutPdf"
+  | "privatePdfEditor";
 
-export type ToolEditorMode = "text" | "pages" | "whiteout";
+export type ToolEditorMode = "text" | "pages" | "whiteout" | "general";
 export type ToolInitialAction =
   | "add-text"
   | "delete"
   | "reorder"
   | "rotate"
-  | "draw";
+  | "draw"
+  | "general";
 
 export interface ToolRouteDefinition {
   readonly key: ToolRouteKey;
   readonly slug: string;
   readonly editorMode: ToolEditorMode;
   readonly initialAction: ToolInitialAction;
-  readonly category: "edit" | "organize";
+  readonly category: "edit" | "organize" | "privacy";
   readonly seoIntent: string;
   readonly status: "active" | "planned";
 }
@@ -80,6 +82,15 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "draw",
     category: "edit",
     seoIntent: "white out PDF content online",
+    status: "active",
+  },
+  privatePdfEditor: {
+    key: "privatePdfEditor",
+    slug: "/private-pdf-editor",
+    editorMode: "general",
+    initialAction: "general",
+    category: "privacy",
+    seoIntent: "private PDF editor without upload",
     status: "active",
   },
 };

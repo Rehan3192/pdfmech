@@ -109,6 +109,17 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable whiteout instructions, its security limit, and a same-route action.`,
     );
   }
+  if (
+    page === "privatePdfEditor" &&
+    (!html.includes("How private browser PDF editing works") ||
+      !html.includes("Local recovery under your control") ||
+      !html.includes("Verify local processing") ||
+      !html.includes('/private-pdf-editor#private-pdf-editor-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable local-processing proof and a same-route action.`,
+    );
+  }
   const structuredData = JSON.parse(jsonLd);
   const graph = structuredData["@graph"];
   if (!Array.isArray(graph)) {
