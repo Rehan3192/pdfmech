@@ -110,6 +110,17 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "ocrPdf" &&
+    (!html.includes("How to make a scanned PDF searchable") ||
+      !html.includes("Private browser OCR") ||
+      !html.includes("Preserves the scanned page") ||
+      !html.includes('/ocr-pdf#ocr-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable OCR instructions, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

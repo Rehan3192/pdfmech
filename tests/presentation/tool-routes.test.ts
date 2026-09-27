@@ -13,6 +13,7 @@ describe("tool route registry", () => {
       "reorderPdfPages",
       "rotatePdfPages",
       "whiteoutPdf",
+      "ocrPdf",
       "privatePdfEditor",
       "editPdfOnIphone",
     ]);
@@ -46,6 +47,12 @@ describe("tool route registry", () => {
       initialAction: "draw",
       status: "active",
     });
+    expect(TOOL_ROUTES.ocrPdf).toMatchObject({
+      slug: "/ocr-pdf",
+      initialAction: "ocr",
+      category: "convert",
+      status: "active",
+    });
     expect(TOOL_ROUTES.privatePdfEditor).toMatchObject({
       slug: "/private-pdf-editor",
       editorMode: "general",
@@ -76,6 +83,7 @@ describe("tool route registry", () => {
     expect(activeToolRouteFromPath("/whiteout-pdf/")?.key).toBe(
       "whiteoutPdf",
     );
+    expect(activeToolRouteFromPath("/ocr-pdf/")?.key).toBe("ocrPdf");
     expect(activeToolRouteFromPath("/private-pdf-editor/")?.key).toBe(
       "privatePdfEditor",
     );

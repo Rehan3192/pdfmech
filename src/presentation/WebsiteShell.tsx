@@ -19,12 +19,17 @@ import {
 } from "../tool-routes";
 
 type WebsitePage = SeoPageKey | "notFound";
-type MarketingPageKey = Exclude<SeoPageKey, "editor">;
+type PublicPageKey = Exclude<SeoPageKey, "editor">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
     readonly initialFile?: File | undefined;
     readonly routeIntent?: ToolRouteDefinition | undefined;
+    readonly onProductEvent: (event: ProductEvent) => void;
+  }) => ReactNode;
+  readonly renderOcrTool: (options: {
+    readonly onOpenEditor: () => void;
     readonly onProductEvent: (event: ProductEvent) => void;
   }) => ReactNode;
 }
@@ -37,6 +42,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.reorderPdfPages.slug]: "reorderPdfPages",
   [TOOL_ROUTES.rotatePdfPages.slug]: "rotatePdfPages",
   [TOOL_ROUTES.whiteoutPdf.slug]: "whiteoutPdf",
+  [TOOL_ROUTES.ocrPdf.slug]: "ocrPdf",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
@@ -62,7 +68,7 @@ function navigateTo(pathname: string): void {
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 
-export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
+export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps) {
   const [page, setPage] = useState<WebsitePage>(() =>
     pageFromPath(window.location.pathname),
   );
@@ -170,6 +176,8 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
             ? TOOL_ROUTES.rotatePdfPages
             : page === "whiteoutPdf"
               ? TOOL_ROUTES.whiteoutPdf
+              : page === "ocrPdf"
+                ? TOOL_ROUTES.ocrPdf
               : page === "privatePdfEditor"
                 ? TOOL_ROUTES.privatePdfEditor
                 : page === "editPdfOnIphone"
@@ -178,7 +186,8 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
   const toolEditorActive =
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
-  const editorExperienceActive = page === "editor" || toolEditorActive;
+  const editorExperienceActive =
+    page === "editor" || page === "ocrPdf" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
     const detail = {
@@ -285,6 +294,14 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
 
       {page === "editor" ? (
         renderEditor({ onProductEvent: recordProductEvent })
+      ) : page === "ocrPdf" ? (
+        <>
+          <Breadcrumbs page="ocrPdf" />
+          {renderOcrTool({
+            onOpenEditor: () => navigateTo("/editor"),
+            onProductEvent: recordProductEvent,
+          })}
+        </>
       ) : toolEditorActive && toolEditorSession !== null ? (
         renderEditor({
           initialFile: toolEditorSession.initialFile,
@@ -311,7 +328,7 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
   );
 }
 
-function Breadcrumbs({ page }: { readonly page: MarketingPageKey }) {
+function Breadcrumbs({ page }: { readonly page: PublicPageKey }) {
   return (
     <nav className="site-breadcrumbs" aria-label="Breadcrumb">
       <SiteLink path="/">Home</SiteLink>
@@ -371,6 +388,7 @@ function SiteFooter() {
         <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
+        <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
         <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
         <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
@@ -419,6 +437,7 @@ const internalLinkClusters: Readonly<
   Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
+    { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "OCR tool", title: "Make scanned PDFs searchable", description: "Recognize printed text locally and download a searchable PDF." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Popular tool", title: "Add text to a PDF", description: "Type on a PDF privately without uploading it." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted pages and download a new PDF copy." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Move pages into a better sequence directly in your browser." },
@@ -431,6 +450,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
+    { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "OCR tool", title: "Make scanned PDFs searchable", description: "Add a searchable text layer without uploading the scan." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Open a PDF with the Text tool ready to place." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Open a PDF with page thumbnails ready for removal." },
     { path: TOOL_ROUTES.reorderPdfPages.slug, eyebrow: "Organize pages", title: "Reorder PDF pages", description: "Select pages and move them earlier or later." },
@@ -442,6 +462,7 @@ const internalLinkClusters: Readonly<
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
   ],
   howItWorks: [
+    { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "Scanned PDFs", title: "Run private OCR", description: "Turn an image-based document into a searchable PDF locally." },
     { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "iPhone guide", title: "Follow the mobile workflow", description: "See how opening, editing, and downloading work in Safari." },
     { path: "/editor", eyebrow: "Start now", title: "Open the PDF editor", description: "Choose a PDF and follow the workflow as you edit." },
     { path: "/features", eyebrow: "Explore tools", title: "See what each tool can do", description: "Review editing, page organization, and recovery features." },
@@ -470,6 +491,7 @@ const internalLinkClusters: Readonly<
     { path: "/contact", eyebrow: "Get in touch", title: "Contact PDFMech", description: "Share feedback, questions, or an issue you found." },
   ],
   privacy: [
+    { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "Local OCR", title: "Make a scan searchable", description: "Recognize English printed text without sending the document to an OCR server." },
     { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editor", title: "Edit without an upload", description: "Use the working browser-local PDF editor and review its technical flow." },
     { path: "/security", eyebrow: "Security overview", title: "Understand local processing", description: "Review how PDFMech approaches browser-based editing." },
     { path: "/editor", eyebrow: "Start privately", title: "Open the PDF editor", description: "Edit a PDF from your device without an account." },
@@ -2040,6 +2062,7 @@ function FeaturesPage() {
             { title: "Add Text", text: "Add text anywhere. Adjust font, size, color, bold style, and alignment.", path: "M4 5h16M12 5v15M8 20h8M4 5v3M20 5v3" },
             { title: "Cover Content", text: "Place visual covers over content and choose a color that blends with the page.", path: "M8 4h13l-5 16H3L8 4Z" },
             { title: "Organize Pages", text: "Rotate pages, change their order, and remove the ones you no longer need.", path: "M8 3h12v15H8zM4 7v14h12" },
+            { title: "Search Scanned PDFs", text: "Run private OCR on printed English scans and download searchable PDF or TXT output.", path: "M4 4h16v16H4zM8 9h8M8 13h8M8 17h5" },
             { title: "Make Corrections", text: "Move, resize, duplicate, or delete objects you add to your document.", path: "M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5" },
             { title: "Undo Mistakes", text: "Step back through your changes or redo an edit while you work.", path: "M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7" },
             { title: "Recover Your Work", text: "Restore an available editing session after a browser reload.", path: "M12 8v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0" },
@@ -2062,6 +2085,7 @@ function FeaturesPage() {
           { title: "Add and re-edit PDF text", items: ["Place a new text box anywhere on a supported PDF page.", "Choose font, size, color, bold style, and alignment.", "Reselect added text later and continue typing.", "Move, resize, duplicate, or delete the text box."] },
           { title: "Visually cover PDF content", items: ["Use Whiteout for a clean visual cover.", "Reselect the cover to open Whiteout Properties.", "Choose a preset or use Pick from PDF to match the page.", "Treat covers as visual changes, not secure data removal."] },
           { title: "Delete and reorder PDF pages", items: ["Delete a PDF page free from the edited copy.", "Move a PDF page up or down with dedicated controls.", "Rotate pages that were scanned sideways.", "Confirm the final order using page thumbnails."] },
+          { title: "Make scanned PDFs searchable", items: ["Recognize clear English printed text with browser-local OCR.", "Keep the original scanned page appearance.", "Add an invisible text layer for search, selection, and copying.", "Download the searchable PDF and extracted plain text."] },
           { title: "Navigate and zoom comfortably", items: ["Use plus, minus, or the percentage control for zoom.", "Drag the document in Select mode when a zoomed page extends beyond the viewport.", "Open the Pages sheet to jump directly to another page.", "Use Previous and Next in Pages without changing document order."] },
           { title: "Create objects safely", items: ["Text and Whiteout use one-shot placement.", "The creation tool disarms after one object is added.", "A later page click cannot create an accidental duplicate.", "Select the tool again only when another object is intentional."] },
           { title: "Control the workspace", items: ["Keep the document visible behind the floating action dock.", "Open Properties only after selecting an added object.", "Open Pages as a temporary thumbnail sheet.", "Choose Fullscreen from More for maximum document space."] },
@@ -2247,6 +2271,7 @@ function FaqPage() {
           { title: "Can I remove PDF text free?", items: ["Whiteout can visually cover text or other visible content.", "Select the cover to open Whiteout Properties.", "Choose a preset, use the color control, or sample a color from the PDF.", "Whiteout is a visual cover and is not guaranteed secure data removal."] },
           { title: "Can I delete PDF pages free?", items: ["Open More, then choose Pages to view thumbnails.", "Select the unwanted page and use Delete Page from More Tools.", "Review the new page count before downloading.", "Your original PDF file remains unchanged on your device."] },
           { title: "Can I move PDF pages up or down?", items: ["Open More, choose Pages, and select a thumbnail.", "Move up sends the page one position earlier.", "Move down sends the page one position later.", "Previous and Next change the selected page without changing document order."] },
+          { title: "Can I make a scanned PDF searchable?", items: ["Open the OCR PDF tool and choose an image-based or scanned PDF.", "Select all pages or enter a custom page range.", "Printed English text is recognized locally in your browser.", "Download a separate searchable PDF or extracted TXT file."] },
           { title: "How do zoom and document dragging work?", items: ["Use plus, minus, or the percentage menu for zoom.", "Keep Select active when you are not placing a new object.", "Drag vertically or horizontally when a zoomed page extends beyond the viewport.", "Open Pages when you want to jump to another page."] },
           { title: "Can I make more room for the PDF?", items: ["The document-first layout has no permanent side rails.", "Properties, More Tools, and Pages open as temporary sheets.", "Close a sheet when its task is complete.", "Choose Fullscreen from More for the largest workspace."] },
           { title: "What happens after a placement?", items: ["Text and Whiteout place one object per activation.", "The selected creation tool then disarms automatically.", "A later page click will not create an unwanted duplicate.", "Choose the tool again when you intentionally need another object."] },

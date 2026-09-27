@@ -41,11 +41,13 @@ import {
   rotatePage as rotateDomainPage,
 } from "./domain/page-commands";
 import { createBrowserIdService } from "./infrastructure/browser-id-service";
+import { createLazyOcrProcessor } from "./infrastructure/ocr/lazy-ocr-processor";
 import { createLazyPdfRenderer } from "./infrastructure/pdfjs/lazy-renderer";
 import { createLazyPdfValidator } from "./infrastructure/pdfjs/lazy-validator";
 import { createLazyPdfExporter } from "./infrastructure/pdflib/lazy-exporter";
 import { createIndexedDbRecoveryStore } from "./infrastructure/persistence/indexeddb-recovery-store";
 import { ProductionApp } from "./presentation/ProductionApp";
+import { OcrPdfPage } from "./presentation/OcrPdfPage";
 import { WebsiteShell } from "./presentation/WebsiteShell";
 import type { EditorDocument } from "./domain/document";
 import type { SourceId } from "./domain/primitives";
@@ -55,6 +57,7 @@ import "./presentation/editor-reference.css";
 import "./presentation/editor-reference-v2.css";
 import "./presentation/content-guide.css";
 import "./presentation/marketing-pages.css";
+import "./presentation/ocr.css";
 
 const rootElement = document.querySelector("#app");
 if (rootElement === null) {
@@ -66,6 +69,7 @@ const renderer = createLazyPdfRenderer();
 const exporter = createLazyPdfExporter();
 const validator = createLazyPdfValidator();
 const recoveryStore = createIndexedDbRecoveryStore();
+const ocrProcessor = createLazyOcrProcessor();
 
 async function restoreRecoveredDocument(
   summary: RecoverySummary,
@@ -121,6 +125,13 @@ async function restoreRecoveredDocument(
 createRoot(rootElement).render(
   <StrictMode>
     <WebsiteShell
+      renderOcrTool={({ onOpenEditor, onProductEvent }) => (
+        <OcrPdfPage
+          processor={ocrProcessor}
+          onOpenEditor={onOpenEditor}
+          onProductEvent={onProductEvent}
+        />
+      )}
       renderEditor={({ initialFile, routeIntent, onProductEvent }) => (
         <ProductionApp
       initialFile={initialFile}

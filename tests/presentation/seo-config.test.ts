@@ -129,7 +129,9 @@ describe("SEO configuration", () => {
     const structuredData = JSON.stringify(buildStructuredData("features"));
 
     expect(structuredData).toContain('"@type":"ItemList"');
-    expect(structuredData).toContain('"numberOfItems":6');
+    expect(structuredData).toContain(
+      `"numberOfItems":${TOOL_SEO_PAGE_KEYS.length}`,
+    );
     for (const page of TOOL_SEO_PAGE_KEYS) {
       expect(structuredData).toContain(canonicalUrl(page));
     }

@@ -9,6 +9,7 @@ export type SeoPageKey =
   | "reorderPdfPages"
   | "rotatePdfPages"
   | "whiteoutPdf"
+  | "ocrPdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -86,6 +87,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     intro: "Place a visual cover over visible PDF content in your browser, adjust its color and position, and download a separate copy.",
     schemaType: "WebPage",
   },
+  ocrPdf: {
+    path: "/ocr-pdf",
+    title: "OCR PDF Online Free - Make Scans Searchable | PDFMech",
+    description: "Use free OCR to make scanned PDFs searchable in your browser. Add an invisible text layer and download searchable PDF and TXT files without uploading.",
+    h1: "Make scanned PDFs searchable.",
+    intro: "Convert scanned and image-based documents into searchable PDFs with private, browser-local OCR and no account.",
+    schemaType: "WebPage",
+  },
   privatePdfEditor: {
     path: "/private-pdf-editor",
     title: "Private PDF Editor Online - No Upload | PDFMech",
@@ -105,7 +114,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   features: {
     path: "/features",
     title: "Free PDF Editing Tools & Features | PDFMech",
-    description: "Explore free PDF tools to add text, cover visible content, rotate pages, reorder or delete pages, undo changes, and recover work locally in your browser.",
+    description: "Explore free PDF tools for OCR, text, visual covers, page rotation, reordering, deletion, recovery, and checked downloads directly in your browser.",
     h1: "Everything you need for quick PDF edits.",
     intro: "Focused browser-based PDF tools for text changes, page organization, local recovery, and checked downloads.",
     schemaType: "WebPage",
@@ -190,6 +199,10 @@ export const FAQ_SCHEMA_ITEMS = [
   {
     question: "Can I remove PDF text free?",
     answer: "No. Whiteout adds a visual cover and is not guaranteed to remove underlying PDF text, metadata, or other data.",
+  },
+  {
+    question: "Can PDFMech make a scanned PDF searchable?",
+    answer: "Yes. The OCR PDF tool recognizes clear English printed text locally and creates a separate searchable PDF without uploading the document to an OCR server.",
   },
 ] as const;
 
@@ -291,6 +304,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech downloads a separate visually edited PDF and leaves the source file unchanged.",
     },
   ],
+  ocrPdf: [
+    {
+      question: "Is my scanned PDF uploaded?",
+      answer: "No. PDFMech renders pages, recognizes printed text, and creates the searchable PDF locally in your browser.",
+    },
+    {
+      question: "What does OCR add to my PDF?",
+      answer: "OCR adds an invisible text layer above the original scanned page so supported text can be searched, selected, and copied while the page appearance stays intact.",
+    },
+    {
+      question: "Does PDFMech OCR handwriting?",
+      answer: "The current tool is optimized for clear English printed text. Handwriting, unusual fonts, low-resolution scans, and complex layouts may be recognized less accurately.",
+    },
+    {
+      question: "Will OCR replace my original PDF?",
+      answer: "No. PDFMech creates a separate searchable PDF and plain-text download. Your original file remains unchanged on your device.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -335,6 +366,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "reorderPdfPages",
   "rotatePdfPages",
   "whiteoutPdf",
+  "ocrPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -343,7 +375,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "editPdfOnIphone" ? "2026-09-27" : "2026-09-25";
+  return page === "editPdfOnIphone" || page === "ocrPdf"
+    ? "2026-09-27"
+    : "2026-09-25";
 }
 
 export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
@@ -399,6 +433,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "reorderPdfPages" ||
     page === "rotatePdfPages" ||
     page === "whiteoutPdf" ||
+    page === "ocrPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

@@ -6,3 +6,4 @@ coverage/
 *.log
 .tools/
 tests/fixtures/generated/
+public/ocr/

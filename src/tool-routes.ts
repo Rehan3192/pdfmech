@@ -4,6 +4,7 @@ export type ToolRouteKey =
   | "reorderPdfPages"
   | "rotatePdfPages"
   | "whiteoutPdf"
+  | "ocrPdf"
   | "privatePdfEditor"
   | "editPdfOnIphone";
 
@@ -14,6 +15,7 @@ export type ToolInitialAction =
   | "reorder"
   | "rotate"
   | "draw"
+  | "ocr"
   | "general";
 
 export interface ToolRouteDefinition {
@@ -21,7 +23,7 @@ export interface ToolRouteDefinition {
   readonly slug: string;
   readonly editorMode: ToolEditorMode;
   readonly initialAction: ToolInitialAction;
-  readonly category: "edit" | "organize" | "privacy" | "mobile";
+  readonly category: "edit" | "convert" | "organize" | "privacy" | "mobile";
   readonly seoIntent: string;
   readonly status: "active" | "planned";
 }
@@ -83,6 +85,15 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "draw",
     category: "edit",
     seoIntent: "white out PDF content online",
+    status: "active",
+  },
+  ocrPdf: {
+    key: "ocrPdf",
+    slug: "/ocr-pdf",
+    editorMode: "general",
+    initialAction: "ocr",
+    category: "convert",
+    seoIntent: "OCR PDF online free",
     status: "active",
   },
   privatePdfEditor: {
