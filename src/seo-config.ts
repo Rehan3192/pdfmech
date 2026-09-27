@@ -10,6 +10,7 @@ export type SeoPageKey =
   | "rotatePdfPages"
   | "whiteoutPdf"
   | "privatePdfEditor"
+  | "editPdfOnIphone"
   | "features"
   | "howItWorks"
   | "faq"
@@ -91,6 +92,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Edit PDFs privately in your browser with PDFMech. Add text, visually cover content, organize pages, and export locally without an editing-server upload.",
     h1: "Edit PDFs privately without uploading them.",
     intro: "Open, edit, recover, and export supported PDF changes in your browser while the source document stays on your device.",
+    schemaType: "WebPage",
+  },
+  editPdfOnIphone: {
+    path: "/edit-pdf-on-iphone",
+    title: "How to Edit a PDF on iPhone Free in Safari | PDFMech",
+    description: "Learn how to edit a PDF on iPhone in Safari. Add text, add visual covers, organize pages, and download a new copy without installing an app.",
+    h1: "How to edit a PDF on iPhone in Safari.",
+    intro: "Choose a PDF from the iPhone Files picker, make touch-friendly edits in Safari, and save a separate finished copy without installing an app.",
     schemaType: "WebPage",
   },
   features: {
@@ -300,6 +309,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech creates a separate edited PDF for download and leaves the original source file unchanged.",
     },
   ],
+  editPdfOnIphone: [
+    {
+      question: "Do I need to install an iPhone app?",
+      answer: "No. PDFMech works in Safari, so you can choose a PDF from Files and edit supported content without installing a separate app.",
+    },
+    {
+      question: "Where does the edited PDF go on iPhone?",
+      answer: "Safari downloads the new PDF through the browser. Its location depends on your Safari download setting, commonly the Downloads folder in iCloud Drive or On My iPhone.",
+    },
+    {
+      question: "Can I change text already embedded in the PDF?",
+      answer: "Not directly. PDFMech adds a new editable text box above the original PDF page rather than rewriting its embedded text layer.",
+    },
+    {
+      question: "Will my iPhone upload the PDF to PDFMech?",
+      answer: "No. Supported editing is designed to process the source PDF locally in Safari rather than sending it to a PDFMech editing server.",
+    },
+  ],
 };
 
 export const TOOL_SEO_PAGE_KEYS = [
@@ -313,6 +340,10 @@ export const TOOL_SEO_PAGE_KEYS = [
 
 export function canonicalUrl(page: SeoPageKey): string {
   return `${SITE_ORIGIN}${SEO_PAGES[page].path}`;
+}
+
+export function lastModifiedDate(page: SeoPageKey): string {
+  return page === "editPdfOnIphone" ? "2026-09-27" : "2026-09-25";
 }
 
 export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
@@ -408,6 +439,21 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
         name: SEO_PAGES[toolPage].h1,
         url: canonicalUrl(toolPage),
       })),
+    });
+  }
+
+  if (page === "editPdfOnIphone") {
+    graph.push({
+      "@type": "Article",
+      "@id": `${url}#article`,
+      headline: config.h1,
+      description: config.description,
+      mainEntityOfPage: { "@id": `${url}#webpage` },
+      author: { "@id": organizationId },
+      publisher: { "@id": organizationId },
+      datePublished: "2026-09-27",
+      dateModified: lastModifiedDate(page),
+      inLanguage: "en",
     });
   }
 

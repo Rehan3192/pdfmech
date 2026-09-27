@@ -48,7 +48,9 @@ test("unknown routes render a branded noindex page", async ({ page }) => {
 test("tool routes expose matching visible FAQ content and structured data", async ({
   page,
 }) => {
-  for (const route of TOOL_SEO_PAGE_KEYS) {
+  for (const route of SEO_PAGE_KEYS.filter(
+    (candidate) => TOOL_ROUTE_FAQS[candidate] !== undefined,
+  )) {
     await page.goto(SEO_PAGES[route].path);
     const routeFaqs = TOOL_ROUTE_FAQS[route] ?? [];
     const structuredData = JSON.parse(

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   buildStructuredData,
   canonicalUrl,
+  lastModifiedDate,
   SEO_PAGE_KEYS,
   SEO_PAGES,
   SITE_ORIGIN,
@@ -38,6 +39,7 @@ function renderSnapshot(page) {
     rotatePdfPages: "Rotate PDF Pages",
     whiteoutPdf: "White Out PDF",
     privatePdfEditor: "Private PDF Editor",
+    editPdfOnIphone: "Edit PDF on iPhone",
     features: "Features",
     howItWorks: "How It Works",
     faq: "FAQ",
@@ -60,6 +62,7 @@ function renderSnapshot(page) {
   const isRotatePagesTool = page === "rotatePdfPages";
   const isWhiteoutTool = page === "whiteoutPdf";
   const isPrivateEditor = page === "privatePdfEditor";
+  const isIphoneGuide = page === "editPdfOnIphone";
   const toolContent = isAddTextTool
     ? `<section><h2>How to add text to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where the new text should appear.</li><li>Adjust font, size, color, bold style, and alignment.</li><li>Review and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>What the Text tool changes</h2><p>PDFMech adds a new editable text box above the PDF page. It does not rewrite text already embedded in the original PDF.</p></section>`
     : isDeletePagesTool
@@ -72,7 +75,9 @@ function renderSnapshot(page) {
             ? `<section><h2>How to white out PDF content</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where a visual cover should appear.</li><li>Move, resize, and recolor the whiteout cover.</li><li>Review the page and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>Visual cover, not secure redaction</h2><p>Whiteout places an opaque cover over visible content. It does not guarantee removal of underlying PDF text, metadata, or other data.</p></section>`
             : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
-              : "";
+              : isIphoneGuide
+                ? `<article><h2>How to edit a PDF on iPhone in Safari</h2><ol><li>Open PDFMech in Safari and choose a PDF from Files.</li><li>Select Text, Whiteout, or a page tool from the mobile action dock.</li><li>Tap the PDF, drag the object into position, and adjust its properties.</li><li>Review the result and download a separate edited PDF.</li></ol><h2>Where iPhone downloads are saved</h2><p>The folder follows your Safari download setting, commonly Downloads in iCloud Drive or On My iPhone.</p><h2>Mobile PDF editing limits</h2><p>Text adds a new layer rather than rewriting embedded words. Whiteout is a visual cover rather than secure redaction, and large PDFs may be constrained by available iPhone memory.</p></article>`
+                : "";
   const routeFaqs = TOOL_ROUTE_FAQS[page] ?? [];
   const faqContent = routeFaqs.length > 0
     ? `<section aria-label="Frequently asked questions"><h2>${escapeHtml(config.h1.replace(/\.$/, ""))} FAQ</h2>${routeFaqs.map((item) => `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p>`).join("")}</section>`
@@ -89,7 +94,9 @@ function renderSnapshot(page) {
             ? "/whiteout-pdf#whiteout-pdf-tool"
             : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
-              : "/editor";
+              : isIphoneGuide
+                ? "/edit-pdf-on-iphone#iphone-pdf-editor-tool"
+                : "/editor";
   const actionLabel = isAddTextTool
     ? "Choose a PDF to add text"
     : isDeletePagesTool
@@ -102,7 +109,9 @@ function renderSnapshot(page) {
             ? "Choose a PDF to white out content"
             : isPrivateEditor
               ? "Choose a PDF to edit privately"
-              : "Open PDFMech";
+              : isIphoneGuide
+                ? "Choose a PDF from iPhone Files"
+                : "Open PDFMech";
 
   return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="${actionPath}">${actionLabel}</a></section>${toolContent}${faqContent}<nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
 }
@@ -147,7 +156,7 @@ notFound = replaceMeta(notFound, "twitter:title", notFoundTitle);
 notFound = replaceMeta(notFound, "twitter:description", "The requested PDFMech page could not be found.");
 await writeFile(join(outputDirectory, "404.html"), notFound);
 
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>2026-09-25</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>${lastModifiedDate(page)}</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
 await writeFile(join(outputDirectory, "sitemap.xml"), sitemap);
 
 if (!template.includes(`content="${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}"`)) {

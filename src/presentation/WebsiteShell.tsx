@@ -38,6 +38,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.rotatePdfPages.slug]: "rotatePdfPages",
   [TOOL_ROUTES.whiteoutPdf.slug]: "whiteoutPdf",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
+  [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
   "/how-it-works": "howItWorks",
   "/faq": "faq",
@@ -171,7 +172,9 @@ export function WebsiteShell({ renderEditor }: WebsiteShellProps) {
               ? TOOL_ROUTES.whiteoutPdf
               : page === "privatePdfEditor"
                 ? TOOL_ROUTES.privatePdfEditor
-                : null;
+                : page === "editPdfOnIphone"
+                  ? TOOL_ROUTES.editPdfOnIphone
+                  : null;
   const toolEditorActive =
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
@@ -369,6 +372,7 @@ function SiteFooter() {
         <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
         <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
+        <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
         <SiteLink path="/how-it-works">How It Works</SiteLink>
         <SiteLink path="/faq">FAQ</SiteLink>
@@ -421,6 +425,7 @@ const internalLinkClusters: Readonly<
     { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Fix orientation", title: "Rotate PDF pages", description: "Turn sideways or upside-down pages clockwise." },
     { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Cover visible content without uploading the source PDF." },
     { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Privacy", title: "Use the private PDF editor", description: "See how browser-local editing works and verify the workflow." },
+    { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "Mobile guide", title: "Edit a PDF on iPhone", description: "Use Safari and the Files picker without installing an app." },
     { path: "/editor", eyebrow: "Start editing", title: "Open the PDF editor", description: "Make a quick change directly in your browser." },
     { path: "/features", eyebrow: "Explore tools", title: "See all PDFMech features", description: "Compare text, page, recovery, and workspace tools." },
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
@@ -437,11 +442,13 @@ const internalLinkClusters: Readonly<
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
   ],
   howItWorks: [
+    { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "iPhone guide", title: "Follow the mobile workflow", description: "See how opening, editing, and downloading work in Safari." },
     { path: "/editor", eyebrow: "Start now", title: "Open the PDF editor", description: "Choose a PDF and follow the workflow as you edit." },
     { path: "/features", eyebrow: "Explore tools", title: "See what each tool can do", description: "Review editing, page organization, and recovery features." },
     { path: "/faq", eyebrow: "Need help?", title: "Read the FAQ", description: "Get answers before you begin your next edit." },
   ],
   faq: [
+    { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "Mobile help", title: "Edit a PDF on iPhone", description: "Learn the Safari and Files workflow step by step." },
     { path: "/how-it-works", eyebrow: "Step-by-step", title: "Learn the editing workflow", description: "See the complete path from opening to downloading." },
     { path: "/features", eyebrow: "Product guide", title: "Explore PDFMech features", description: "See which tools support the edit you need." },
     { path: "/security", eyebrow: "Trust & safety", title: "Read the security overview", description: "Understand local processing and product limits." },
@@ -517,11 +524,19 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Local processing", title: "Understand your privacy", description: "Learn what remains in your browser and how recovery works." },
   ],
   privatePdfEditor: [
+    { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "Mobile guide", title: "Use PDFMech on iPhone", description: "Follow the touch-friendly Safari workflow without installing an app." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Place a new editable text box without uploading the source PDF." },
     { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Cover visible content locally while understanding the limits." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted complete pages in the browser." },
     { path: "/security", eyebrow: "Technical details", title: "Review PDFMech security", description: "Understand local processing, browser storage, and tool limits." },
     { path: "/privacy", eyebrow: "Privacy policy", title: "Read the privacy overview", description: "See how local recovery and contact data are handled." },
+  ],
+  editPdfOnIphone: [
+    { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Privacy proof", title: "How local PDF editing works", description: "Review processing, recovery storage, and browser controls." },
+    { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Open the Text tool directly for a focused editing workflow." },
+    { path: TOOL_ROUTES.whiteoutPdf.slug, eyebrow: "Visual cover", title: "White out PDF content", description: "Cover visible content while understanding the security limit." },
+    { path: TOOL_ROUTES.rotatePdfPages.slug, eyebrow: "Page orientation", title: "Rotate PDF pages", description: "Correct sideways scans with the Pages sheet." },
+    { path: "/how-it-works", eyebrow: "Product guide", title: "Learn the full editor workflow", description: "Review the document canvas, action dock, sheets, and download." },
   ],
 };
 
@@ -612,6 +627,10 @@ const searchIntentCopy: Readonly<
     title: "Private PDF editing with browser-local processing.",
     text: "PDFMech reads the selected source PDF in your browser, applies supported edits locally, and generates the downloaded copy on your device. Optional recovery may keep an IndexedDB checkpoint in the current browser until you clear the document.",
   },
+  editPdfOnIphone: {
+    title: "Edit a PDF on iPhone without installing an app.",
+    text: "Open PDFMech in Safari, choose a document from the iPhone Files picker, and use the bottom action dock for text, visual covers, page tools, and download. Supported PDF processing stays in the browser, while optional recovery belongs to that Safari installation and device.",
+  },
 };
 
 function SearchIntentSection({ page }: { readonly page: MarketingPageKey }) {
@@ -667,6 +686,8 @@ function MarketingPage({
       return <WhiteoutPdfPage onStart={onStartTool} />;
     case "privatePdfEditor":
       return <PrivatePdfEditorPage onStart={onStartTool} />;
+    case "editPdfOnIphone":
+      return <EditPdfOnIphonePage onStart={onStartTool} />;
   }
 }
 
@@ -1534,6 +1555,185 @@ function PrivatePdfEditorPage({
         <details>
           <summary>Does downloading replace my original PDF?</summary>
           <p>No. PDFMech creates a separate edited PDF for download and leaves the original source file unchanged.</p>
+        </details>
+      </section>
+    </main>
+  );
+}
+
+function EditPdfOnIphonePage({
+  onStart,
+}: {
+  readonly onStart: (
+    route: ToolRouteDefinition,
+    initialFile?: File,
+  ) => void;
+}) {
+  const [dragActive, setDragActive] = useState(false);
+  const route = TOOL_ROUTES.editPdfOnIphone;
+
+  function startWithFile(file: File | undefined): void {
+    if (file !== undefined) {
+      onStart(route, file);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    const [file] = event.currentTarget.files ?? [];
+    startWithFile(file);
+    event.currentTarget.value = "";
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>): void {
+    event.preventDefault();
+    setDragActive(false);
+    const [file] = event.dataTransfer.files;
+    startWithFile(file);
+  }
+
+  return (
+    <main className="site-page tool-route-page iphone-guide-page" data-testid="site-edit-pdf-on-iphone">
+      <section className="tool-route-hero">
+        <div className="tool-route-copy">
+          <span className="hero-kicker">iPhone PDF editing guide</span>
+          <h1>How to edit a PDF on iPhone in Safari.</h1>
+          <p>
+            Choose a document from Files, use PDFMech&apos;s touch-friendly
+            controls, and download a separate edited copy—without installing
+            another iPhone app or sending the source PDF to an editing server.
+          </p>
+          <ul className="tool-route-benefits">
+            <li>Works in Safari with the iPhone Files picker</li>
+            <li>Bottom action dock keeps primary tools within reach</li>
+            <li>No PDFMech account or app installation</li>
+          </ul>
+        </div>
+        <section
+          id="iphone-pdf-editor-tool"
+          className="tool-route-upload"
+          data-drag-active={dragActive ? "true" : "false"}
+          aria-label="Choose a PDF to edit on iPhone"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+        >
+          <span className="tool-route-file-icon" aria-hidden="true">PDF</span>
+          <h2>Choose a PDF from Files</h2>
+          <p>On iPhone, Safari opens the Files picker when you tap below.</p>
+          <label className="tool-route-file-control">
+            <span>Choose PDF File</span>
+            <input
+              data-testid="iphone-editor-file-input"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={handleFileChange}
+            />
+          </label>
+          <small>Files can come from iCloud Drive or On My iPhone</small>
+          <button
+            type="button"
+            className="tool-route-recovery"
+            onClick={() => onStart(route)}
+          >
+            Continue a locally saved document
+          </button>
+          <p className="tool-route-storage-note">
+            Safari may keep a local recovery checkpoint on this iPhone. Clear
+            the document when you no longer need it or use a shared device.
+          </p>
+        </section>
+      </section>
+
+      <section className="iphone-guide-preview" aria-labelledby="iphone-preview-title">
+        <header>
+          <span className="hero-kicker">Touch-first walkthrough</span>
+          <h2 id="iphone-preview-title">Three editor states you will use.</h2>
+          <p>These interface illustrations match PDFMech&apos;s mobile workflow.</p>
+        </header>
+        <div>
+          <article>
+            <span className="iphone-guide-step">1</span>
+            <div className="iphone-screen" aria-hidden="true">
+              <b>PDFMech</b><i>PDF</i><strong>Choose PDF File</strong><small>Files picker</small>
+            </div>
+            <h3>Open from Files</h3>
+            <p>Tap Choose PDF File, browse iCloud Drive or On My iPhone, and select one PDF.</p>
+          </article>
+          <article>
+            <span className="iphone-guide-step">2</span>
+            <div className="iphone-screen iphone-screen-editor" aria-hidden="true">
+              <b>document.pdf</b><i>PDF page</i><strong>Select&nbsp;&nbsp; Text&nbsp;&nbsp; Whiteout&nbsp;&nbsp; More</strong><small>Download</small>
+            </div>
+            <h3>Edit from the action dock</h3>
+            <p>Choose Text or Whiteout, tap the page to place an object, then drag it into position.</p>
+          </article>
+          <article>
+            <span className="iphone-guide-step">3</span>
+            <div className="iphone-screen iphone-screen-sheet" aria-hidden="true">
+              <b>Text Properties</b><i>Font · Size</i><strong>Color · Alignment</strong><small>Done</small>
+            </div>
+            <h3>Refine in a bottom sheet</h3>
+            <p>Adjust the selected object, tap Done, review the PDF, and use Download for the new copy.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="tool-route-steps" aria-labelledby="iphone-steps-title">
+        <header>
+          <span className="hero-kicker">Safari workflow</span>
+          <h2 id="iphone-steps-title">Edit and save a PDF in four steps.</h2>
+        </header>
+        <ol>
+          <li><span>1</span><div><strong>Open PDFMech in Safari</strong><p>Stay on this page and tap Choose PDF File to open Apple&apos;s Files picker.</p></div></li>
+          <li><span>2</span><div><strong>Select a mobile tool</strong><p>Use Text or Whiteout in the action dock, or open More for page controls.</p></div></li>
+          <li><span>3</span><div><strong>Tap, drag, and refine</strong><p>Place an object on the page, drag it with one finger, and adjust its properties.</p></div></li>
+          <li><span>4</span><div><strong>Download the new PDF</strong><p>Review the result and save the separate edited copy through Safari.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="tool-route-details">
+        <article>
+          <span className="hero-kicker">Where the download goes</span>
+          <h2>Find the PDF in Safari Downloads or Files.</h2>
+          <p>
+            The exact folder follows your Safari download setting. It is commonly
+            Downloads in iCloud Drive or On My iPhone. Safari&apos;s download button
+            can also open the completed file directly.
+          </p>
+        </article>
+        <article>
+          <span className="hero-kicker">Know the limits</span>
+          <h2>Mobile editing is focused, not a full desktop replacement.</h2>
+          <p>
+            Text creates a new layer rather than rewriting embedded words.
+            Whiteout is a visual cover, not secure redaction. Very large PDFs
+            may also be constrained by available iPhone memory.
+          </p>
+        </article>
+      </section>
+
+      <section className="tool-route-faq" aria-labelledby="iphone-faq-title">
+        <span className="hero-kicker">iPhone PDF FAQ</span>
+        <h2 id="iphone-faq-title">Practical answers before you start.</h2>
+        <details open>
+          <summary>Do I need to install an iPhone app?</summary>
+          <p>No. PDFMech works in Safari, so you can choose a PDF from Files and edit supported content without installing a separate app.</p>
+        </details>
+        <details>
+          <summary>Where does the edited PDF go on iPhone?</summary>
+          <p>Safari downloads the new PDF through the browser. Its location depends on your Safari download setting, commonly the Downloads folder in iCloud Drive or On My iPhone.</p>
+        </details>
+        <details>
+          <summary>Can I change text already embedded in the PDF?</summary>
+          <p>Not directly. PDFMech adds a new editable text box above the original PDF page rather than rewriting its embedded text layer.</p>
+        </details>
+        <details>
+          <summary>Will my iPhone upload the PDF to PDFMech?</summary>
+          <p>No. Supported editing is designed to process the source PDF locally in Safari rather than sending it to a PDFMech editing server.</p>
         </details>
       </section>
     </main>

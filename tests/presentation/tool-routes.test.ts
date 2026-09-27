@@ -14,6 +14,7 @@ describe("tool route registry", () => {
       "rotatePdfPages",
       "whiteoutPdf",
       "privatePdfEditor",
+      "editPdfOnIphone",
     ]);
     expect(TOOL_ROUTES.addTextToPdf).toMatchObject({
       slug: "/add-text-to-pdf",
@@ -51,6 +52,12 @@ describe("tool route registry", () => {
       initialAction: "general",
       status: "active",
     });
+    expect(TOOL_ROUTES.editPdfOnIphone).toMatchObject({
+      slug: "/edit-pdf-on-iphone",
+      editorMode: "general",
+      initialAction: "general",
+      status: "active",
+    });
   });
 
   it("normalizes trailing slashes and does not expose planned routes", () => {
@@ -71,6 +78,9 @@ describe("tool route registry", () => {
     );
     expect(activeToolRouteFromPath("/private-pdf-editor/")?.key).toBe(
       "privatePdfEditor",
+    );
+    expect(activeToolRouteFromPath("/edit-pdf-on-iphone/")?.key).toBe(
+      "editPdfOnIphone",
     );
     expect(activeToolRouteFromPath("/not-a-tool")).toBeNull();
   });

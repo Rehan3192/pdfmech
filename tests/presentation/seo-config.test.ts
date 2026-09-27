@@ -101,7 +101,9 @@ describe("SEO configuration", () => {
   });
 
   it("publishes FAQ schema that matches every focused tool route", () => {
-    for (const page of TOOL_SEO_PAGE_KEYS) {
+    for (const page of SEO_PAGE_KEYS.filter(
+      (candidate) => TOOL_ROUTE_FAQS[candidate] !== undefined,
+    )) {
       const structuredData = JSON.stringify(buildStructuredData(page));
 
       expect(structuredData).toContain('"@type":"FAQPage"');
@@ -111,6 +113,16 @@ describe("SEO configuration", () => {
         expect(structuredData).toContain(item.answer);
       }
     }
+  });
+
+  it("publishes Article schema for the first-hand iPhone guide", () => {
+    const config = SEO_PAGES.editPdfOnIphone;
+    const structuredData = JSON.stringify(buildStructuredData("editPdfOnIphone"));
+
+    expect(config.path).toBe("/edit-pdf-on-iphone");
+    expect(structuredData).toContain('"@type":"Article"');
+    expect(structuredData).toContain(config.h1);
+    expect(structuredData).toContain('"dateModified":"2026-09-27"');
   });
 
   it("describes the Features page as the hub for every focused PDF tool", () => {

@@ -4,7 +4,8 @@ export type ToolRouteKey =
   | "reorderPdfPages"
   | "rotatePdfPages"
   | "whiteoutPdf"
-  | "privatePdfEditor";
+  | "privatePdfEditor"
+  | "editPdfOnIphone";
 
 export type ToolEditorMode = "text" | "pages" | "whiteout" | "general";
 export type ToolInitialAction =
@@ -20,7 +21,7 @@ export interface ToolRouteDefinition {
   readonly slug: string;
   readonly editorMode: ToolEditorMode;
   readonly initialAction: ToolInitialAction;
-  readonly category: "edit" | "organize" | "privacy";
+  readonly category: "edit" | "organize" | "privacy" | "mobile";
   readonly seoIntent: string;
   readonly status: "active" | "planned";
 }
@@ -91,6 +92,15 @@ export const TOOL_ROUTES: Readonly<Record<ToolRouteKey, ToolRouteDefinition>> = 
     initialAction: "general",
     category: "privacy",
     seoIntent: "private PDF editor without upload",
+    status: "active",
+  },
+  editPdfOnIphone: {
+    key: "editPdfOnIphone",
+    slug: "/edit-pdf-on-iphone",
+    editorMode: "general",
+    initialAction: "general",
+    category: "mobile",
+    seoIntent: "edit PDF on iPhone in Safari",
     status: "active",
   },
 };

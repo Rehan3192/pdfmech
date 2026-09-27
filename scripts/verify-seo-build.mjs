@@ -120,12 +120,23 @@ for (const page of SEO_PAGE_KEYS) {
       `${filename} must expose crawlable local-processing proof and a same-route action.`,
     );
   }
+  if (
+    page === "editPdfOnIphone" &&
+    (!html.includes("How to edit a PDF on iPhone in Safari") ||
+      !html.includes("Where iPhone downloads are saved") ||
+      !html.includes("Mobile PDF editing limits") ||
+      !html.includes('/edit-pdf-on-iphone#iphone-pdf-editor-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable iPhone instructions, limitations, and a same-route action.`,
+    );
+  }
   const structuredData = JSON.parse(jsonLd);
   const graph = structuredData["@graph"];
   if (!Array.isArray(graph)) {
     throw new Error(`${filename} must expose a Schema.org graph.`);
   }
-  if (TOOL_SEO_PAGE_KEYS.includes(page)) {
+  if (TOOL_ROUTE_FAQS[page] !== undefined) {
     const faqSchema = graph.find((item) => item["@type"] === "FAQPage");
     const routeFaqs = TOOL_ROUTE_FAQS[page] ?? [];
     if (
@@ -152,6 +163,12 @@ for (const page of SEO_PAGE_KEYS) {
     ) {
       throw new Error(`${filename} must identify every focused PDF tool in its ItemList schema.`);
     }
+  }
+  if (
+    page === "editPdfOnIphone" &&
+    !graph.some((item) => item["@type"] === "Article")
+  ) {
+    throw new Error(`${filename} must expose Article structured data.`);
   }
   titles.add(title);
   descriptions.add(description);
