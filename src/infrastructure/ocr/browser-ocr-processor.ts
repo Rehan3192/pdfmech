@@ -419,7 +419,9 @@ async function renderThumbnail(
   page: PDFPageProxy,
   baseViewport: PageViewport,
 ): Promise<Blob> {
-  const scale = Math.min(0.3, 130 / Math.max(1, baseViewport.width));
+  // One local preview serves both the thumbnail rail and the large review pane.
+  // Rendering it at review size avoids a tiny, blurry page in the main panel.
+  const scale = Math.min(0.75, 420 / Math.max(1, baseViewport.width));
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.ceil(viewport.width));
@@ -429,7 +431,7 @@ async function renderThumbnail(
     throw new Error("This browser could not create a PDF preview.");
   }
   await page.render({ canvas, canvasContext: context, viewport }).promise;
-  const thumbnail = await canvasToBlob(canvas, "image/webp", 0.76);
+  const thumbnail = await canvasToBlob(canvas, "image/webp", 0.82);
   canvas.width = 1;
   canvas.height = 1;
   return thumbnail;

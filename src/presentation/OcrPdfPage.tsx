@@ -224,7 +224,7 @@ export function OcrPdfPage({
   const selectedPreview = thumbnailUrls[selectedPageIndex] ?? null;
 
   return (
-    <main className="ocr-page" data-testid="site-ocr-pdf">
+    <main className="ocr-page" data-ocr-phase={phase} data-testid="site-ocr-pdf">
       <section className="ocr-hero" aria-labelledby="ocr-page-title">
         <span className="hero-kicker">Private browser OCR</span>
         <h1 id="ocr-page-title">Make scanned PDFs searchable.</h1>

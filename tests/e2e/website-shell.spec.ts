@@ -48,7 +48,14 @@ test("website shell has clear navigation and SEO support pages", async ({
     page.getByRole("link", { name: "Email support" }),
   ).toHaveAttribute("href", "mailto:muhammadrehan3192@gmail.com");
 
-  await mainNavigation.getByRole("link", { name: "PDF Editor", exact: true }).click();
+  await mainNavigation.locator(".site-tools-menu > summary").click();
+  const toolsNavigation = mainNavigation.locator(".site-tools-dropdown");
+  await expect(toolsNavigation.getByRole("link", { name: /PDF Editor/ })).toBeVisible();
+  await expect(toolsNavigation.getByRole("link", { name: /OCR PDF/ })).toHaveAttribute(
+    "href",
+    "/ocr-pdf",
+  );
+  await toolsNavigation.getByRole("link", { name: /PDF Editor/ }).click();
   await expect(page).toHaveURL(/\/editor$/);
   await expect(page.getByTestId("production-empty")).toContainText(
     "Edit PDFs privately in your browser",

@@ -34,6 +34,14 @@ test("publishes the private OCR workflow on desktop and mobile", async ({ page }
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Make scanned PDFs searchable.",
   );
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .locator(".site-tools-menu > summary")
+    .click();
+  await expect(page.getByRole("link", { name: /OCR PDF/ }).first()).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   await expect(page.getByTestId("ocr-file-input")).toBeAttached();
   await expect(page.locator('.site-footer a[href="/ocr-pdf"]')).toHaveText(
     "OCR PDF",
@@ -44,6 +52,14 @@ test("publishes the private OCR workflow on desktop and mobile", async ({ page }
   );
 
   await page.setViewportSize({ width: 390, height: 844 });
+  const mobileMenu = page.getByRole("button", { name: "Menu" });
+  await mobileMenu.click();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("link", { name: /OCR PDF/ }),
+  ).toBeVisible();
+  await mobileMenu.click();
   await expect(page.getByTestId("site-ocr-pdf")).toBeVisible();
   await expect(page.getByText("Files stay on your device").first()).toBeVisible();
 

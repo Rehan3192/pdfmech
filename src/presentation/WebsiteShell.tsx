@@ -154,8 +154,6 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
 
   const navItems = useMemo(
     () => [
-      { page: "home" as const, path: "/", label: "Home" },
-      { page: "editor" as const, path: "/editor", label: "PDF Editor" },
       { page: "features" as const, path: "/features", label: "Features" },
       { page: "howItWorks" as const, path: "/how-it-works", label: "How It Works" },
       { page: "faq" as const, path: "/faq", label: "FAQ" },
@@ -253,15 +251,64 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           Menu
         </button>
         <nav id="site-nav" className="site-nav" aria-label="Main navigation">
+          <a
+            href="/"
+            aria-current={page === "home" ? "page" : undefined}
+            onClick={(event) => {
+              event.preventDefault();
+              navigateTo("/");
+              setMobileMenuOpen(false);
+            }}
+          >
+            Home
+          </a>
+          <details
+            key={page}
+            className="site-tools-menu"
+            data-active={page === "editor" || activeToolRoute !== null ? "true" : "false"}
+          >
+            <summary aria-label="Tools">
+              Tools <span aria-hidden="true">⌄</span>
+            </summary>
+            <div className="site-tools-dropdown" aria-label="PDF tools">
+              <a
+                href="/editor"
+                aria-current={
+                  page === "editor" || (activeToolRoute !== null && page !== "ocrPdf")
+                    ? "page"
+                    : undefined
+                }
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.currentTarget.closest("details")?.removeAttribute("open");
+                  navigateTo("/editor");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <span className="site-tool-icon" aria-hidden="true">T</span>
+                <span><strong>PDF Editor</strong><small>Add text, whiteout, and organize pages</small></span>
+              </a>
+              <a
+                href="/ocr-pdf"
+                aria-current={page === "ocrPdf" ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.currentTarget.closest("details")?.removeAttribute("open");
+                  navigateTo("/ocr-pdf");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <span className="site-tool-icon" aria-hidden="true">OCR</span>
+                <span><strong>OCR PDF</strong><small>Make scanned PDFs searchable</small></span>
+              </a>
+            </div>
+          </details>
           {navItems.map((item) => (
             <a
               key={item.path}
               href={item.path}
               aria-current={
-                page === item.page ||
-                (editorExperienceActive && item.page === "editor")
-                  ? "page"
-                  : undefined
+                page === item.page ? "page" : undefined
               }
               onClick={(event) => {
                 event.preventDefault();
