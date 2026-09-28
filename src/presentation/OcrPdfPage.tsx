@@ -52,6 +52,7 @@ export function OcrPdfPage({
   const [pdfDownloadUrl, setPdfDownloadUrl] = useState<string | null>(null);
   const [textDownloadUrl, setTextDownloadUrl] = useState<string | null>(null);
   const activeController = useRef<AbortController | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const urls =
@@ -280,15 +281,24 @@ export function OcrPdfPage({
             {phase === "inspecting" ? (
               <span className="ocr-spinner" aria-label="Inspecting PDF" />
             ) : (
-              <label className="ocr-primary-button">
-                <span>Choose PDF File</span>
+              <>
+                <button
+                  className="ocr-primary-button"
+                  data-testid="ocr-choose-file"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Choose PDF File
+                </button>
                 <input
+                  ref={fileInputRef}
+                  className="ocr-file-input"
                   data-testid="ocr-file-input"
                   type="file"
                   accept="application/pdf,.pdf"
                   onChange={handleFileChange}
                 />
-              </label>
+              </>
             )}
             <small>PDF only · up to 100 MB · processed locally</small>
             <div className="ocr-local-note">

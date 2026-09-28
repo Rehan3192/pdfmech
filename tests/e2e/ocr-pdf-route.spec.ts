@@ -48,7 +48,10 @@ test("publishes the private OCR workflow on desktop and mobile", async ({ page }
   await expect(page.getByText("Files stay on your device").first()).toBeVisible();
 
   const scannedPdf = await createImageOnlyPdf(page);
-  await page.getByTestId("ocr-file-input").setInputFiles({
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  await page.getByTestId("ocr-choose-file").click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles({
     name: "mobile-scan.pdf",
     mimeType: "application/pdf",
     buffer: scannedPdf,
