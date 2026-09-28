@@ -186,6 +186,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
     page === "editor" || page === "ocrPdf" || toolEditorActive;
+  const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
     const detail = {
@@ -217,7 +218,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
   return (
     <div
       className="website-shell"
-      data-page={editorExperienceActive ? "editor" : page}
+      data-page={documentEditorActive ? "editor" : page}
       data-route={page}
     >
       <header className="site-header" data-menu-open={mobileMenuOpen ? "true" : "false"}>

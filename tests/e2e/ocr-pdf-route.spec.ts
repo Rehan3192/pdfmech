@@ -46,6 +46,7 @@ test("publishes the private OCR workflow on desktop and mobile", async ({ page }
   await expect(page.locator('.site-footer a[href="/ocr-pdf"]')).toHaveText(
     "OCR PDF",
   );
+  await expect(page.locator(".site-footer")).toBeVisible();
   await expect(page.locator('.site-footer a[href="/ocr-pdf"]')).toHaveAttribute(
     "href",
     "/ocr-pdf",
