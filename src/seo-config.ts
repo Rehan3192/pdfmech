@@ -14,6 +14,7 @@ export type SeoPageKey =
   | "editPdfOnIphone"
   | "features"
   | "howItWorks"
+  | "blog"
   | "faq"
   | "security"
   | "terms"
@@ -125,6 +126,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Learn how to edit a PDF online for free: open a file, add text or visual covers, organize pages, review your changes, and download a new PDF copy.",
     h1: "Free PDF editing in three clear steps.",
     intro: "Open your PDF, make focused edits, review the document, and download a separate finished copy.",
+    schemaType: "WebPage",
+  },
+  blog: {
+    path: "/blog",
+    title: "Free PDF Guides: Edit, OCR & Organize PDFs | PDFMech",
+    description: "Read practical PDF guides about editing, OCR, searchable documents, page organization, privacy, and mobile workflows with free PDFMech tools.",
+    h1: "Practical PDF guides and privacy-first tips.",
+    intro: "Clear instructions for editing, organizing, searching, and protecting PDF documents with browser-based tools.",
     schemaType: "WebPage",
   },
   faq: {
@@ -375,7 +384,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "editPdfOnIphone" || page === "ocrPdf"
+  return page === "blog"
+    ? "2026-09-28"
+    : page === "editPdfOnIphone" || page === "ocrPdf"
     ? "2026-09-27"
     : "2026-09-25";
 }

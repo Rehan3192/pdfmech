@@ -58,6 +58,7 @@ import "./presentation/editor-reference-v2.css";
 import "./presentation/content-guide.css";
 import "./presentation/marketing-pages.css";
 import "./presentation/ocr.css";
+import "./presentation/blog.css";
 
 const rootElement = document.querySelector("#app");
 if (rootElement === null) {

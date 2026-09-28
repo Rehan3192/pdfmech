@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   buildStructuredData,
@@ -10,9 +10,21 @@ import {
   SOCIAL_IMAGE_PATH,
   TOOL_ROUTE_FAQS,
 } from "../src/seo-config.ts";
+import {
+  blogPostDescription,
+  formatBlogDate,
+  getBlogPosts,
+} from "../src/blog.ts";
+import { sanitizeBlogHtmlForBuild } from "./sanitize-blog-html.mjs";
 
 const outputDirectory = join(process.cwd(), "dist");
 const template = await readFile(join(outputDirectory, "index.html"), "utf8");
+let blogPosts = [];
+try {
+  blogPosts = await getBlogPosts(100, sanitizeBlogHtmlForBuild);
+} catch (error) {
+  console.warn(`WordPress content was unavailable during prerender: ${error instanceof Error ? error.message : String(error)}`);
+}
 
 function escapeHtml(value) {
   return value
@@ -43,6 +55,7 @@ function renderSnapshot(page) {
     editPdfOnIphone: "Edit PDF on iPhone",
     features: "Features",
     howItWorks: "How It Works",
+    blog: "Blog",
     faq: "FAQ",
     about: "About",
     contact: "Contact",
@@ -65,6 +78,9 @@ function renderSnapshot(page) {
   const isOcrTool = page === "ocrPdf";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
+  const blogContent = page === "blog"
+    ? `<section aria-label="Latest PDF guides"><h2>Latest articles</h2>${blogPosts.length === 0 ? "<p>New PDF guides are on the way.</p>" : blogPosts.map((post) => `<article><h3><a href="/blog/${post.slug}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.excerpt || "Read this practical PDF guide from PDFMech.")}</p><time datetime="${escapeHtml(post.date)}">${escapeHtml(formatBlogDate(post.date))}</time></article>`).join("")}</section>`
+    : "";
   const toolContent = isAddTextTool
     ? `<section><h2>How to add text to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where the new text should appear.</li><li>Adjust font, size, color, bold style, and alignment.</li><li>Review and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>What the Text tool changes</h2><p>PDFMech adds a new editable text box above the PDF page. It does not rewrite text already embedded in the original PDF.</p></section>`
     : isDeletePagesTool
@@ -121,7 +137,7 @@ function renderSnapshot(page) {
                 ? "Choose a PDF from iPhone Files"
                 : "Open PDFMech";
 
-  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="${actionPath}">${actionLabel}</a></section>${toolContent}${faqContent}<nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
+  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation">${nav}</nav></header><main><nav aria-label="Breadcrumb"><a href="/">Home</a>${page === "home" ? "" : `<span aria-hidden="true">/</span><span>${escapeHtml(config.h1)}</span>`}</nav><section><p>Private browser PDF editing</p><h1>${escapeHtml(config.h1)}</h1><p>${escapeHtml(config.intro)}</p><a href="${actionPath}">${actionLabel}</a></section>${blogContent}${toolContent}${faqContent}<nav aria-label="Related PDFMech pages"><strong>Explore PDFMech</strong>${related}</nav></main><footer><a href="/blog">Blog</a><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
 }
 
 function renderRoute(page) {
@@ -149,6 +165,65 @@ for (const page of SEO_PAGE_KEYS) {
   await writeFile(join(outputDirectory, filename), renderRoute(page));
 }
 
+function renderBlogPost(post) {
+  const url = `${SITE_ORIGIN}/blog/${post.slug}`;
+  const title = `${post.title} | PDFMech`;
+  const description = blogPostDescription(post);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": `${url}#article`,
+        headline: post.title,
+        description,
+        datePublished: post.date,
+        dateModified: post.modified,
+        mainEntityOfPage: url,
+        author: { "@type": "Organization", name: "PDFMech", url: `${SITE_ORIGIN}/` },
+        publisher: { "@type": "Organization", name: "PDFMech", url: `${SITE_ORIGIN}/` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_ORIGIN}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: url },
+        ],
+      },
+    ],
+  };
+  const featuredImage = post.featuredImageUrl === null
+    ? ""
+    : `<img src="${escapeHtml(post.featuredImageUrl)}" alt="${escapeHtml(post.featuredImageAlt)}" width="1200" height="675">`;
+  const snapshot = `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation"><a href="/">Home</a><a href="/editor">PDF Editor</a><a href="/ocr-pdf">OCR PDF</a><a href="/features">Features</a><a href="/how-it-works">How It Works</a><a href="/blog">Blog</a></nav></header><main class="blog-article-page"><nav aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><span>${escapeHtml(post.title)}</span></nav><article class="blog-article-shell"><header class="blog-article-header"><p>PDF guide</p><h1>${escapeHtml(post.title)}</h1><p>${escapeHtml(description)}</p><time datetime="${escapeHtml(post.date)}">Published ${escapeHtml(formatBlogDate(post.date))}</time>${featuredImage}</header><div class="blog-prose">${post.contentHtml}</div></article></main><footer><a href="/blog">Blog</a><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
+
+  let html = template
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`)
+    .replace(/<link rel="canonical"[^>]*>/i, `<link rel="canonical" href="${url}" />`)
+    .replace(/<script id="route-structured-data"[^>]*>[\s\S]*?<\/script>/i, `<script id="route-structured-data" type="application/ld+json">${JSON.stringify(structuredData).replaceAll("<", "\\u003c")}</script>`)
+    .replace('<div id="app"></div>', `<div id="app">${snapshot}</div>`);
+  html = replaceMeta(html, "description", description);
+  html = replaceMeta(html, "robots", "index,follow,max-image-preview:large");
+  html = replaceMeta(html, "og:url", url);
+  html = replaceMeta(html, "og:type", "article");
+  html = replaceMeta(html, "og:title", title);
+  html = replaceMeta(html, "og:description", description);
+  html = replaceMeta(html, "og:image", `${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}`);
+  html = replaceMeta(html, "twitter:title", title);
+  html = replaceMeta(html, "twitter:description", description);
+  html = replaceMeta(html, "twitter:image", `${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}`);
+  return html;
+}
+
+if (blogPosts.length > 0) {
+  const blogDirectory = join(outputDirectory, "blog");
+  await mkdir(blogDirectory, { recursive: true });
+  for (const post of blogPosts) {
+    await writeFile(join(blogDirectory, `${post.slug}.html`), renderBlogPost(post));
+  }
+}
+
 const notFoundTitle = "Page Not Found | PDFMech";
 let notFound = template
   .replace(/<title>[\s\S]*?<\/title>/i, `<title>${notFoundTitle}</title>`)
@@ -164,7 +239,11 @@ notFound = replaceMeta(notFound, "twitter:title", notFoundTitle);
 notFound = replaceMeta(notFound, "twitter:description", "The requested PDFMech page could not be found.");
 await writeFile(join(outputDirectory, "404.html"), notFound);
 
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SEO_PAGE_KEYS.map((page) => `  <url>\n    <loc>${canonicalUrl(page)}</loc>\n    <lastmod>${lastModifiedDate(page)}</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
+const sitemapEntries = [
+  ...SEO_PAGE_KEYS.map((page) => ({ url: canonicalUrl(page), modified: lastModifiedDate(page) })),
+  ...blogPosts.map((post) => ({ url: `${SITE_ORIGIN}/blog/${post.slug}`, modified: post.modified.split("T")[0] })),
+];
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries.map((entry) => `  <url>\n    <loc>${escapeHtml(entry.url)}</loc>\n    <lastmod>${escapeHtml(entry.modified)}</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
 await writeFile(join(outputDirectory, "sitemap.xml"), sitemap);
 
 if (!template.includes(`content="${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}"`)) {

@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useEffect,
   useMemo,
   useState,
@@ -10,6 +12,8 @@ import {
   buildStructuredData,
   canonicalUrl,
   SEO_PAGES,
+  SITE_ORIGIN,
+  SOCIAL_IMAGE_PATH,
   type SeoPageKey,
 } from "../seo-config";
 import {
@@ -17,10 +21,20 @@ import {
   type ProductEvent,
   type ToolRouteDefinition,
 } from "../tool-routes";
+import type { BlogPost } from "../blog";
 
-type WebsitePage = SeoPageKey | "notFound";
+const BlogArchivePage = lazy(async () => {
+  const module = await import("./BlogPages");
+  return { default: module.BlogArchivePage };
+});
+const BlogPostPage = lazy(async () => {
+  const module = await import("./BlogPages");
+  return { default: module.BlogPostPage };
+});
+
+type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -47,6 +61,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
   "/how-it-works": "howItWorks",
+  "/blog": "blog",
   "/faq": "faq",
   "/security": "security",
   "/terms": "terms",
@@ -60,7 +75,13 @@ const freeCampaignCycleLength = 37 * 24 * 60 * 60 * 1000;
 
 function pageFromPath(pathname: string): WebsitePage {
   const normalizedPath = pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
+  if (/^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(normalizedPath)) return "blogPost";
   return routes[normalizedPath] ?? "notFound";
+}
+
+function blogSlugFromPath(pathname: string): string | null {
+  const normalizedPath = pathname.replace(/\/+$/, "");
+  return normalizedPath.match(/^\/blog\/([a-z0-9]+(?:-[a-z0-9]+)*)$/i)?.[1] ?? null;
 }
 
 function navigateTo(pathname: string): void {
@@ -73,6 +94,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     pageFromPath(window.location.pathname),
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [resolvedBlogPost, setResolvedBlogPost] = useState<BlogPost | null>(null);
   const [toolEditorSession, setToolEditorSession] = useState<{
     readonly route: ToolRouteDefinition;
     readonly initialFile?: File | undefined;
@@ -82,6 +104,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     function syncRoute(): void {
       setPage(pageFromPath(window.location.pathname));
       setToolEditorSession(null);
+      setResolvedBlogPost(null);
       setMobileMenuOpen(false);
     }
 
@@ -91,11 +114,29 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
 
   useEffect(() => {
     const isNotFound = page === "notFound";
-    const title = isNotFound ? "Page Not Found | PDFMech" : SEO_PAGES[page].title;
+    const isBlogPost = page === "blogPost";
+    const blogSlug = blogSlugFromPath(window.location.pathname);
+    const matchingPost =
+      isBlogPost && resolvedBlogPost?.slug === blogSlug ? resolvedBlogPost : null;
+    const title = isNotFound
+      ? "Page Not Found | PDFMech"
+      : isBlogPost
+        ? matchingPost === null
+          ? "PDF Guide | PDFMech"
+          : `${matchingPost.title} | PDFMech`
+        : SEO_PAGES[page].title;
     const description = isNotFound
       ? "The requested PDFMech page could not be found. Return home or open the free browser PDF editor."
-      : SEO_PAGES[page].description;
-    const pageCanonical = isNotFound ? null : canonicalUrl(page);
+      : isBlogPost
+        ? matchingPost === null
+          ? "Read practical PDF editing, OCR, privacy, and document workflow guides from PDFMech."
+          : matchingPost.excerpt || "Read this practical PDF guide from PDFMech."
+        : SEO_PAGES[page].description;
+    const pageCanonical = isNotFound || (isBlogPost && matchingPost === null)
+      ? null
+      : isBlogPost
+        ? `https://www.pdfmech.com/blog/${matchingPost?.slug ?? ""}`
+        : canonicalUrl(page);
 
     document.title = title;
     document
@@ -105,7 +146,9 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
       .querySelector('meta[name="robots"]')
       ?.setAttribute(
         "content",
-        isNotFound ? "noindex,follow" : "index,follow,max-image-preview:large",
+        isNotFound || (isBlogPost && matchingPost === null)
+          ? "noindex,follow"
+          : "index,follow,max-image-preview:large",
       );
     document
       .querySelector('meta[property="og:title"]')
@@ -135,11 +178,21 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     document
       .querySelector('meta[property="og:url"]')
       ?.setAttribute("content", pageCanonical ?? window.location.href);
+    const socialImage = `${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}`;
+    document
+      .querySelector('meta[property="og:type"]')
+      ?.setAttribute("content", isBlogPost && matchingPost !== null ? "article" : "website");
+    document
+      .querySelector('meta[property="og:image"]')
+      ?.setAttribute("content", socialImage);
+    document
+      .querySelector('meta[name="twitter:image"]')
+      ?.setAttribute("content", socialImage);
 
     let structuredData = document.querySelector<HTMLScriptElement>(
       "#route-structured-data",
     );
-    if (isNotFound) {
+    if (isNotFound || (isBlogPost && matchingPost === null)) {
       structuredData?.remove();
     } else {
       if (structuredData === null) {
@@ -148,14 +201,29 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         structuredData.type = "application/ld+json";
         document.head.append(structuredData);
       }
-      structuredData.textContent = JSON.stringify(buildStructuredData(page));
+      structuredData.textContent = JSON.stringify(
+        isBlogPost
+          ? {
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: matchingPost?.title,
+              description,
+              datePublished: matchingPost?.date,
+              dateModified: matchingPost?.modified,
+              mainEntityOfPage: pageCanonical,
+              author: { "@type": "Organization", name: "PDFMech" },
+              publisher: { "@type": "Organization", name: "PDFMech" },
+            }
+          : buildStructuredData(page),
+      );
     }
-  }, [page]);
+  }, [page, resolvedBlogPost]);
 
   const navItems = useMemo(
     () => [
       { page: "features" as const, path: "/features", label: "Features" },
       { page: "howItWorks" as const, path: "/how-it-works", label: "How It Works" },
+      { page: "blog" as const, path: "/blog", label: "Blog" },
       { page: "faq" as const, path: "/faq", label: "FAQ" },
       { page: "about" as const, path: "/about", label: "About" },
       { page: "contact" as const, path: "/contact", label: "Contact" },
@@ -358,6 +426,21 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         })
       ) : page === "notFound" ? (
         <NotFoundPage />
+      ) : page === "blog" ? (
+        <>
+          <Breadcrumbs page="blog" />
+          <Suspense fallback={<main className="blog-article-state" role="status">Loading guides…</main>}>
+            <BlogArchivePage onNavigate={navigateTo} />
+          </Suspense>
+        </>
+      ) : page === "blogPost" ? (
+        <Suspense fallback={<main className="blog-article-state" role="status">Loading article…</main>}>
+          <BlogPostPage
+            slug={blogSlugFromPath(window.location.pathname) ?? ""}
+            onNavigate={navigateTo}
+            onPostResolved={setResolvedBlogPost}
+          />
+        </Suspense>
       ) : (
         <>
           {page !== "home" ? <Breadcrumbs page={page} /> : null}
@@ -447,6 +530,7 @@ function SiteFooter() {
         <strong>Company</strong>
         <SiteLink path="/about">About</SiteLink>
         <SiteLink path="/contact">Contact</SiteLink>
+        <SiteLink path="/blog">Blog</SiteLink>
       </nav>
       <nav className="footer-column" aria-label="Trust and legal links">
         <strong>Trust &amp; Legal</strong>

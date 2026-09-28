@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import {
   canonicalUrl,
@@ -204,4 +204,29 @@ for (const page of SEO_PAGE_KEYS) {
   }
 }
 
-console.log(`Verified SEO output for ${SEO_PAGE_KEYS.length} routes plus the custom 404 page.`);
+const blogArchive = await readFile(join(outputDirectory, "blog.html"), "utf8");
+if (blogArchive.includes("Hello world!")) {
+  throw new Error("The default WordPress Hello world post must not be published on PDFMech.");
+}
+
+let blogFiles = [];
+try {
+  blogFiles = (await readdir(join(outputDirectory, "blog"))).filter((file) => file.endsWith(".html"));
+} catch (error) {
+  if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") throw error;
+}
+for (const filename of blogFiles) {
+  const slug = filename.slice(0, -5);
+  const html = await readFile(join(outputDirectory, "blog", filename), "utf8");
+  if (!html.includes(`<link rel="canonical" href="https://www.pdfmech.com/blog/${slug}" />`)) {
+    throw new Error(`${filename} is missing its self-referencing blog canonical URL.`);
+  }
+  if ((html.match(/<h1>/gi) ?? []).length !== 1 || !html.includes('"@type":"Article"')) {
+    throw new Error(`${filename} must contain one H1 and Article structured data.`);
+  }
+  if (/<script(?! id="route-structured-data"| type="module")/i.test(html)) {
+    throw new Error(`${filename} contains an unexpected script element.`);
+  }
+}
+
+console.log(`Verified SEO output for ${SEO_PAGE_KEYS.length} routes, ${blogFiles.length} blog posts, and the custom 404 page.`);
