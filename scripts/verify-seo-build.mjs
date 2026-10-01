@@ -121,6 +121,17 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "batesNumberingPdf" &&
+    (!html.includes("How to add Bates numbers to a PDF") ||
+      !html.includes("Continuous numbering across PDFs") ||
+      !html.includes("Private local processing") ||
+      !html.includes('/bates-numbering-pdf#bates-numbering-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable Bates numbering instructions, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

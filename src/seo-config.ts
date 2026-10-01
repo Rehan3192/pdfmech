@@ -10,6 +10,7 @@ export type SeoPageKey =
   | "rotatePdfPages"
   | "whiteoutPdf"
   | "ocrPdf"
+  | "batesNumberingPdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -94,6 +95,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Use free OCR to make scanned PDFs searchable in your browser. Add an invisible text layer and download searchable PDF and TXT files without uploading.",
     h1: "Make scanned PDFs searchable.",
     intro: "Convert scanned and image-based documents into searchable PDFs with private, browser-local OCR and no account.",
+    schemaType: "WebPage",
+  },
+  batesNumberingPdf: {
+    path: "/bates-numbering-pdf",
+    title: "Bates Numbering PDF Online Free - No Upload | PDFMech",
+    description: "Add continuous Bates numbers to one or multiple PDFs for free. Set prefixes, suffixes, digits, page ranges, and positions locally without uploading files.",
+    h1: "Add Bates numbers to PDFs privately.",
+    intro: "Apply continuous page identifiers across one or multiple PDFs locally in your browser, with precise sequence and position controls.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -331,6 +340,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech creates a separate searchable PDF and plain-text download. Your original file remains unchanged on your device.",
     },
   ],
+  batesNumberingPdf: [
+    {
+      question: "Are my PDFs uploaded for Bates numbering?",
+      answer: "No. PDFMech reads, numbers, and creates the new PDFs locally in your browser. The source documents are not sent to a PDFMech processing server.",
+    },
+    {
+      question: "Can one Bates sequence continue across multiple PDFs?",
+      answer: "Yes. Arrange the files in the required order and PDFMech continues the sequence across every selected page in that order.",
+    },
+    {
+      question: "Can I number only selected pages?",
+      answer: "Yes. Use all pages or enter a range such as 1-5, 8, 12 for each PDF before processing.",
+    },
+    {
+      question: "Will Bates numbering affect digital signatures?",
+      answer: "It can. Adding a visible number changes the PDF and may invalidate an existing digital signature, so keep the original signed file.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -376,6 +403,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "rotatePdfPages",
   "whiteoutPdf",
   "ocrPdf",
+  "batesNumberingPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -384,7 +412,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "blog"
+  return page === "batesNumberingPdf"
+    ? "2026-10-01"
+    : page === "blog"
     ? "2026-09-28"
     : page === "editPdfOnIphone" || page === "ocrPdf"
     ? "2026-09-27"
@@ -445,6 +475,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "rotatePdfPages" ||
     page === "whiteoutPdf" ||
     page === "ocrPdf" ||
+    page === "batesNumberingPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

@@ -21,10 +21,11 @@ import {
 } from "../tool-routes";
 import { getEmbeddedBlogPost, type BlogPost } from "../blog";
 import { BlogArchivePage, BlogPostPage } from "./BlogPages";
+import { BatesNumberingPage } from "./BatesNumberingPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -47,6 +48,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.rotatePdfPages.slug]: "rotatePdfPages",
   [TOOL_ROUTES.whiteoutPdf.slug]: "whiteoutPdf",
   [TOOL_ROUTES.ocrPdf.slug]: "ocrPdf",
+  "/bates-numbering-pdf": "batesNumberingPdf",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
@@ -246,7 +248,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -327,7 +329,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           <details
             key={page}
             className="site-tools-menu"
-            data-active={page === "editor" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "editor" || page === "batesNumberingPdf" || activeToolRoute !== null ? "true" : "false"}
           >
             <summary aria-label="Tools">
               Tools <span aria-hidden="true">⌄</span>
@@ -362,6 +364,19 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
               >
                 <span className="site-tool-icon" aria-hidden="true">OCR</span>
                 <span><strong>OCR PDF</strong><small>Make scanned PDFs searchable</small></span>
+              </a>
+              <a
+                href="/bates-numbering-pdf"
+                aria-current={page === "batesNumberingPdf" ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.currentTarget.closest("details")?.removeAttribute("open");
+                  navigateTo("/bates-numbering-pdf");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <span className="site-tool-icon" aria-hidden="true">#</span>
+                <span><strong>Bates Numbering</strong><small>Add continuous page identifiers</small></span>
               </a>
             </div>
           </details>
@@ -410,6 +425,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             onOpenEditor: () => navigateTo("/editor"),
             onProductEvent: recordProductEvent,
           })}
+        </>
+      ) : page === "batesNumberingPdf" ? (
+        <>
+          <Breadcrumbs page="batesNumberingPdf" />
+          <BatesNumberingPage />
         </>
       ) : toolEditorActive && toolEditorSession !== null ? (
         renderEditor({
@@ -509,6 +529,7 @@ function SiteFooter() {
         <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
         <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
+        <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
         <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
         <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
@@ -558,6 +579,7 @@ const internalLinkClusters: Readonly<
   Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
+    { path: "/bates-numbering-pdf", eyebrow: "Legal documents", title: "Add Bates numbers to PDFs", description: "Apply one continuous sequence across multiple files privately." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "OCR tool", title: "Make scanned PDFs searchable", description: "Recognize printed text locally and download a searchable PDF." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Popular tool", title: "Add text to a PDF", description: "Type on a PDF privately without uploading it." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Remove unwanted pages and download a new PDF copy." },
@@ -571,6 +593,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
+    { path: "/bates-numbering-pdf", eyebrow: "Document labels", title: "Bates number PDFs", description: "Add sequential identifiers across selected pages and files." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "OCR tool", title: "Make scanned PDFs searchable", description: "Add a searchable text layer without uploading the scan." },
     { path: TOOL_ROUTES.addTextToPdf.slug, eyebrow: "Text tool", title: "Add text to a PDF", description: "Open a PDF with the Text tool ready to place." },
     { path: TOOL_ROUTES.deletePdfPages.slug, eyebrow: "Page tool", title: "Delete PDF pages", description: "Open a PDF with page thumbnails ready for removal." },
