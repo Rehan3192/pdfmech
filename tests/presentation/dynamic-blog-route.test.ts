@@ -16,11 +16,11 @@ const template = `<!doctype html>
     <meta name="twitter:description" content="Blog archive" />
     <meta name="twitter:image" content="https://www.pdfmech.com/PDFMechLogo.png" />
     <script id="route-structured-data" type="application/ld+json">{}</script>
+    <script type="module" src="/assets/index.js"></script>
     <title>PDFMech Blog</title>
   </head>
   <body>
     <div id="app"><main><h1>Stale archive</h1></main></div>
-    <script type="module" src="/assets/index.js"></script>
   </body>
 </html>`;
 

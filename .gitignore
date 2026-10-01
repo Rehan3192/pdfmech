@@ -7,3 +7,6 @@ coverage/
 .tools/
 tests/fixtures/generated/
 public/ocr/
+
+.vercel
+.env*

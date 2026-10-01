@@ -1,5 +1,4 @@
 import sanitizeHtml from "sanitize-html";
-import type { BlogPost } from "../blog";
 
 const SITE_ORIGIN = "https://www.pdfmech.com";
 const WORDPRESS_API = "https://cms.pdfmech.com/wp-json/wp/v2/posts";
@@ -33,6 +32,24 @@ interface WordPressPostResponse {
     readonly "wp:featuredmedia"?: readonly WordPressMedia[];
     readonly "wp:term"?: readonly (readonly WordPressTerm[])[];
   };
+}
+
+interface BlogCategory {
+  readonly name: string;
+  readonly slug: string;
+}
+
+interface BlogPost {
+  readonly id: number;
+  readonly slug: string;
+  readonly title: string;
+  readonly excerpt: string;
+  readonly contentHtml: string;
+  readonly date: string;
+  readonly modified: string;
+  readonly featuredImageUrl: string | null;
+  readonly featuredImageAlt: string;
+  readonly categories: readonly BlogCategory[];
 }
 
 type Fetcher = typeof fetch;
@@ -217,10 +234,12 @@ function replaceApplicationMarkup(html: string, markup: string): string {
   const bodyStart = html.search(/<body[^>]*>/i);
   if (bodyStart === -1) throw new Error("Template is missing the body element.");
   const bodyOpenEnd = html.indexOf(">", bodyStart) + 1;
-  const moduleScriptStart = html.indexOf('<script type="module"', bodyOpenEnd);
-  if (moduleScriptStart === -1) throw new Error("Template is missing the application script.");
+  const bodyCloseStart = html.search(/<\/body\s*>/i);
+  if (bodyCloseStart === -1 || bodyCloseStart < bodyOpenEnd) {
+    throw new Error("Template is missing the closing body element.");
+  }
 
-  return `${html.slice(0, bodyOpenEnd)}\n    <div id="app">${markup}</div>\n    ${html.slice(moduleScriptStart)}`;
+  return `${html.slice(0, bodyOpenEnd)}\n    <div id="app">${markup}</div>\n  ${html.slice(bodyCloseStart)}`;
 }
 
 function serializeEmbeddedPost(post: BlogPost): string {
@@ -381,7 +400,8 @@ export async function renderDynamicBlogRoute(
       200,
       "public, s-maxage=60",
     );
-  } catch {
+  } catch (error) {
+    console.error("Unable to render the dynamic blog article.", error);
     try {
       const template = await fetchHtmlTemplate(request, fetcher);
       const response = htmlResponse(
@@ -391,7 +411,8 @@ export async function renderDynamicBlogRoute(
       );
       response.headers.set("Retry-After", "60");
       return response;
-    } catch {
+    } catch (fallbackError) {
+      console.error("Unable to render the dynamic blog fallback.", fallbackError);
       return new Response(
         "<!doctype html><html lang=\"en\"><head><meta name=\"robots\" content=\"noindex,follow\"><title>Guide Temporarily Unavailable | PDFMech</title></head><body><main><h1>This guide is temporarily unavailable.</h1><p>Please try again shortly.</p><a href=\"/blog\">Return to all guides</a></main></body></html>",
         {
