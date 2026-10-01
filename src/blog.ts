@@ -53,6 +53,76 @@ export interface BlogPost {
   readonly categories: readonly BlogCategory[];
 }
 
+let embeddedBlogPostCache: BlogPost | null | undefined;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function getEmbeddedBlogPost(slug: string): BlogPost | null {
+  if (embeddedBlogPostCache !== undefined) {
+    return embeddedBlogPostCache?.slug === slug ? embeddedBlogPostCache : null;
+  }
+  embeddedBlogPostCache = null;
+  if (typeof document === "undefined") return null;
+
+  const element = document.querySelector<HTMLScriptElement>("#blog-post-data");
+  if (element?.textContent === null || element?.textContent === undefined) return null;
+
+  try {
+    const value: unknown = JSON.parse(element.textContent);
+    if (
+      !isRecord(value) ||
+      typeof value.id !== "number" ||
+      typeof value.slug !== "string" ||
+      typeof value.title !== "string" ||
+      typeof value.excerpt !== "string" ||
+      typeof value.contentHtml !== "string" ||
+      typeof value.date !== "string" ||
+      typeof value.modified !== "string" ||
+      !Array.isArray(value.categories)
+    ) {
+      return null;
+    }
+
+    const categories = value.categories
+      .filter(
+        (category): category is Record<string, unknown> =>
+          isRecord(category) &&
+          typeof category.name === "string" &&
+          typeof category.slug === "string",
+      )
+      .map((category) => ({
+        name: category.name as string,
+        slug: category.slug as string,
+      }));
+    const featuredImageUrl =
+      value.featuredImageUrl === null
+        ? null
+        : typeof value.featuredImageUrl === "string"
+          ? safeHttpsUrl(value.featuredImageUrl)
+          : null;
+
+    embeddedBlogPostCache = {
+      id: value.id,
+      slug: value.slug,
+      title: value.title,
+      excerpt: value.excerpt,
+      contentHtml: sanitizeWordPressHtml(value.contentHtml),
+      date: value.date,
+      modified: value.modified,
+      featuredImageUrl,
+      featuredImageAlt:
+        typeof value.featuredImageAlt === "string" ? value.featuredImageAlt : "",
+      categories,
+    };
+  } catch {
+    embeddedBlogPostCache = null;
+  }
+
+  return embeddedBlogPostCache?.slug === slug ? embeddedBlogPostCache : null;
+}
+
 function decodeHtmlEntities(value: string): string {
   const namedEntities: Readonly<Record<string, string>> = {
     amp: "&",

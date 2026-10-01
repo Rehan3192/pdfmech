@@ -1,6 +1,4 @@
 import {
-  lazy,
-  Suspense,
   useEffect,
   useMemo,
   useState,
@@ -21,16 +19,8 @@ import {
   type ProductEvent,
   type ToolRouteDefinition,
 } from "../tool-routes";
-import type { BlogPost } from "../blog";
-
-const BlogArchivePage = lazy(async () => {
-  const module = await import("./BlogPages");
-  return { default: module.BlogArchivePage };
-});
-const BlogPostPage = lazy(async () => {
-  const module = await import("./BlogPages");
-  return { default: module.BlogPostPage };
-});
+import { getEmbeddedBlogPost, type BlogPost } from "../blog";
+import { BlogArchivePage, BlogPostPage } from "./BlogPages";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
@@ -94,7 +84,10 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     pageFromPath(window.location.pathname),
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [resolvedBlogPost, setResolvedBlogPost] = useState<BlogPost | null>(null);
+  const [resolvedBlogPost, setResolvedBlogPost] = useState<BlogPost | null>(() => {
+    const slug = blogSlugFromPath(window.location.pathname);
+    return slug === null ? null : getEmbeddedBlogPost(slug);
+  });
   const [toolEditorSession, setToolEditorSession] = useState<{
     readonly route: ToolRouteDefinition;
     readonly initialFile?: File | undefined;
@@ -429,18 +422,14 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
       ) : page === "blog" ? (
         <>
           <Breadcrumbs page="blog" />
-          <Suspense fallback={<main className="blog-article-state" role="status">Loading guides…</main>}>
-            <BlogArchivePage onNavigate={navigateTo} />
-          </Suspense>
+          <BlogArchivePage onNavigate={navigateTo} />
         </>
       ) : page === "blogPost" ? (
-        <Suspense fallback={<main className="blog-article-state" role="status">Loading article…</main>}>
-          <BlogPostPage
-            slug={blogSlugFromPath(window.location.pathname) ?? ""}
-            onNavigate={navigateTo}
-            onPostResolved={setResolvedBlogPost}
-          />
-        </Suspense>
+        <BlogPostPage
+          slug={blogSlugFromPath(window.location.pathname) ?? ""}
+          onNavigate={navigateTo}
+          onPostResolved={setResolvedBlogPost}
+        />
       ) : (
         <>
           {page !== "home" ? <Breadcrumbs page={page} /> : null}

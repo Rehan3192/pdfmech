@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   buildStructuredData,
@@ -11,7 +11,6 @@ import {
   TOOL_ROUTE_FAQS,
 } from "../src/seo-config.ts";
 import {
-  blogPostDescription,
   formatBlogDate,
   getBlogPosts,
 } from "../src/blog.ts";
@@ -163,65 +162,6 @@ for (const page of SEO_PAGE_KEYS) {
   const config = SEO_PAGES[page];
   const filename = page === "home" ? "index.html" : `${config.path.slice(1)}.html`;
   await writeFile(join(outputDirectory, filename), renderRoute(page));
-}
-
-function renderBlogPost(post) {
-  const url = `${SITE_ORIGIN}/blog/${post.slug}`;
-  const title = `${post.title} | PDFMech`;
-  const description = blogPostDescription(post);
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Article",
-        "@id": `${url}#article`,
-        headline: post.title,
-        description,
-        datePublished: post.date,
-        dateModified: post.modified,
-        mainEntityOfPage: url,
-        author: { "@type": "Organization", name: "PDFMech", url: `${SITE_ORIGIN}/` },
-        publisher: { "@type": "Organization", name: "PDFMech", url: `${SITE_ORIGIN}/` },
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
-          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_ORIGIN}/blog` },
-          { "@type": "ListItem", position: 3, name: post.title, item: url },
-        ],
-      },
-    ],
-  };
-  const featuredImage = post.featuredImageUrl === null
-    ? ""
-    : `<img src="${escapeHtml(post.featuredImageUrl)}" alt="${escapeHtml(post.featuredImageAlt)}" width="1200" height="675">`;
-  const snapshot = `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation"><a href="/">Home</a><a href="/editor">PDF Editor</a><a href="/ocr-pdf">OCR PDF</a><a href="/features">Features</a><a href="/how-it-works">How It Works</a><a href="/blog">Blog</a></nav></header><main class="blog-article-page"><nav aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><span>${escapeHtml(post.title)}</span></nav><article class="blog-article-shell"><header class="blog-article-header"><p>PDF guide</p><h1>${escapeHtml(post.title)}</h1><p>${escapeHtml(description)}</p><time datetime="${escapeHtml(post.date)}">Published ${escapeHtml(formatBlogDate(post.date))}</time>${featuredImage}</header><div class="blog-prose">${post.contentHtml}</div></article></main><footer><a href="/blog">Blog</a><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
-
-  let html = template
-    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`)
-    .replace(/<link rel="canonical"[^>]*>/i, `<link rel="canonical" href="${url}" />`)
-    .replace(/<script id="route-structured-data"[^>]*>[\s\S]*?<\/script>/i, `<script id="route-structured-data" type="application/ld+json">${JSON.stringify(structuredData).replaceAll("<", "\\u003c")}</script>`)
-    .replace('<div id="app"></div>', `<div id="app">${snapshot}</div>`);
-  html = replaceMeta(html, "description", description);
-  html = replaceMeta(html, "robots", "index,follow,max-image-preview:large");
-  html = replaceMeta(html, "og:url", url);
-  html = replaceMeta(html, "og:type", "article");
-  html = replaceMeta(html, "og:title", title);
-  html = replaceMeta(html, "og:description", description);
-  html = replaceMeta(html, "og:image", `${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}`);
-  html = replaceMeta(html, "twitter:title", title);
-  html = replaceMeta(html, "twitter:description", description);
-  html = replaceMeta(html, "twitter:image", `${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}`);
-  return html;
-}
-
-if (blogPosts.length > 0) {
-  const blogDirectory = join(outputDirectory, "blog");
-  await mkdir(blogDirectory, { recursive: true });
-  for (const post of blogPosts) {
-    await writeFile(join(blogDirectory, `${post.slug}.html`), renderBlogPost(post));
-  }
 }
 
 const notFoundTitle = "Page Not Found | PDFMech";

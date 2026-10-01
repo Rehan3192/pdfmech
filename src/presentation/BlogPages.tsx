@@ -2,6 +2,7 @@ import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import {
   blogPostDescription,
   formatBlogDate,
+  getEmbeddedBlogPost,
   getBlogPostBySlug,
   getBlogPosts,
   type BlogPost,
@@ -168,14 +169,24 @@ export function BlogPostPage({
   readonly onNavigate: (path: string) => void;
   readonly onPostResolved: (post: BlogPost | null) => void;
 }) {
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "notFound" | "error">("loading");
+  const embeddedPost = getEmbeddedBlogPost(slug);
+  const [post, setPost] = useState<BlogPost | null>(embeddedPost);
+  const [status, setStatus] = useState<"loading" | "ready" | "notFound" | "error">(
+    embeddedPost === null ? "loading" : "ready",
+  );
 
   useEffect(() => {
     let active = true;
-    setPost(null);
-    setStatus("loading");
-    onPostResolved(null);
+    const initialPost = getEmbeddedBlogPost(slug);
+    if (initialPost === null) {
+      setPost(null);
+      setStatus("loading");
+      onPostResolved(null);
+    } else {
+      setPost(initialPost);
+      setStatus("ready");
+      onPostResolved(initialPost);
+    }
 
     void getBlogPostBySlug(slug)
       .then((result) => {
@@ -186,6 +197,7 @@ export function BlogPostPage({
       })
       .catch(() => {
         if (!active) return;
+        if (initialPost !== null) return;
         setStatus("error");
         onPostResolved(null);
       });

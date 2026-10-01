@@ -215,18 +215,20 @@ try {
 } catch (error) {
   if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") throw error;
 }
-for (const filename of blogFiles) {
-  const slug = filename.slice(0, -5);
-  const html = await readFile(join(outputDirectory, "blog", filename), "utf8");
-  if (!html.includes(`<link rel="canonical" href="https://www.pdfmech.com/blog/${slug}" />`)) {
-    throw new Error(`${filename} is missing its self-referencing blog canonical URL.`);
-  }
-  if ((html.match(/<h1>/gi) ?? []).length !== 1 || !html.includes('"@type":"Article"')) {
-    throw new Error(`${filename} must contain one H1 and Article structured data.`);
-  }
-  if (/<script(?! id="route-structured-data"| type="module")/i.test(html)) {
-    throw new Error(`${filename} contains an unexpected script element.`);
-  }
+if (blogFiles.length > 0) {
+  throw new Error(
+    "Blog post HTML must be served by the dynamic Vercel route, not static files.",
+  );
 }
 
-console.log(`Verified SEO output for ${SEO_PAGE_KEYS.length} routes, ${blogFiles.length} blog posts, and the custom 404 page.`);
+const vercelConfig = JSON.parse(await readFile(join(process.cwd(), "vercel.json"), "utf8"));
+const dynamicBlogRewrite = vercelConfig.rewrites?.find(
+  (rewrite) =>
+    rewrite.source === "/blog/:slug" &&
+    rewrite.destination === "/api/blog-post?slug=:slug",
+);
+if (dynamicBlogRewrite === undefined) {
+  throw new Error("vercel.json must route dynamic blog posts through the server renderer.");
+}
+
+console.log(`Verified SEO output for ${SEO_PAGE_KEYS.length} routes, the dynamic blog renderer, and the custom 404 page.`);
