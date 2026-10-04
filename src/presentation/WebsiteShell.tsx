@@ -24,10 +24,11 @@ import { BlogArchivePage, BlogPostPage } from "./BlogPages";
 import { BatesNumberingPage } from "./BatesNumberingPage";
 import { FlattenPdfPage } from "./FlattenPdfPage";
 import { DeskewPdfPage } from "./DeskewPdfPage";
+import { MetadataPdfPage } from "./MetadataPdfPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -53,6 +54,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/bates-numbering-pdf": "batesNumberingPdf",
   "/flatten-pdf": "flattenPdf",
   "/deskew-pdf": "deskewPdf",
+  "/remove-pdf-metadata": "metadataPdf",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
@@ -252,7 +254,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -333,7 +335,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           <details
             key={page}
             className="site-tools-menu"
-            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || activeToolRoute !== null ? "true" : "false"}
           >
             <summary aria-label="Tools">
               Tools <span aria-hidden="true">⌄</span>
@@ -408,6 +410,19 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
                 <span className="site-tool-icon" aria-hidden="true">↗</span>
                 <span><strong>Deskew PDF</strong><small>Straighten crooked scanned pages</small></span>
               </a>
+              <a
+                href="/remove-pdf-metadata"
+                aria-current={page === "metadataPdf" ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.currentTarget.closest("details")?.removeAttribute("open");
+                  navigateTo("/remove-pdf-metadata");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <span className="site-tool-icon" aria-hidden="true">⌫</span>
+                <span><strong>Remove PDF Metadata</strong><small>View and clear hidden document details</small></span>
+              </a>
             </div>
           </details>
           {navItems.map((item) => (
@@ -470,6 +485,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="deskewPdf" />
           <DeskewPdfPage />
+        </>
+      ) : page === "metadataPdf" ? (
+        <>
+          <Breadcrumbs page="metadataPdf" />
+          <MetadataPdfPage />
         </>
       ) : toolEditorActive && toolEditorSession !== null ? (
         renderEditor({
@@ -572,6 +592,7 @@ function SiteFooter() {
         <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
         <SiteLink path="/flatten-pdf">Flatten PDF Forms</SiteLink>
         <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
+        <SiteLink path="/remove-pdf-metadata">Remove PDF Metadata</SiteLink>
         <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
         <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
@@ -621,6 +642,7 @@ const internalLinkClusters: Readonly<
   Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
+    { path: "/remove-pdf-metadata", eyebrow: "Privacy cleanup", title: "View and remove PDF metadata", description: "Inspect hidden document properties and remove selected details locally." },
     { path: "/deskew-pdf", eyebrow: "Scanned documents", title: "Straighten scanned PDF pages", description: "Detect and correct crooked scan angles before running OCR." },
     { path: "/flatten-pdf", eyebrow: "PDF forms", title: "Flatten PDF form fields", description: "Turn completed form controls into fixed page content locally." },
     { path: "/bates-numbering-pdf", eyebrow: "Legal documents", title: "Add Bates numbers to PDFs", description: "Apply one continuous sequence across multiple files privately." },
@@ -637,6 +659,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
+    { path: "/remove-pdf-metadata", eyebrow: "Document privacy", title: "Remove hidden PDF metadata", description: "Clear titles, authors, dates, custom properties, and XMP data locally." },
     { path: "/deskew-pdf", eyebrow: "Scan cleanup", title: "Deskew scanned PDFs", description: "Automatically straighten crooked pages and fine-tune each angle." },
     { path: "/flatten-pdf", eyebrow: "PDF forms", title: "Flatten completed forms", description: "Fix supported form appearances for consistent viewing and printing." },
     { path: "/bates-numbering-pdf", eyebrow: "Document labels", title: "Bates number PDFs", description: "Add sequential identifiers across selected pages and files." },
@@ -652,6 +675,7 @@ const internalLinkClusters: Readonly<
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
   ],
   howItWorks: [
+    { path: "/remove-pdf-metadata", eyebrow: "Privacy check", title: "Review PDF metadata before sharing", description: "See hidden properties and create a cleaned copy in your browser." },
     { path: "/deskew-pdf", eyebrow: "Scan preparation", title: "Straighten pages before OCR", description: "Correct crooked scans locally, then create a searchable PDF." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "Scanned PDFs", title: "Run private OCR", description: "Turn an image-based document into a searchable PDF locally." },
     { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "iPhone guide", title: "Follow the mobile workflow", description: "See how opening, editing, and downloading work in Safari." },
@@ -682,6 +706,7 @@ const internalLinkClusters: Readonly<
     { path: "/contact", eyebrow: "Get in touch", title: "Contact PDFMech", description: "Share feedback, questions, or an issue you found." },
   ],
   privacy: [
+    { path: "/remove-pdf-metadata", eyebrow: "Metadata privacy", title: "Clear document properties locally", description: "Remove supported Info fields and embedded XMP data without uploading the PDF." },
     { path: "/deskew-pdf", eyebrow: "Local scan cleanup", title: "Straighten a scan privately", description: "Analyze and correct page angles without uploading the document." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "Local OCR", title: "Make a scan searchable", description: "Recognize English printed text without sending the document to an OCR server." },
     { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editor", title: "Edit without an upload", description: "Use the working browser-local PDF editor and review its technical flow." },

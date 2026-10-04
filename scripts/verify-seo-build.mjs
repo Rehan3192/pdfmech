@@ -156,6 +156,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "metadataPdf" &&
+    (!html.includes("How to remove PDF metadata") ||
+      !html.includes("Standard, custom, and XMP metadata") ||
+      !html.includes("Private metadata processing") ||
+      !html.includes("Important privacy limit") ||
+      !html.includes('/remove-pdf-metadata#pdf-metadata-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable metadata-removal instructions, scope, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

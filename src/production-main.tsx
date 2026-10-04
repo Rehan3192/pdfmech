@@ -61,6 +61,7 @@ import "./presentation/ocr.css";
 import "./presentation/bates.css";
 import "./presentation/flatten.css";
 import "./presentation/deskew.css";
+import "./presentation/metadata.css";
 import "./presentation/blog.css";
 
 const rootElement = document.querySelector("#app");

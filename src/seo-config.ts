@@ -13,6 +13,7 @@ export type SeoPageKey =
   | "batesNumberingPdf"
   | "flattenPdf"
   | "deskewPdf"
+  | "metadataPdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -121,6 +122,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Straighten crooked scanned PDF pages online for free. Detect and adjust page angles locally in your browser, then download without uploading the file.",
     h1: "Straighten scanned PDF pages online.",
     intro: "Automatically detect crooked scan angles, fine-tune each page, and create a corrected PDF privately in your browser.",
+    schemaType: "WebPage",
+  },
+  metadataPdf: {
+    path: "/remove-pdf-metadata",
+    title: "Remove PDF Metadata Online Free | PDFMech",
+    description: "View and remove PDF metadata online for free. Clear author, title, dates, custom fields, and XMP data privately in your browser without uploading.",
+    h1: "View and remove PDF metadata online.",
+    intro: "Inspect hidden document properties, remove selected metadata or clear it all, and download a cleaned PDF privately in your browser.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -412,6 +421,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech creates a separate deskewed PDF and leaves the source file unchanged.",
     },
   ],
+  metadataPdf: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. PDFMech reads and removes supported metadata inside your browser.",
+    },
+    {
+      question: "Will removing metadata change my pages?",
+      answer: "The tool preserves the PDF page count and does not intentionally rasterize or visibly edit page content.",
+    },
+    {
+      question: "Can I remove only the author or title?",
+      answer: "Yes. You can select individual standard or custom fields and choose whether to remove the embedded XMP packet.",
+    },
+    {
+      question: "Does this remove every possible trace of personal information?",
+      answer: "No. It removes supported document-info fields and XMP metadata, not visible text, annotations, attachments, form values, or other page content.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -460,6 +487,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "batesNumberingPdf",
   "flattenPdf",
   "deskewPdf",
+  "metadataPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -468,7 +496,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "flattenPdf" || page === "deskewPdf"
+  return page === "metadataPdf"
+    ? "2026-10-05"
+    : page === "flattenPdf" || page === "deskewPdf"
     ? "2026-10-04"
     : page === "batesNumberingPdf"
     ? "2026-10-01"
@@ -536,6 +566,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "batesNumberingPdf" ||
     page === "flattenPdf" ||
     page === "deskewPdf" ||
+    page === "metadataPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

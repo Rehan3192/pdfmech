@@ -53,6 +53,7 @@ function renderSnapshot(page) {
     batesNumberingPdf: "Bates Numbering PDF",
     flattenPdf: "Flatten PDF Forms",
     deskewPdf: "Deskew PDF",
+    metadataPdf: "Remove PDF Metadata",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
     features: "Features",
@@ -81,6 +82,7 @@ function renderSnapshot(page) {
   const isBatesTool = page === "batesNumberingPdf";
   const isFlattenTool = page === "flattenPdf";
   const isDeskewTool = page === "deskewPdf";
+  const isMetadataTool = page === "metadataPdf";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
   const blogContent = page === "blog"
@@ -104,7 +106,9 @@ function renderSnapshot(page) {
                   ? `<section><h2>How to flatten PDF form fields</h2><ol><li>Choose a completed PDF form.</li><li>Review the editable AcroForm fields found.</li><li>Flatten the current field appearances locally.</li><li>Download a validated non-editable copy.</li></ol><h2>AcroForm fields become fixed content</h2><p>Supported text fields, checkboxes, radio buttons, and dropdown appearances become part of the page and are no longer editable.</p><h2>Private local form processing</h2><p>PDFMech inspects and flattens the form in your browser without uploading it to a document-processing server.</p><h2>Clear product limits</h2><p>This tool flattens AcroForm fields, not arbitrary annotations, layers, scripts, or XFA forms.</p></section>`
                   : isDeskewTool
                     ? `<section><h2>How to straighten a scanned PDF</h2><ol><li>Choose a scanned or image-based PDF.</li><li>Review each automatically detected correction angle.</li><li>Fine-tune individual pages when needed.</li><li>Create the corrected PDF locally and download it.</li></ol><h2>Automatic and manual deskew</h2><p>PDFMech estimates small page rotations from horizontal printed text and lets you adjust every page in quarter-degree steps.</p><h2>Private scan processing</h2><p>Page analysis, rendering, correction, and PDF export happen in your browser without uploading the source document.</p><h2>Scan-specific raster output</h2><p>Corrected pages are rasterized and should be sent through OCR afterward if searchable text is required. Pages at zero degrees are preserved.</p></section>`
-                    : isPrivateEditor
+                    : isMetadataTool
+                      ? `<section><h2>How to remove PDF metadata</h2><ol><li>Choose a PDF from your device.</li><li>Review standard fields, custom properties, and embedded XMP metadata.</li><li>Select individual items or choose all detected metadata.</li><li>Create and download a cleaned copy locally.</li></ol><h2>Standard, custom, and XMP metadata</h2><p>PDFMech can inspect common document properties, additional Info dictionary fields, and a separate embedded XMP packet.</p><h2>Private metadata processing</h2><p>Metadata inspection, removal, validation, and PDF export happen in your browser without uploading the source document.</p><h2>Important privacy limit</h2><p>Metadata cleanup does not remove visible text, annotations, attachments, form values, or other content inside PDF pages.</p></section>`
+                      : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
                 ? `<article><h2>How to edit a PDF on iPhone in Safari</h2><ol><li>Open PDFMech in Safari and choose a PDF from Files.</li><li>Select Text, Whiteout, or a page tool from the mobile action dock.</li><li>Tap the PDF, drag the object into position, and adjust its properties.</li><li>Review the result and download a separate edited PDF.</li></ol><h2>Where iPhone downloads are saved</h2><p>The folder follows your Safari download setting, commonly Downloads in iCloud Drive or On My iPhone.</p><h2>Mobile PDF editing limits</h2><p>Text adds a new layer rather than rewriting embedded words. Whiteout is a visual cover rather than secure redaction, and large PDFs may be constrained by available iPhone memory.</p></article>`
@@ -131,7 +135,9 @@ function renderSnapshot(page) {
                   ? "/flatten-pdf#flatten-pdf-tool"
                   : isDeskewTool
                     ? "/deskew-pdf#deskew-pdf-tool"
-                    : isPrivateEditor
+                    : isMetadataTool
+                      ? "/remove-pdf-metadata#pdf-metadata-tool"
+                      : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
                 ? "/edit-pdf-on-iphone#iphone-pdf-editor-tool"
@@ -154,7 +160,9 @@ function renderSnapshot(page) {
                   ? "Choose a PDF form to flatten"
                   : isDeskewTool
                     ? "Choose a scanned PDF to straighten"
-                    : isPrivateEditor
+                    : isMetadataTool
+                      ? "Choose a PDF to inspect metadata"
+                      : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide
                 ? "Choose a PDF from iPhone Files"
