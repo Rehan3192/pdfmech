@@ -59,6 +59,7 @@ import "./presentation/content-guide.css";
 import "./presentation/marketing-pages.css";
 import "./presentation/ocr.css";
 import "./presentation/bates.css";
+import "./presentation/flatten.css";
 import "./presentation/blog.css";
 
 const rootElement = document.querySelector("#app");

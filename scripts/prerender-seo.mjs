@@ -51,6 +51,7 @@ function renderSnapshot(page) {
     whiteoutPdf: "White Out PDF",
     ocrPdf: "OCR PDF",
     batesNumberingPdf: "Bates Numbering PDF",
+    flattenPdf: "Flatten PDF Forms",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
     features: "Features",
@@ -77,6 +78,7 @@ function renderSnapshot(page) {
   const isWhiteoutTool = page === "whiteoutPdf";
   const isOcrTool = page === "ocrPdf";
   const isBatesTool = page === "batesNumberingPdf";
+  const isFlattenTool = page === "flattenPdf";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
   const blogContent = page === "blog"
@@ -96,7 +98,9 @@ function renderSnapshot(page) {
               ? `<section><h2>How to make a scanned PDF searchable</h2><ol><li>Choose a scanned or image-based PDF.</li><li>Review the document and select the pages to process.</li><li>Run private OCR locally in your browser.</li><li>Download the searchable PDF or extracted text.</li></ol><h2>Private browser OCR</h2><p>PDFMech recognizes printed text and creates the new searchable PDF on your device. Your source document and recognized text are not uploaded to an OCR server.</p><h2>Preserves the scanned page</h2><p>The original page appearance remains visible while PDFMech adds an invisible text layer for search, selection, and copying.</p></section>`
               : isBatesTool
                 ? `<section><h2>How to add Bates numbers to a PDF</h2><ol><li>Choose one or more PDFs and arrange them in sequence.</li><li>Select all pages or enter a page range for each file.</li><li>Set the starting number, prefix, suffix, digits, and position.</li><li>Process locally and download each numbered PDF.</li></ol><h2>Continuous numbering across PDFs</h2><p>PDFMech continues one sequence across selected pages in the exact file order you choose.</p><h2>Private local processing</h2><p>Your source documents are numbered in this browser and are not uploaded to a PDFMech processing server.</p></section>`
-                : isPrivateEditor
+                : isFlattenTool
+                  ? `<section><h2>How to flatten PDF form fields</h2><ol><li>Choose a completed PDF form.</li><li>Review the editable AcroForm fields found.</li><li>Flatten the current field appearances locally.</li><li>Download a validated non-editable copy.</li></ol><h2>AcroForm fields become fixed content</h2><p>Supported text fields, checkboxes, radio buttons, and dropdown appearances become part of the page and are no longer editable.</p><h2>Private local form processing</h2><p>PDFMech inspects and flattens the form in your browser without uploading it to a document-processing server.</p><h2>Clear product limits</h2><p>This tool flattens AcroForm fields, not arbitrary annotations, layers, scripts, or XFA forms.</p></section>`
+                  : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
                 ? `<article><h2>How to edit a PDF on iPhone in Safari</h2><ol><li>Open PDFMech in Safari and choose a PDF from Files.</li><li>Select Text, Whiteout, or a page tool from the mobile action dock.</li><li>Tap the PDF, drag the object into position, and adjust its properties.</li><li>Review the result and download a separate edited PDF.</li></ol><h2>Where iPhone downloads are saved</h2><p>The folder follows your Safari download setting, commonly Downloads in iCloud Drive or On My iPhone.</p><h2>Mobile PDF editing limits</h2><p>Text adds a new layer rather than rewriting embedded words. Whiteout is a visual cover rather than secure redaction, and large PDFs may be constrained by available iPhone memory.</p></article>`
@@ -119,7 +123,9 @@ function renderSnapshot(page) {
               ? "/ocr-pdf#ocr-pdf-tool"
               : isBatesTool
                 ? "/bates-numbering-pdf#bates-numbering-tool"
-                : isPrivateEditor
+                : isFlattenTool
+                  ? "/flatten-pdf#flatten-pdf-tool"
+                  : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
                 ? "/edit-pdf-on-iphone#iphone-pdf-editor-tool"
@@ -138,7 +144,9 @@ function renderSnapshot(page) {
               ? "Choose a scanned PDF for OCR"
               : isBatesTool
                 ? "Choose PDFs for Bates numbering"
-                : isPrivateEditor
+                : isFlattenTool
+                  ? "Choose a PDF form to flatten"
+                  : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide
                 ? "Choose a PDF from iPhone Files"

@@ -11,6 +11,7 @@ export type SeoPageKey =
   | "whiteoutPdf"
   | "ocrPdf"
   | "batesNumberingPdf"
+  | "flattenPdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -103,6 +104,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Add continuous Bates numbers to one or multiple PDFs for free. Set prefixes, suffixes, digits, page ranges, and positions locally without uploading files.",
     h1: "Add Bates numbers to PDFs privately.",
     intro: "Apply continuous page identifiers across one or multiple PDFs locally in your browser, with precise sequence and position controls.",
+    schemaType: "WebPage",
+  },
+  flattenPdf: {
+    path: "/flatten-pdf",
+    title: "Flatten PDF Forms Online Free - No Upload | PDFMech",
+    description: "Flatten editable PDF form fields online for free. Fix completed field appearances into the page and download a validated copy locally without uploading.",
+    h1: "Flatten PDF forms online for free.",
+    intro: "Convert supported AcroForm fields into fixed page content locally for consistent viewing, sharing, and printing.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -358,6 +367,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "It can. Adding a visible number changes the PDF and may invalidate an existing digital signature, so keep the original signed file.",
     },
   ],
+  flattenPdf: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. PDFMech inspects, flattens, validates, and creates the output in your browser.",
+    },
+    {
+      question: "Will the form fields still be editable?",
+      answer: "No. Supported field appearances become fixed page content in the downloaded copy.",
+    },
+    {
+      question: "Does flattening replace my original file?",
+      answer: "No. PDFMech creates a separate flattened PDF and leaves the source file unchanged.",
+    },
+    {
+      question: "Are XFA forms supported?",
+      answer: "No. XFA forms are detected and blocked because this browser-local method cannot preserve them reliably.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -404,6 +431,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "whiteoutPdf",
   "ocrPdf",
   "batesNumberingPdf",
+  "flattenPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -412,7 +440,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "batesNumberingPdf"
+  return page === "flattenPdf"
+    ? "2026-10-04"
+    : page === "batesNumberingPdf"
     ? "2026-10-01"
     : page === "blog"
     ? "2026-09-28"
@@ -476,6 +506,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "whiteoutPdf" ||
     page === "ocrPdf" ||
     page === "batesNumberingPdf" ||
+    page === "flattenPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

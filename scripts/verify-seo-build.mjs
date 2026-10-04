@@ -132,6 +132,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "flattenPdf" &&
+    (!html.includes("How to flatten PDF form fields") ||
+      !html.includes("AcroForm fields become fixed content") ||
+      !html.includes("Private local form processing") ||
+      !html.includes("Clear product limits") ||
+      !html.includes('/flatten-pdf#flatten-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable form-flattening instructions, scope, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||
