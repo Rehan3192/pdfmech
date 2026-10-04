@@ -144,6 +144,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "deskewPdf" &&
+    (!html.includes("How to straighten a scanned PDF") ||
+      !html.includes("Automatic and manual deskew") ||
+      !html.includes("Private scan processing") ||
+      !html.includes("Scan-specific raster output") ||
+      !html.includes('/deskew-pdf#deskew-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable deskew instructions, output limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

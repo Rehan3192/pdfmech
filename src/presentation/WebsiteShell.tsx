@@ -23,10 +23,11 @@ import { getEmbeddedBlogPost, type BlogPost } from "../blog";
 import { BlogArchivePage, BlogPostPage } from "./BlogPages";
 import { BatesNumberingPage } from "./BatesNumberingPage";
 import { FlattenPdfPage } from "./FlattenPdfPage";
+import { DeskewPdfPage } from "./DeskewPdfPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -51,6 +52,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.ocrPdf.slug]: "ocrPdf",
   "/bates-numbering-pdf": "batesNumberingPdf",
   "/flatten-pdf": "flattenPdf",
+  "/deskew-pdf": "deskewPdf",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
@@ -250,7 +252,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -331,7 +333,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           <details
             key={page}
             className="site-tools-menu"
-            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || activeToolRoute !== null ? "true" : "false"}
           >
             <summary aria-label="Tools">
               Tools <span aria-hidden="true">⌄</span>
@@ -393,6 +395,19 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
                 <span className="site-tool-icon" aria-hidden="true">▤</span>
                 <span><strong>Flatten PDF Forms</strong><small>Make completed fields non-editable</small></span>
               </a>
+              <a
+                href="/deskew-pdf"
+                aria-current={page === "deskewPdf" ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.currentTarget.closest("details")?.removeAttribute("open");
+                  navigateTo("/deskew-pdf");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <span className="site-tool-icon" aria-hidden="true">↗</span>
+                <span><strong>Deskew PDF</strong><small>Straighten crooked scanned pages</small></span>
+              </a>
             </div>
           </details>
           {navItems.map((item) => (
@@ -450,6 +465,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="flattenPdf" />
           <FlattenPdfPage />
+        </>
+      ) : page === "deskewPdf" ? (
+        <>
+          <Breadcrumbs page="deskewPdf" />
+          <DeskewPdfPage />
         </>
       ) : toolEditorActive && toolEditorSession !== null ? (
         renderEditor({
@@ -551,6 +571,7 @@ function SiteFooter() {
         <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
         <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
         <SiteLink path="/flatten-pdf">Flatten PDF Forms</SiteLink>
+        <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
         <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
         <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
@@ -600,6 +621,7 @@ const internalLinkClusters: Readonly<
   Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
+    { path: "/deskew-pdf", eyebrow: "Scanned documents", title: "Straighten scanned PDF pages", description: "Detect and correct crooked scan angles before running OCR." },
     { path: "/flatten-pdf", eyebrow: "PDF forms", title: "Flatten PDF form fields", description: "Turn completed form controls into fixed page content locally." },
     { path: "/bates-numbering-pdf", eyebrow: "Legal documents", title: "Add Bates numbers to PDFs", description: "Apply one continuous sequence across multiple files privately." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "OCR tool", title: "Make scanned PDFs searchable", description: "Recognize printed text locally and download a searchable PDF." },
@@ -615,6 +637,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
+    { path: "/deskew-pdf", eyebrow: "Scan cleanup", title: "Deskew scanned PDFs", description: "Automatically straighten crooked pages and fine-tune each angle." },
     { path: "/flatten-pdf", eyebrow: "PDF forms", title: "Flatten completed forms", description: "Fix supported form appearances for consistent viewing and printing." },
     { path: "/bates-numbering-pdf", eyebrow: "Document labels", title: "Bates number PDFs", description: "Add sequential identifiers across selected pages and files." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "OCR tool", title: "Make scanned PDFs searchable", description: "Add a searchable text layer without uploading the scan." },
@@ -629,6 +652,7 @@ const internalLinkClusters: Readonly<
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
   ],
   howItWorks: [
+    { path: "/deskew-pdf", eyebrow: "Scan preparation", title: "Straighten pages before OCR", description: "Correct crooked scans locally, then create a searchable PDF." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "Scanned PDFs", title: "Run private OCR", description: "Turn an image-based document into a searchable PDF locally." },
     { path: TOOL_ROUTES.editPdfOnIphone.slug, eyebrow: "iPhone guide", title: "Follow the mobile workflow", description: "See how opening, editing, and downloading work in Safari." },
     { path: "/editor", eyebrow: "Start now", title: "Open the PDF editor", description: "Choose a PDF and follow the workflow as you edit." },
@@ -658,6 +682,7 @@ const internalLinkClusters: Readonly<
     { path: "/contact", eyebrow: "Get in touch", title: "Contact PDFMech", description: "Share feedback, questions, or an issue you found." },
   ],
   privacy: [
+    { path: "/deskew-pdf", eyebrow: "Local scan cleanup", title: "Straighten a scan privately", description: "Analyze and correct page angles without uploading the document." },
     { path: TOOL_ROUTES.ocrPdf.slug, eyebrow: "Local OCR", title: "Make a scan searchable", description: "Recognize English printed text without sending the document to an OCR server." },
     { path: TOOL_ROUTES.privatePdfEditor.slug, eyebrow: "Private editor", title: "Edit without an upload", description: "Use the working browser-local PDF editor and review its technical flow." },
     { path: "/security", eyebrow: "Security overview", title: "Understand local processing", description: "Review how PDFMech approaches browser-based editing." },

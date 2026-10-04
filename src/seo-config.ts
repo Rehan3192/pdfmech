@@ -12,6 +12,7 @@ export type SeoPageKey =
   | "ocrPdf"
   | "batesNumberingPdf"
   | "flattenPdf"
+  | "deskewPdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -112,6 +113,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Flatten editable PDF form fields online for free. Fix completed field appearances into the page and download a validated copy locally without uploading.",
     h1: "Flatten PDF forms online for free.",
     intro: "Convert supported AcroForm fields into fixed page content locally for consistent viewing, sharing, and printing.",
+    schemaType: "WebPage",
+  },
+  deskewPdf: {
+    path: "/deskew-pdf",
+    title: "Deskew PDF Online Free - Straighten Scans | PDFMech",
+    description: "Straighten crooked scanned PDF pages online for free. Detect and adjust page angles locally in your browser, then download without uploading the file.",
+    h1: "Straighten scanned PDF pages online.",
+    intro: "Automatically detect crooked scan angles, fine-tune each page, and create a corrected PDF privately in your browser.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -385,6 +394,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. XFA forms are detected and blocked because this browser-local method cannot preserve them reliably.",
     },
   ],
+  deskewPdf: [
+    {
+      question: "Is my scanned PDF uploaded?",
+      answer: "No. PDFMech analyzes and straightens supported pages locally in your browser.",
+    },
+    {
+      question: "Does automatic deskew work on every page?",
+      answer: "No. Pages need enough horizontal printed text or line structure for reliable detection. You can adjust every page manually.",
+    },
+    {
+      question: "Will searchable text be preserved?",
+      answer: "Pages corrected by a non-zero angle are rasterized, so existing interactive text is not preserved on those pages. Run PDFMech OCR afterward to add a new searchable text layer.",
+    },
+    {
+      question: "Does this replace my original PDF?",
+      answer: "No. PDFMech creates a separate deskewed PDF and leaves the source file unchanged.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -432,6 +459,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "ocrPdf",
   "batesNumberingPdf",
   "flattenPdf",
+  "deskewPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -440,7 +468,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "flattenPdf"
+  return page === "flattenPdf" || page === "deskewPdf"
     ? "2026-10-04"
     : page === "batesNumberingPdf"
     ? "2026-10-01"
@@ -507,6 +535,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "ocrPdf" ||
     page === "batesNumberingPdf" ||
     page === "flattenPdf" ||
+    page === "deskewPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({
