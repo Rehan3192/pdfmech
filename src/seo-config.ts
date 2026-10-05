@@ -15,6 +15,7 @@ export type SeoPageKey =
   | "deskewPdf"
   | "metadataPdf"
   | "comparePdf"
+  | "extractPdfPages"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -139,6 +140,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Compare two PDF files online for free. Find added and removed text page by page locally in your browser without uploading sensitive documents.",
     h1: "Compare two PDF files online.",
     intro: "Find added and removed selectable text page by page, review document changes, and download a comparison report privately in your browser.",
+    schemaType: "WebPage",
+  },
+  extractPdfPages: {
+    path: "/extract-pdf-pages",
+    title: "Extract PDF Pages Online Free - No Upload | PDFMech",
+    description: "Extract selected pages from a PDF online for free. Choose thumbnails or page ranges and download one new PDF locally without uploading your file.",
+    h1: "Extract pages from a PDF online.",
+    intro: "Select page thumbnails or enter flexible ranges, then save the chosen native pages as one new PDF privately in your browser.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -466,6 +475,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Pages are compared by page number. If one version inserts or removes a page, later pages may no longer be aligned with their matching content.",
     },
   ],
+  extractPdfPages: [
+    {
+      question: "Is my PDF uploaded?",
+      answer: "No. Page previews, extraction, validation, and download are created locally in your browser.",
+    },
+    {
+      question: "Can I extract non-consecutive pages?",
+      answer: "Yes. Enter individual pages and ranges together, such as 1-3, 6, 9.",
+    },
+    {
+      question: "Will the extracted pages become images?",
+      answer: "No. Selected pages are copied as native PDF pages rather than intentionally rasterized.",
+    },
+    {
+      question: "Does extraction modify my original PDF?",
+      answer: "No. PDFMech creates a separate PDF containing the selected pages and leaves the source file unchanged.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -516,6 +543,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "deskewPdf",
   "metadataPdf",
   "comparePdf",
+  "extractPdfPages",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -524,7 +552,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "metadataPdf" || page === "comparePdf"
+  return page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
     ? "2026-10-05"
     : page === "flattenPdf" || page === "deskewPdf"
     ? "2026-10-04"
@@ -596,6 +624,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "deskewPdf" ||
     page === "metadataPdf" ||
     page === "comparePdf" ||
+    page === "extractPdfPages" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

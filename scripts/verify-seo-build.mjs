@@ -180,6 +180,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "extractPdfPages" &&
+    (!html.includes("How to extract pages from a PDF") ||
+      !html.includes("Native PDF page extraction") ||
+      !html.includes("Private local page processing") ||
+      !html.includes("Document-level transfer limits") ||
+      !html.includes('/extract-pdf-pages#extract-pdf-pages-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable page-extraction instructions, transfer limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

@@ -55,6 +55,7 @@ function renderSnapshot(page) {
     deskewPdf: "Deskew PDF",
     metadataPdf: "Remove PDF Metadata",
     comparePdf: "Compare PDFs",
+    extractPdfPages: "Extract PDF Pages",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
     features: "Features",
@@ -85,6 +86,7 @@ function renderSnapshot(page) {
   const isDeskewTool = page === "deskewPdf";
   const isMetadataTool = page === "metadataPdf";
   const isCompareTool = page === "comparePdf";
+  const isExtractPagesTool = page === "extractPdfPages";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
   const blogContent = page === "blog"
@@ -112,7 +114,9 @@ function renderSnapshot(page) {
                       ? `<section><h2>How to remove PDF metadata</h2><ol><li>Choose a PDF from your device.</li><li>Review standard fields, custom properties, and embedded XMP metadata.</li><li>Select individual items or choose all detected metadata.</li><li>Create and download a cleaned copy locally.</li></ol><h2>Standard, custom, and XMP metadata</h2><p>PDFMech can inspect common document properties, additional Info dictionary fields, and a separate embedded XMP packet.</p><h2>Private metadata processing</h2><p>Metadata inspection, removal, validation, and PDF export happen in your browser without uploading the source document.</p><h2>Important privacy limit</h2><p>Metadata cleanup does not remove visible text, annotations, attachments, form values, or other content inside PDF pages.</p></section>`
                       : isCompareTool
                         ? `<section><h2>How to compare two PDF files</h2><ol><li>Choose the older and newer PDFs.</li><li>Select whether to ignore whitespace or capitalization.</li><li>Compare selectable text locally in your browser.</li><li>Review changed pages and download a text report.</li></ol><h2>Page-by-page text differences</h2><p>PDFMech extracts selectable text and identifies added and removed lines on matching page numbers.</p><h2>Private local comparison</h2><p>Both PDFs are read and compared in your browser without uploading either document to a comparison server.</p><h2>Text-only comparison limits</h2><p>This version does not detect images, fonts, colors, formatting, drawings, or layout-only changes. Image-only scans need OCR first.</p></section>`
-                        : isPrivateEditor
+                        : isExtractPagesTool
+                          ? `<section><h2>How to extract pages from a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Select page thumbnails or enter a range such as 1-3, 6, 9.</li><li>Review selected and excluded page counts.</li><li>Extract and download one new PDF containing the selected pages.</li></ol><h2>Native PDF page extraction</h2><p>PDFMech copies selected pages into a new PDF without intentionally converting them to screenshots.</p><h2>Private local page processing</h2><p>Page previews, selection, extraction, validation, and download happen in your browser without uploading the source document.</p><h2>Document-level transfer limits</h2><p>Bookmarks, attachments, metadata, scripts, signatures, and some interactive structures may not transfer to the new PDF.</p></section>`
+                          : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
                 ? `<article><h2>How to edit a PDF on iPhone in Safari</h2><ol><li>Open PDFMech in Safari and choose a PDF from Files.</li><li>Select Text, Whiteout, or a page tool from the mobile action dock.</li><li>Tap the PDF, drag the object into position, and adjust its properties.</li><li>Review the result and download a separate edited PDF.</li></ol><h2>Where iPhone downloads are saved</h2><p>The folder follows your Safari download setting, commonly Downloads in iCloud Drive or On My iPhone.</p><h2>Mobile PDF editing limits</h2><p>Text adds a new layer rather than rewriting embedded words. Whiteout is a visual cover rather than secure redaction, and large PDFs may be constrained by available iPhone memory.</p></article>`
@@ -143,7 +147,9 @@ function renderSnapshot(page) {
                       ? "/remove-pdf-metadata#pdf-metadata-tool"
                       : isCompareTool
                         ? "/compare-pdf#compare-pdf-tool"
-                        : isPrivateEditor
+                        : isExtractPagesTool
+                          ? "/extract-pdf-pages#extract-pdf-pages-tool"
+                          : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
                 ? "/edit-pdf-on-iphone#iphone-pdf-editor-tool"
@@ -170,7 +176,9 @@ function renderSnapshot(page) {
                       ? "Choose a PDF to inspect metadata"
                       : isCompareTool
                         ? "Choose two PDFs to compare"
-                        : isPrivateEditor
+                        : isExtractPagesTool
+                          ? "Choose a PDF and extract pages"
+                          : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide
                 ? "Choose a PDF from iPhone Files"

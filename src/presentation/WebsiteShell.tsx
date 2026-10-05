@@ -26,10 +26,11 @@ import { FlattenPdfPage } from "./FlattenPdfPage";
 import { DeskewPdfPage } from "./DeskewPdfPage";
 import { MetadataPdfPage } from "./MetadataPdfPage";
 import { ComparePdfPage } from "./ComparePdfPage";
+import { ExtractPagesPage } from "./ExtractPagesPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -57,6 +58,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/deskew-pdf": "deskewPdf",
   "/remove-pdf-metadata": "metadataPdf",
   "/compare-pdf": "comparePdf",
+  "/extract-pdf-pages": "extractPdfPages",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
@@ -256,7 +258,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -337,7 +339,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           <details
             key={page}
             className="site-tools-menu"
-            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || activeToolRoute !== null ? "true" : "false"}
           >
             <summary aria-label="Tools">
               Tools <span aria-hidden="true">⌄</span>
@@ -438,6 +440,19 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
                 <span className="site-tool-icon" aria-hidden="true">⇄</span>
                 <span><strong>Compare PDFs</strong><small>Find page-by-page text changes</small></span>
               </a>
+              <a
+                href="/extract-pdf-pages"
+                aria-current={page === "extractPdfPages" ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.currentTarget.closest("details")?.removeAttribute("open");
+                  navigateTo("/extract-pdf-pages");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <span className="site-tool-icon" aria-hidden="true">▤</span>
+                <span><strong>Extract PDF Pages</strong><small>Save selected pages as a new PDF</small></span>
+              </a>
             </div>
           </details>
           {navItems.map((item) => (
@@ -510,6 +525,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="comparePdf" />
           <ComparePdfPage />
+        </>
+      ) : page === "extractPdfPages" ? (
+        <>
+          <Breadcrumbs page="extractPdfPages" />
+          <ExtractPagesPage />
         </>
       ) : toolEditorActive && toolEditorSession !== null ? (
         renderEditor({
@@ -614,6 +634,7 @@ function SiteFooter() {
         <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
         <SiteLink path="/remove-pdf-metadata">Remove PDF Metadata</SiteLink>
         <SiteLink path="/compare-pdf">Compare PDFs</SiteLink>
+        <SiteLink path="/extract-pdf-pages">Extract PDF Pages</SiteLink>
         <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
         <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
         <SiteLink path="/features">Features</SiteLink>
@@ -663,6 +684,7 @@ const internalLinkClusters: Readonly<
   Record<MarketingPageKey, readonly { path: string; eyebrow: string; title: string; description: string }[]>
 > = {
   home: [
+    { path: "/extract-pdf-pages", eyebrow: "Page extraction", title: "Extract selected PDF pages", description: "Preview pages and save chosen ranges as one new PDF locally." },
     { path: "/compare-pdf", eyebrow: "Document review", title: "Compare text in two PDFs", description: "Find page-by-page additions and removals without uploading either file." },
     { path: "/remove-pdf-metadata", eyebrow: "Privacy cleanup", title: "View and remove PDF metadata", description: "Inspect hidden document properties and remove selected details locally." },
     { path: "/deskew-pdf", eyebrow: "Scanned documents", title: "Straighten scanned PDF pages", description: "Detect and correct crooked scan angles before running OCR." },
@@ -681,6 +703,7 @@ const internalLinkClusters: Readonly<
     { path: "/privacy", eyebrow: "Your privacy", title: "Learn how local editing works", description: "Understand recovery data and browser-based processing." },
   ],
   features: [
+    { path: "/extract-pdf-pages", eyebrow: "Page tools", title: "Extract PDF pages", description: "Choose page thumbnails or ranges and preserve them in a separate PDF." },
     { path: "/compare-pdf", eyebrow: "Version review", title: "Compare PDF text", description: "Review added and removed lines across two document versions locally." },
     { path: "/remove-pdf-metadata", eyebrow: "Document privacy", title: "Remove hidden PDF metadata", description: "Clear titles, authors, dates, custom properties, and XMP data locally." },
     { path: "/deskew-pdf", eyebrow: "Scan cleanup", title: "Deskew scanned PDFs", description: "Automatically straighten crooked pages and fine-tune each angle." },
@@ -698,6 +721,7 @@ const internalLinkClusters: Readonly<
     { path: "/faq", eyebrow: "Get answers", title: "Read common PDF questions", description: "Find practical answers about tools, files, and exports." },
   ],
   howItWorks: [
+    { path: "/extract-pdf-pages", eyebrow: "Select pages", title: "Create a PDF from chosen pages", description: "Copy native PDF pages into a validated new document without uploading." },
     { path: "/compare-pdf", eyebrow: "Compare versions", title: "Find text changes privately", description: "Extract and compare selectable PDF text page by page in your browser." },
     { path: "/remove-pdf-metadata", eyebrow: "Privacy check", title: "Review PDF metadata before sharing", description: "See hidden properties and create a cleaned copy in your browser." },
     { path: "/deskew-pdf", eyebrow: "Scan preparation", title: "Straighten pages before OCR", description: "Correct crooked scans locally, then create a searchable PDF." },
@@ -730,6 +754,7 @@ const internalLinkClusters: Readonly<
     { path: "/contact", eyebrow: "Get in touch", title: "Contact PDFMech", description: "Share feedback, questions, or an issue you found." },
   ],
   privacy: [
+    { path: "/extract-pdf-pages", eyebrow: "Local page extraction", title: "Keep selected pages on your device", description: "Preview and extract native pages entirely inside the browser." },
     { path: "/compare-pdf", eyebrow: "Private comparison", title: "Compare two sensitive documents locally", description: "Keep both versions on your device while reviewing text differences." },
     { path: "/remove-pdf-metadata", eyebrow: "Metadata privacy", title: "Clear document properties locally", description: "Remove supported Info fields and embedded XMP data without uploading the PDF." },
     { path: "/deskew-pdf", eyebrow: "Local scan cleanup", title: "Straighten a scan privately", description: "Analyze and correct page angles without uploading the document." },
