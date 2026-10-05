@@ -168,6 +168,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "comparePdf" &&
+    (!html.includes("How to compare two PDF files") ||
+      !html.includes("Page-by-page text differences") ||
+      !html.includes("Private local comparison") ||
+      !html.includes("Text-only comparison limits") ||
+      !html.includes('/compare-pdf#compare-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable PDF comparison instructions, text-only scope, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

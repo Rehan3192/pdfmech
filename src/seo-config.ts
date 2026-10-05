@@ -14,6 +14,7 @@ export type SeoPageKey =
   | "flattenPdf"
   | "deskewPdf"
   | "metadataPdf"
+  | "comparePdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -130,6 +131,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "View and remove PDF metadata online for free. Clear author, title, dates, custom fields, and XMP data privately in your browser without uploading.",
     h1: "View and remove PDF metadata online.",
     intro: "Inspect hidden document properties, remove selected metadata or clear it all, and download a cleaned PDF privately in your browser.",
+    schemaType: "WebPage",
+  },
+  comparePdf: {
+    path: "/compare-pdf",
+    title: "Compare PDF Files Online Free - Text Diff | PDFMech",
+    description: "Compare two PDF files online for free. Find added and removed text page by page locally in your browser without uploading sensitive documents.",
+    h1: "Compare two PDF files online.",
+    intro: "Find added and removed selectable text page by page, review document changes, and download a comparison report privately in your browser.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -439,6 +448,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. It removes supported document-info fields and XMP metadata, not visible text, annotations, attachments, form values, or other page content.",
     },
   ],
+  comparePdf: [
+    {
+      question: "Are my PDFs uploaded?",
+      answer: "No. Text extraction and comparison run locally in your browser.",
+    },
+    {
+      question: "Can it compare scanned PDFs?",
+      answer: "Only after the scans contain searchable text. Use PDFMech OCR first when a page is image-only.",
+    },
+    {
+      question: "Does it compare images and formatting?",
+      answer: "No. This version compares selectable text, not images, fonts, colors, drawings, or visual layout.",
+    },
+    {
+      question: "Why can added pages affect later results?",
+      answer: "Pages are compared by page number. If one version inserts or removes a page, later pages may no longer be aligned with their matching content.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -488,6 +515,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "flattenPdf",
   "deskewPdf",
   "metadataPdf",
+  "comparePdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -496,7 +524,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "metadataPdf"
+  return page === "metadataPdf" || page === "comparePdf"
     ? "2026-10-05"
     : page === "flattenPdf" || page === "deskewPdf"
     ? "2026-10-04"
@@ -567,6 +595,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "flattenPdf" ||
     page === "deskewPdf" ||
     page === "metadataPdf" ||
+    page === "comparePdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({
