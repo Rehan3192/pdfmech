@@ -8042,8 +8042,8 @@ button[data-testid="production-apply-text"] {
   isolation: isolate;
   width: min(1400px, calc(100% - 24px));
   max-width: 1400px;
-  grid-template-columns: minmax(290px, 1.45fr) repeat(3, minmax(140px, .62fr));
-  gap: clamp(28px, 4vw, 64px);
+  grid-template-columns: minmax(250px, 1.05fr) minmax(480px, 2fr) repeat(2, minmax(130px, .55fr));
+  gap: clamp(24px, 3vw, 48px);
   margin: 18px auto 12px;
   padding: 52px clamp(28px, 5vw, 72px) 24px;
   border: 1px solid rgb(92 184 207 / 18%);
@@ -8104,8 +8104,18 @@ button[data-testid="production-apply-text"] {
 
 .website-shell:not([data-page="editor"]) .footer-column {
   align-content: start;
-  gap: 5px;
+  gap: 0;
   padding-top: 8px;
+}
+
+.website-shell:not([data-page="editor"]) .footer-link-grid {
+  display: grid;
+  align-content: start;
+  gap: 2px 24px;
+}
+
+.website-shell:not([data-page="editor"]) .footer-product-column .footer-link-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .website-shell:not([data-page="editor"]) .footer-column strong {
@@ -8174,9 +8184,15 @@ button[data-testid="production-apply-text"] {
 
 @media (max-width: 900px) {
   .website-shell:not([data-page="editor"]) .site-footer {
-    grid-template-columns: minmax(240px, 1.4fr) repeat(3, minmax(110px, .7fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 26px;
     padding: 40px 28px 22px;
+  }
+
+  .website-shell:not([data-page="editor"]) .footer-brand-block,
+  .website-shell:not([data-page="editor"]) .footer-product-column {
+    grid-column: 1 / -1;
+    max-width: none;
   }
 }
 
@@ -8194,6 +8210,14 @@ button[data-testid="production-apply-text"] {
     max-width: none;
   }
 
+  .website-shell:not([data-page="editor"]) .footer-product-column {
+    grid-column: 1 / -1;
+  }
+
+  .website-shell:not([data-page="editor"]) .footer-product-column .footer-link-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .website-shell:not([data-page="editor"]) .footer-note {
     text-align: left;
   }
@@ -8201,12 +8225,23 @@ button[data-testid="production-apply-text"] {
 
 @media (max-width: 430px) {
   .website-shell:not([data-page="editor"]) .site-footer {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px 16px;
+    padding-inline: 18px;
   }
 
   .website-shell:not([data-page="editor"]) .footer-brand-block,
+  .website-shell:not([data-page="editor"]) .footer-product-column,
   .website-shell:not([data-page="editor"]) .footer-note {
-    grid-column: 1;
+    grid-column: 1 / -1;
+  }
+
+  .website-shell:not([data-page="editor"]) .footer-link-grid {
+    gap-inline: 12px;
+  }
+
+  .website-shell:not([data-page="editor"]) .footer-column a {
+    font-size: 13px;
   }
 }
 

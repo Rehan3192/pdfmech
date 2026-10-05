@@ -620,40 +620,46 @@ function SiteFooter() {
           an editing server.
         </p>
       </div>
-      <nav className="footer-column" aria-label="Product links">
-        <strong>Product</strong>
-        <SiteLink path="/editor">PDFMech App</SiteLink>
-        <SiteLink path={TOOL_ROUTES.addTextToPdf.slug}>Add Text to PDF</SiteLink>
-        <SiteLink path={TOOL_ROUTES.deletePdfPages.slug}>Delete PDF Pages</SiteLink>
-        <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
-        <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
-        <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
-        <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
-        <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
-        <SiteLink path="/flatten-pdf">Flatten PDF Forms</SiteLink>
-        <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
-        <SiteLink path="/remove-pdf-metadata">Remove PDF Metadata</SiteLink>
-        <SiteLink path="/compare-pdf">Compare PDFs</SiteLink>
-        <SiteLink path="/extract-pdf-pages">Extract PDF Pages</SiteLink>
-        <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
-        <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
-        <SiteLink path="/features">Features</SiteLink>
-        <SiteLink path="/how-it-works">How It Works</SiteLink>
-        <SiteLink path="/faq">FAQ</SiteLink>
+      <nav className="footer-column footer-product-column" aria-label="Product links">
+        <strong>PDF tools</strong>
+        <div className="footer-link-grid">
+          <SiteLink path="/editor">PDFMech App</SiteLink>
+          <SiteLink path={TOOL_ROUTES.addTextToPdf.slug}>Add Text to PDF</SiteLink>
+          <SiteLink path={TOOL_ROUTES.deletePdfPages.slug}>Delete PDF Pages</SiteLink>
+          <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
+          <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
+          <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
+          <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
+          <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
+          <SiteLink path="/flatten-pdf">Flatten PDF Forms</SiteLink>
+          <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
+          <SiteLink path="/remove-pdf-metadata">Remove PDF Metadata</SiteLink>
+          <SiteLink path="/compare-pdf">Compare PDFs</SiteLink>
+          <SiteLink path="/extract-pdf-pages">Extract PDF Pages</SiteLink>
+          <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
+          <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
+          <SiteLink path="/features">All PDF tools</SiteLink>
+          <SiteLink path="/how-it-works">How It Works</SiteLink>
+          <SiteLink path="/faq">FAQ</SiteLink>
+        </div>
       </nav>
       <nav className="footer-column" aria-label="Company links">
         <strong>Company</strong>
-        <SiteLink path="/about">About</SiteLink>
-        <SiteLink path="/contact">Contact</SiteLink>
-        <SiteLink path="/blog">Blog</SiteLink>
+        <div className="footer-link-grid">
+          <SiteLink path="/about">About</SiteLink>
+          <SiteLink path="/contact">Contact</SiteLink>
+          <SiteLink path="/blog">Blog</SiteLink>
+        </div>
       </nav>
       <nav className="footer-column" aria-label="Trust and legal links">
         <strong>Trust &amp; Legal</strong>
-        <SiteLink path="/security">Security</SiteLink>
-        <SiteLink path="/privacy">Privacy</SiteLink>
-        <SiteLink path="/terms">Terms</SiteLink>
-        <a href="/sitemap.xml">Sitemap</a>
-        <a href="/robots.txt">Robots.txt</a>
+        <div className="footer-link-grid">
+          <SiteLink path="/security">Security</SiteLink>
+          <SiteLink path="/privacy">Privacy</SiteLink>
+          <SiteLink path="/terms">Terms</SiteLink>
+          <a href="/sitemap.xml">Sitemap</a>
+          <a href="/robots.txt">Robots.txt</a>
+        </div>
       </nav>
       <p className="footer-note">© {year} PDFMech. Built for fast browser-based PDF fixes.</p>
     </footer>
