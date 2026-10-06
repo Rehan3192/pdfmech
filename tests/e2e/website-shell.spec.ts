@@ -48,14 +48,24 @@ test("website shell has clear navigation and SEO support pages", async ({
     page.getByRole("link", { name: "Email support" }),
   ).toHaveAttribute("href", "mailto:muhammadrehan3192@gmail.com");
 
-  await mainNavigation.locator(".site-tools-menu > summary").click();
-  const toolsNavigation = mainNavigation.locator(".site-tools-dropdown");
-  await expect(toolsNavigation.getByRole("link", { name: /PDF Editor/ })).toBeVisible();
-  await expect(toolsNavigation.getByRole("link", { name: /OCR PDF/ })).toHaveAttribute(
-    "href",
-    "/ocr-pdf",
-  );
-  await toolsNavigation.getByRole("link", { name: /PDF Editor/ }).click();
+  await expect(mainNavigation.locator(".site-tools-menu")).toHaveCount(0);
+  await mainNavigation.getByRole("link", { name: "Tools" }).click();
+  await expect(page).toHaveURL(/\/tools$/);
+  const toolsDirectory = page.getByTestId("site-tools-directory");
+  await expect(toolsDirectory.getByRole("heading", { name: "Free PDF tools that work in your browser." })).toBeVisible();
+  await expect(toolsDirectory.getByRole("link", { name: /OCR PDF/ })).toHaveAttribute("href", "/ocr-pdf");
+
+  const search = toolsDirectory.getByRole("searchbox", { name: "Search PDF tools" });
+  await search.fill("merge");
+  await expect(toolsDirectory.locator(".tools-directory-card")).toHaveCount(1);
+  await expect(toolsDirectory.getByRole("link", { name: /Merge PDF/ })).toBeVisible();
+  await search.clear();
+
+  await toolsDirectory.getByRole("button", { name: "Organize PDF" }).click();
+  await expect(toolsDirectory.getByRole("link", { name: /Extract PDF Pages/ })).toBeVisible();
+  await expect(toolsDirectory.getByRole("link", { name: /OCR PDF/ })).toHaveCount(0);
+  await toolsDirectory.getByRole("button", { name: "All tools" }).click();
+  await toolsDirectory.locator('a[href="/editor"]').click();
   await expect(page).toHaveURL(/\/editor$/);
   await expect(page.getByTestId("production-empty")).toContainText(
     "Edit PDFs privately in your browser",

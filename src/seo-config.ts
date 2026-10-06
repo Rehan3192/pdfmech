@@ -17,6 +17,7 @@ export type SeoPageKey =
   | "comparePdf"
   | "extractPdfPages"
   | "mergePdf"
+  | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -157,6 +158,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Merge PDF files online for free. Arrange multiple PDFs and download one combined document locally in your browser without uploading your files.",
     h1: "Merge PDF files online for free.",
     intro: "Combine multiple PDFs in the order you choose, preserve native pages, and download one new document privately in your browser.",
+    schemaType: "WebPage",
+  },
+  tools: {
+    path: "/tools",
+    title: "Free Online PDF Tools - Private & No Upload | PDFMech",
+    description: "Explore free online PDF tools to edit, organize, merge, extract, OCR, compare, and clean PDFs locally in your browser without uploading files.",
+    h1: "Free PDF tools that work in your browser.",
+    intro: "Choose a focused tool for editing, organizing, scanning, forms, privacy, or document review with browser-local processing.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -580,7 +589,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "mergePdf"
+  return page === "mergePdf" || page === "tools"
     ? "2026-10-06"
     : page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
     ? "2026-10-05"
@@ -684,7 +693,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     });
   }
 
-  if (page === "features") {
+  if (page === "tools") {
     graph.push({
       "@type": "ItemList",
       "@id": `${url}#pdf-tools`,

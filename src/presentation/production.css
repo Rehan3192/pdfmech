@@ -7828,6 +7828,12 @@ button[data-testid="production-apply-text"] {
     background: linear-gradient(135deg, #10b3d6, #087da8);
     box-shadow: 0 8px 18px rgb(4 146 190 / 22%);
   }
+
+  .website-shell[data-page] .site-nav .tools-nav-link[data-active="true"] {
+    color: #fff;
+    background: linear-gradient(135deg, #10b3d6, #087da8);
+    box-shadow: 0 8px 18px rgb(4 146 190 / 22%);
+  }
 }
 
 .website-shell[data-page] .nav-cta {
@@ -7972,6 +7978,12 @@ button[data-testid="production-apply-text"] {
   }
 
   .website-shell[data-page] .site-nav a[aria-current="page"] {
+    color: #fff;
+    background: linear-gradient(135deg, #10b3d6, #087da8);
+    box-shadow: 0 8px 18px rgb(4 146 190 / 18%);
+  }
+
+  .website-shell[data-page] .site-nav .tools-nav-link[data-active="true"] {
     color: #fff;
     background: linear-gradient(135deg, #10b3d6, #087da8);
     box-shadow: 0 8px 18px rgb(4 146 190 / 18%);

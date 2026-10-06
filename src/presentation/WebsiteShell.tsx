@@ -28,10 +28,11 @@ import { MetadataPdfPage } from "./MetadataPdfPage";
 import { ComparePdfPage } from "./ComparePdfPage";
 import { ExtractPagesPage } from "./ExtractPagesPage";
 import { MergePdfPage } from "./MergePdfPage";
+import { ToolsDirectoryPage } from "./ToolsDirectoryPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -61,6 +62,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/compare-pdf": "comparePdf",
   "/extract-pdf-pages": "extractPdfPages",
   "/merge-pdf": "mergePdf",
+  "/tools": "tools",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
   "/features": "features",
@@ -338,138 +340,19 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           >
             Home
           </a>
-          <details
-            key={page}
-            className="site-tools-menu"
-            data-active={page === "editor" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || activeToolRoute !== null ? "true" : "false"}
+          <a
+            className="tools-nav-link"
+            href="/tools"
+            aria-current={page === "tools" ? "page" : undefined}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || activeToolRoute !== null ? "true" : "false"}
+            onClick={(event) => {
+              event.preventDefault();
+              navigateTo("/tools");
+              setMobileMenuOpen(false);
+            }}
           >
-            <summary aria-label="Tools">
-              Tools <span aria-hidden="true">⌄</span>
-            </summary>
-            <div className="site-tools-dropdown" aria-label="PDF tools">
-              <a
-                href="/editor"
-                aria-current={
-                  page === "editor" || (activeToolRoute !== null && page !== "ocrPdf")
-                    ? "page"
-                    : undefined
-                }
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/editor");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">T</span>
-                <span><strong>PDF Editor</strong><small>Add text, whiteout, and organize pages</small></span>
-              </a>
-              <a
-                href="/ocr-pdf"
-                aria-current={page === "ocrPdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/ocr-pdf");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">OCR</span>
-                <span><strong>OCR PDF</strong><small>Make scanned PDFs searchable</small></span>
-              </a>
-              <a
-                href="/bates-numbering-pdf"
-                aria-current={page === "batesNumberingPdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/bates-numbering-pdf");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">#</span>
-                <span><strong>Bates Numbering</strong><small>Add continuous page identifiers</small></span>
-              </a>
-              <a
-                href="/flatten-pdf"
-                aria-current={page === "flattenPdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/flatten-pdf");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">▤</span>
-                <span><strong>Flatten PDF Forms</strong><small>Make completed fields non-editable</small></span>
-              </a>
-              <a
-                href="/deskew-pdf"
-                aria-current={page === "deskewPdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/deskew-pdf");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">↗</span>
-                <span><strong>Deskew PDF</strong><small>Straighten crooked scanned pages</small></span>
-              </a>
-              <a
-                href="/remove-pdf-metadata"
-                aria-current={page === "metadataPdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/remove-pdf-metadata");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">⌫</span>
-                <span><strong>Remove PDF Metadata</strong><small>View and clear hidden document details</small></span>
-              </a>
-              <a
-                href="/compare-pdf"
-                aria-current={page === "comparePdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/compare-pdf");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">⇄</span>
-                <span><strong>Compare PDFs</strong><small>Find page-by-page text changes</small></span>
-              </a>
-              <a
-                href="/extract-pdf-pages"
-                aria-current={page === "extractPdfPages" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/extract-pdf-pages");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">▤</span>
-                <span><strong>Extract PDF Pages</strong><small>Save selected pages as a new PDF</small></span>
-              </a>
-              <a
-                href="/merge-pdf"
-                aria-current={page === "mergePdf" ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                  navigateTo("/merge-pdf");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <span className="site-tool-icon" aria-hidden="true">⊕</span>
-                <span><strong>Merge PDF</strong><small>Combine PDFs in your chosen order</small></span>
-              </a>
-            </div>
-          </details>
+            Tools
+          </a>
           {navItems.map((item) => (
             <a
               key={item.path}
@@ -550,6 +433,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="mergePdf" />
           <MergePdfPage />
+        </>
+      ) : page === "tools" ? (
+        <>
+          <Breadcrumbs page="tools" />
+          <ToolsDirectoryPage />
         </>
       ) : toolEditorActive && toolEditorSession !== null ? (
         renderEditor({
@@ -659,7 +547,7 @@ function SiteFooter() {
           <SiteLink path="/merge-pdf">Merge PDF</SiteLink>
           <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
           <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
-          <SiteLink path="/features">All PDF tools</SiteLink>
+          <SiteLink path="/tools">All PDF tools</SiteLink>
           <SiteLink path="/how-it-works">How It Works</SiteLink>
           <SiteLink path="/faq">FAQ</SiteLink>
         </div>

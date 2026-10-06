@@ -8,6 +8,7 @@ import {
   SEO_PAGES,
   SITE_ORIGIN,
   SOCIAL_IMAGE_PATH,
+  TOOL_SEO_PAGE_KEYS,
   TOOL_ROUTE_FAQS,
 } from "../src/seo-config.ts";
 import {
@@ -57,6 +58,7 @@ function renderSnapshot(page) {
     comparePdf: "Compare PDFs",
     extractPdfPages: "Extract PDF Pages",
     mergePdf: "Merge PDF",
+    tools: "All PDF Tools",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
     features: "Features",
@@ -89,13 +91,16 @@ function renderSnapshot(page) {
   const isCompareTool = page === "comparePdf";
   const isExtractPagesTool = page === "extractPdfPages";
   const isMergeTool = page === "mergePdf";
+  const isToolsDirectory = page === "tools";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
   const blogContent = page === "blog"
     ? `<section aria-label="Latest PDF guides"><h2>Latest articles</h2>${blogPosts.length === 0 ? "<p>New PDF guides are on the way.</p>" : blogPosts.map((post) => `<article><h3><a href="/blog/${post.slug}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.excerpt || "Read this practical PDF guide from PDFMech.")}</p><time datetime="${escapeHtml(post.date)}">${escapeHtml(formatBlogDate(post.date))}</time></article>`).join("")}</section>`
     : "";
-  const toolContent = isAddTextTool
-    ? `<section><h2>How to add text to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where the new text should appear.</li><li>Adjust font, size, color, bold style, and alignment.</li><li>Review and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>What the Text tool changes</h2><p>PDFMech adds a new editable text box above the PDF page. It does not rewrite text already embedded in the original PDF.</p></section>`
+  const toolContent = isToolsDirectory
+    ? `<section><h2>Choose your PDF tool</h2><p>Use a focused browser-local workflow for editing, organizing, scanning, forms, privacy, or document review.</p>${TOOL_SEO_PAGE_KEYS.map((toolPage) => `<article><h3><a href="${SEO_PAGES[toolPage].path}">${escapeHtml(SEO_PAGES[toolPage].h1)}</a></h3><p>${escapeHtml(SEO_PAGES[toolPage].description)}</p></article>`).join("")}</section>`
+    : isAddTextTool
+      ? `<section><h2>How to add text to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where the new text should appear.</li><li>Adjust font, size, color, bold style, and alignment.</li><li>Review and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>What the Text tool changes</h2><p>PDFMech adds a new editable text box above the PDF page. It does not rewrite text already embedded in the original PDF.</p></section>`
     : isDeletePagesTool
       ? `<section><h2>How to delete PDF pages</h2><ol><li>Choose a PDF from your device.</li><li>Select an unwanted page from the thumbnails.</li><li>Delete the selected page and review the remaining page count.</li><li>Download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>Remove complete pages</h2><p>PDFMech removes selected pages from the working document used for export. Your original PDF file remains unchanged on your device.</p></section>`
       : isReorderPagesTool

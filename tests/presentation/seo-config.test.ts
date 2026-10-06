@@ -125,8 +125,8 @@ describe("SEO configuration", () => {
     expect(structuredData).toContain('"dateModified":"2026-09-27"');
   });
 
-  it("describes the Features page as the hub for every focused PDF tool", () => {
-    const structuredData = JSON.stringify(buildStructuredData("features"));
+  it("describes the Tools page as the hub for every focused PDF tool", () => {
+    const structuredData = JSON.stringify(buildStructuredData("tools"));
 
     expect(structuredData).toContain('"@type":"ItemList"');
     expect(structuredData).toContain(

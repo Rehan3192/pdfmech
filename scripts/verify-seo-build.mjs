@@ -245,14 +245,15 @@ for (const page of SEO_PAGE_KEYS) {
       throw new Error(`${filename} must expose matching visible and structured FAQ content.`);
     }
   }
-  if (page === "features") {
+  if (page === "tools") {
     const toolList = graph.find((item) => item["@type"] === "ItemList");
     if (
       toolList === undefined ||
       toolList.numberOfItems !== TOOL_SEO_PAGE_KEYS.length ||
       TOOL_SEO_PAGE_KEYS.some(
         (toolPage) =>
-          !JSON.stringify(toolList).includes(canonicalUrl(toolPage)),
+          !JSON.stringify(toolList).includes(canonicalUrl(toolPage)) ||
+          !html.includes(`href="${SEO_PAGES[toolPage].path}"`),
       )
     ) {
       throw new Error(`${filename} must identify every focused PDF tool in its ItemList schema.`);

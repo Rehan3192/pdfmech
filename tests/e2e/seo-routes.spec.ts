@@ -69,8 +69,8 @@ test("tool routes expose matching visible FAQ content and structured data", asyn
   }
 });
 
-test("Features identifies every focused tool in its structured hub", async ({ page }) => {
-  await page.goto(SEO_PAGES.features.path);
+test("Tools identifies every focused tool in its structured hub", async ({ page }) => {
+  await page.goto(SEO_PAGES.tools.path);
   const structuredData = JSON.parse(
     (await page.locator("#route-structured-data").textContent()) ?? "{}",
   );
