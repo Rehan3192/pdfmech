@@ -18,6 +18,7 @@ export type SeoPageKey =
   | "extractPdfPages"
   | "mergePdf"
   | "splitPdf"
+  | "compressPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -167,6 +168,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Split PDF files online for free. Create one PDF per page or define custom page ranges, then download locally without uploading your document.",
     h1: "Split PDF pages online for free.",
     intro: "Separate a PDF into individual pages or custom page ranges, preserve native page content, and download every output privately in your browser.",
+    schemaType: "WebPage",
+  },
+  compressPdf: {
+    path: "/compress-pdf",
+    title: "Compress PDF Online Free - Reduce PDF Size Locally | PDFMech",
+    description: "Compress PDF files online for free. Reduce scanned and image-heavy PDF sizes locally in your browser without uploading your document.",
+    h1: "Compress PDF files online for free.",
+    intro: "Choose Light, Balanced, or Strong compression and download a smaller visible-page copy created privately in your browser.",
     schemaType: "WebPage",
   },
   tools: {
@@ -556,6 +565,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech creates new files and leaves the source PDF unchanged.",
     },
   ],
+  compressPdf: [
+    {
+      question: "Does PDFMech upload my PDF?",
+      answer: "No. Previewing, compression, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Which compression level should I choose?",
+      answer: "Balanced is recommended for most sharing and email tasks. Choose Light for sharper detail or Strong for a smaller file.",
+    },
+    {
+      question: "Why did my PDF not become smaller?",
+      answer: "Text-only and already-optimized PDFs can be more efficient than rasterized pages. PDFMech keeps the original bytes when the generated copy would be larger.",
+    },
+    {
+      question: "Will text remain selectable?",
+      answer: "No. This compressor rebuilds visible pages as images. Keep the original when selectable text, links, forms, or accessibility structure must remain available.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -609,6 +636,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "extractPdfPages",
   "mergePdf",
   "splitPdf",
+  "compressPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -617,7 +645,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "mergePdf" || page === "splitPdf" || page === "tools"
+  return page === "compressPdf" || page === "tools"
+    ? "2026-10-07"
+    : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
     : page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
     ? "2026-10-05"
@@ -694,6 +724,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "extractPdfPages" ||
     page === "mergePdf" ||
     page === "splitPdf" ||
+    page === "compressPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

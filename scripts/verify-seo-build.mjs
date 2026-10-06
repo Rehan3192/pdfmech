@@ -216,6 +216,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "compressPdf" &&
+    (!html.includes("How to compress a PDF online") ||
+      !html.includes("Private local PDF compression") ||
+      !html.includes("Best for scanned and image-heavy PDFs") ||
+      !html.includes("Raster compression limits") ||
+      !html.includes('/compress-pdf#compress-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable PDF compression instructions, raster limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

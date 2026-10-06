@@ -59,6 +59,7 @@ function renderSnapshot(page) {
     extractPdfPages: "Extract PDF Pages",
     mergePdf: "Merge PDF",
     splitPdf: "Split PDF",
+    compressPdf: "Compress PDF",
     tools: "All PDF Tools",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
@@ -93,6 +94,7 @@ function renderSnapshot(page) {
   const isExtractPagesTool = page === "extractPdfPages";
   const isMergeTool = page === "mergePdf";
   const isSplitTool = page === "splitPdf";
+  const isCompressTool = page === "compressPdf";
   const isToolsDirectory = page === "tools";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
@@ -129,6 +131,8 @@ function renderSnapshot(page) {
                             ? `<section><h2>How to merge PDF files online</h2><ol><li>Choose two or more PDF files from your device.</li><li>Review the previews and move files into the required order.</li><li>Merge every page locally in your browser.</li><li>Download one new combined PDF.</li></ol><h2>Native PDF page merging</h2><p>PDFMech copies native pages from every source into one combined document without intentionally converting them into screenshots.</p><h2>Private local PDF merging</h2><p>Previewing, ordering, merging, validation, and download happen in your browser without uploading the source documents.</p><h2>Document-level merge limits</h2><p>Bookmarks, metadata, attachments, scripts, signatures, and some interactive forms or links may not transfer or remain valid.</p></section>`
                             : isSplitTool
                               ? `<section><h2>How to split a PDF online</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or define separate custom ranges.</li><li>Review the output count and included pages.</li><li>Create the files and download them together as a ZIP.</li></ol><h2>Native PDF page splitting</h2><p>PDFMech copies native pages into separate PDF documents without intentionally converting them into screenshots.</p><h2>Private local PDF splitting</h2><p>Page previews, splitting, validation, ZIP packaging, and downloads happen in your browser without uploading the source document.</p><h2>Document-level split limits</h2><p>Bookmarks, metadata, attachments, scripts, signatures, and some interactive forms or links may not transfer or remain valid.</p></section>`
+                            : isCompressTool
+                              ? `<section><h2>How to compress a PDF online</h2><ol><li>Choose a PDF from your device.</li><li>Review the original file size and page previews.</li><li>Select Light, Balanced, or Strong compression.</li><li>Download the smaller PDF created in your browser.</li></ol><h2>Private local PDF compression</h2><p>PDFMech renders, rebuilds, validates, and downloads the compressed copy in your browser without uploading the source document.</p><h2>Best for scanned and image-heavy PDFs</h2><p>Raster compression is most effective for scans, photographs, screenshots, and presentation graphics. Already-efficient text PDFs may not become smaller.</p><h2>Raster compression limits</h2><p>The visible pages remain, but selectable text, forms, links, layers, attachments, and digital signatures do not remain interactive in the compressed copy.</p></section>`
                           : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
@@ -166,6 +170,8 @@ function renderSnapshot(page) {
                             ? "/merge-pdf#merge-pdf-tool"
                             : isSplitTool
                               ? "/split-pdf#split-pdf-tool"
+                            : isCompressTool
+                              ? "/compress-pdf#compress-pdf-tool"
                           : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
@@ -199,6 +205,8 @@ function renderSnapshot(page) {
                             ? "Choose PDFs to merge"
                             : isSplitTool
                               ? "Choose a PDF to split"
+                            : isCompressTool
+                              ? "Choose a PDF to compress"
                           : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide
