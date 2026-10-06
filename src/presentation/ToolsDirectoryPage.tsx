@@ -31,6 +31,7 @@ const tools: readonly DirectoryTool[] = [
   { name: "Bates Numbering PDF", description: "Add continuous page identifiers across one or multiple PDFs.", path: "/bates-numbering-pdf", category: "Scan & Forms", icon: "#", tone: "orange", keywords: "legal page numbers identifiers" },
   { name: "Remove PDF Metadata", description: "Inspect and clear supported hidden document properties and XMP data.", path: "/remove-pdf-metadata", category: "Privacy & Review", icon: "⌫", tone: "green", keywords: "privacy author title hidden data" },
   { name: "Compare PDFs", description: "Find added and removed selectable text page by page.", path: "/compare-pdf", category: "Privacy & Review", icon: "⇄", tone: "purple", keywords: "difference diff versions review" },
+  { name: "Secure PDF Redaction", description: "Permanently remove selected text and graphics from marked PDF pages.", path: "/redact-pdf", category: "Privacy & Review", icon: "■", tone: "orange", keywords: "redact permanent remove sensitive confidential privacy" },
   { name: "Private PDF Editor", description: "Learn how PDFMech processes supported edits locally in your browser.", path: "/private-pdf-editor", category: "Privacy & Review", icon: "⌂", tone: "cyan", keywords: "local browser no upload security" },
 ] as const;
 

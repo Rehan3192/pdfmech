@@ -67,6 +67,7 @@ import "./presentation/extract-pages.css";
 import "./presentation/merge-pdf.css";
 import "./presentation/split-pdf.css";
 import "./presentation/compress-pdf.css";
+import "./presentation/redact-pdf.css";
 import "./presentation/tools-directory.css";
 import "./presentation/blog.css";
 

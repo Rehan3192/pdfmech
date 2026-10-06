@@ -228,6 +228,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "redactPdf" &&
+    (!html.includes("How to redact a PDF securely online") ||
+      !html.includes("Permanent redaction instead of visual whiteout") ||
+      !html.includes("Private browser-local PDF redaction") ||
+      !html.includes("Redaction limits and verification") ||
+      !html.includes('/redact-pdf#redact-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable secure-redaction instructions, verification limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

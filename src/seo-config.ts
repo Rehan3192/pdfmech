@@ -19,6 +19,7 @@ export type SeoPageKey =
   | "mergePdf"
   | "splitPdf"
   | "compressPdf"
+  | "redactPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -176,6 +177,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Compress PDF files online for free. Reduce scanned and image-heavy PDF sizes locally in your browser without uploading your document.",
     h1: "Compress PDF files online for free.",
     intro: "Choose Light, Balanced, or Strong compression and download a smaller visible-page copy created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  redactPdf: {
+    path: "/redact-pdf",
+    title: "Redact PDF Online Free - Remove Content Securely | PDFMech",
+    description: "Redact PDF content permanently online for free. Remove sensitive text and graphics locally in your browser without uploading your document.",
+    h1: "Redact PDF content securely online.",
+    intro: "Draw over sensitive content and create a new PDF with the covered text and graphics permanently removed from marked pages.",
     schemaType: "WebPage",
   },
   tools: {
@@ -583,6 +592,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. This compressor rebuilds visible pages as images. Keep the original when selectable text, links, forms, or accessibility structure must remain available.",
     },
   ],
+  redactPdf: [
+    {
+      question: "Is secure redaction different from whiteout?",
+      answer: "Yes. Whiteout adds a visual cover. Secure redaction rebuilds marked pages without retaining the underlying PDF text or graphics beneath selected regions.",
+    },
+    {
+      question: "Does PDFMech upload my document?",
+      answer: "No. Page previews, redaction, PDF generation, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Will all pages become images?",
+      answer: "No. Only pages containing redaction areas are flattened. Unmarked pages are copied natively into the new PDF.",
+    },
+    {
+      question: "Can redactions be undone after download?",
+      answer: "No. Applied redactions are permanent in the generated copy. Your original source PDF remains unchanged on your device.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -637,6 +664,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "mergePdf",
   "splitPdf",
   "compressPdf",
+  "redactPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -645,7 +673,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -725,6 +753,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "mergePdf" ||
     page === "splitPdf" ||
     page === "compressPdf" ||
+    page === "redactPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({
