@@ -29,10 +29,11 @@ import { ComparePdfPage } from "./ComparePdfPage";
 import { ExtractPagesPage } from "./ExtractPagesPage";
 import { MergePdfPage } from "./MergePdfPage";
 import { ToolsDirectoryPage } from "./ToolsDirectoryPage";
+import { SplitPdfPage } from "./SplitPdfPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "tools" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -62,6 +63,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/compare-pdf": "comparePdf",
   "/extract-pdf-pages": "extractPdfPages",
   "/merge-pdf": "mergePdf",
+  "/split-pdf": "splitPdf",
   "/tools": "tools",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
@@ -262,7 +264,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -344,7 +346,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             className="tools-nav-link"
             href="/tools"
             aria-current={page === "tools" ? "page" : undefined}
-            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || activeToolRoute !== null ? "true" : "false"}
             onClick={(event) => {
               event.preventDefault();
               navigateTo("/tools");
@@ -433,6 +435,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="mergePdf" />
           <MergePdfPage />
+        </>
+      ) : page === "splitPdf" ? (
+        <>
+          <Breadcrumbs page="splitPdf" />
+          <SplitPdfPage />
         </>
       ) : page === "tools" ? (
         <>
@@ -545,6 +552,7 @@ function SiteFooter() {
           <SiteLink path="/compare-pdf">Compare PDFs</SiteLink>
           <SiteLink path="/extract-pdf-pages">Extract PDF Pages</SiteLink>
           <SiteLink path="/merge-pdf">Merge PDF</SiteLink>
+          <SiteLink path="/split-pdf">Split PDF</SiteLink>
           <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
           <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
           <SiteLink path="/tools">All PDF tools</SiteLink>

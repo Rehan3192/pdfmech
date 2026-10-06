@@ -17,6 +17,7 @@ export type SeoPageKey =
   | "comparePdf"
   | "extractPdfPages"
   | "mergePdf"
+  | "splitPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -160,10 +161,18 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     intro: "Combine multiple PDFs in the order you choose, preserve native pages, and download one new document privately in your browser.",
     schemaType: "WebPage",
   },
+  splitPdf: {
+    path: "/split-pdf",
+    title: "Split PDF Online Free - Separate Pages Locally | PDFMech",
+    description: "Split PDF files online for free. Create one PDF per page or define custom page ranges, then download locally without uploading your document.",
+    h1: "Split PDF pages online for free.",
+    intro: "Separate a PDF into individual pages or custom page ranges, preserve native page content, and download every output privately in your browser.",
+    schemaType: "WebPage",
+  },
   tools: {
     path: "/tools",
     title: "Free Online PDF Tools - Private & No Upload | PDFMech",
-    description: "Explore free online PDF tools to edit, organize, merge, extract, OCR, compare, and clean PDFs locally in your browser without uploading files.",
+    description: "Explore free online PDF tools to edit, organize, merge, split, extract, OCR, compare, and clean PDFs locally in your browser without uploading files.",
     h1: "Free PDF tools that work in your browser.",
     intro: "Choose a focused tool for editing, organizing, scanning, forms, privacy, or document review with browser-local processing.",
     schemaType: "WebPage",
@@ -529,6 +538,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "They may be merged, but creating a new combined document means the original digital signatures will not remain valid.",
     },
   ],
+  splitPdf: [
+    {
+      question: "Does PDFMech upload my file?",
+      answer: "No. Page previews, splitting, validation, ZIP packaging, and downloads are produced locally in your browser.",
+    },
+    {
+      question: "Can I split a PDF into chapters?",
+      answer: "Yes. Enter each chapter as a separate range. For example, 1-5, 6-12, 13-20 creates three PDFs.",
+    },
+    {
+      question: "Will text remain selectable?",
+      answer: "Ordinary PDF pages are copied natively instead of intentionally converted into screenshots, so selectable text and vector content can remain intact.",
+    },
+    {
+      question: "Does splitting change my original PDF?",
+      answer: "No. PDFMech creates new files and leaves the source PDF unchanged.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -581,6 +608,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "comparePdf",
   "extractPdfPages",
   "mergePdf",
+  "splitPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -589,7 +617,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "mergePdf" || page === "tools"
+  return page === "mergePdf" || page === "splitPdf" || page === "tools"
     ? "2026-10-06"
     : page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
     ? "2026-10-05"
@@ -665,6 +693,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "comparePdf" ||
     page === "extractPdfPages" ||
     page === "mergePdf" ||
+    page === "splitPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

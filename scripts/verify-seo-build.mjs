@@ -204,6 +204,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "splitPdf" &&
+    (!html.includes("How to split a PDF online") ||
+      !html.includes("Native PDF page splitting") ||
+      !html.includes("Private local PDF splitting") ||
+      !html.includes("Document-level split limits") ||
+      !html.includes('/split-pdf#split-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable PDF splitting instructions, transfer limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||
