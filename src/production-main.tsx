@@ -64,6 +64,7 @@ import "./presentation/deskew.css";
 import "./presentation/metadata.css";
 import "./presentation/compare.css";
 import "./presentation/extract-pages.css";
+import "./presentation/merge-pdf.css";
 import "./presentation/blog.css";
 
 const rootElement = document.querySelector("#app");

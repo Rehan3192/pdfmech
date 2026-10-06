@@ -16,6 +16,7 @@ export type SeoPageKey =
   | "metadataPdf"
   | "comparePdf"
   | "extractPdfPages"
+  | "mergePdf"
   | "privatePdfEditor"
   | "editPdfOnIphone"
   | "features"
@@ -148,6 +149,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Extract selected pages from a PDF online for free. Choose thumbnails or page ranges and download one new PDF locally without uploading your file.",
     h1: "Extract pages from a PDF online.",
     intro: "Select page thumbnails or enter flexible ranges, then save the chosen native pages as one new PDF privately in your browser.",
+    schemaType: "WebPage",
+  },
+  mergePdf: {
+    path: "/merge-pdf",
+    title: "Merge PDF Online Free - Combine PDFs Locally | PDFMech",
+    description: "Merge PDF files online for free. Arrange multiple PDFs and download one combined document locally in your browser without uploading your files.",
+    h1: "Merge PDF files online for free.",
+    intro: "Combine multiple PDFs in the order you choose, preserve native pages, and download one new document privately in your browser.",
     schemaType: "WebPage",
   },
   privatePdfEditor: {
@@ -493,6 +502,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech creates a separate PDF containing the selected pages and leaves the source file unchanged.",
     },
   ],
+  mergePdf: [
+    {
+      question: "Are my PDF files uploaded?",
+      answer: "No. Previewing, ordering, merging, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Can I change the order before merging?",
+      answer: "Yes. Use the Move Up and Move Down controls to set the file order. Pages within each PDF keep their original order.",
+    },
+    {
+      question: "Will merging turn pages into images?",
+      answer: "No. PDFMech copies native PDF pages instead of intentionally converting them into screenshots.",
+    },
+    {
+      question: "Are digitally signed PDFs supported?",
+      answer: "They may be merged, but creating a new combined document means the original digital signatures will not remain valid.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -544,6 +571,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "metadataPdf",
   "comparePdf",
   "extractPdfPages",
+  "mergePdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -552,7 +580,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
+  return page === "mergePdf"
+    ? "2026-10-06"
+    : page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
     ? "2026-10-05"
     : page === "flattenPdf" || page === "deskewPdf"
     ? "2026-10-04"
@@ -625,6 +655,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "metadataPdf" ||
     page === "comparePdf" ||
     page === "extractPdfPages" ||
+    page === "mergePdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

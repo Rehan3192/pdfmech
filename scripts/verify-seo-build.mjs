@@ -192,6 +192,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "mergePdf" &&
+    (!html.includes("How to merge PDF files online") ||
+      !html.includes("Native PDF page merging") ||
+      !html.includes("Private local PDF merging") ||
+      !html.includes("Document-level merge limits") ||
+      !html.includes('/merge-pdf#merge-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable PDF merging instructions, transfer limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||
