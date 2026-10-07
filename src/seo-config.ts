@@ -12,6 +12,7 @@ export type SeoPageKey =
   | "ocrPdf"
   | "batesNumberingPdf"
   | "flattenPdf"
+  | "fillPdfForm"
   | "deskewPdf"
   | "metadataPdf"
   | "comparePdf"
@@ -127,6 +128,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Flatten editable PDF form fields online for free. Fix completed field appearances into the page and download a validated copy locally without uploading.",
     h1: "Flatten PDF forms online for free.",
     intro: "Convert supported AcroForm fields into fixed page content locally for consistent viewing, sharing, and printing.",
+    schemaType: "WebPage",
+  },
+  fillPdfForm: {
+    path: "/fill-pdf-form",
+    title: "Fill PDF Forms Online Free - Private & No Upload | PDFMech",
+    description: "Fill PDF forms online for free. Complete text fields, checkboxes, radio buttons, dropdowns, and list boxes locally without uploading your document.",
+    h1: "Fill PDF forms online for free.",
+    intro: "Complete supported interactive PDF fields, keep them editable or flatten the finished copy, and download privately in your browser.",
     schemaType: "WebPage",
   },
   deskewPdf: {
@@ -520,6 +529,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. XFA forms are detected and blocked because this browser-local method cannot preserve them reliably.",
     },
   ],
+  fillPdfForm: [
+    {
+      question: "Is my PDF or form data uploaded?",
+      answer: "No. Supported form inspection, editing, rendering, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Which PDF fields are supported?",
+      answer: "PDFMech supports AcroForm text fields, checkboxes, radio groups, dropdowns, and list boxes. Buttons and cryptographic signature fields are not edited.",
+    },
+    {
+      question: "Can I keep the form editable?",
+      answer: "Yes. Fields remain interactive by default. Enable flattening only when you want the supported field appearances fixed into the page.",
+    },
+    {
+      question: "Are XFA forms supported?",
+      answer: "No. XFA forms are detected and blocked because this browser-local workflow cannot preserve them reliably.",
+    },
+  ],
   deskewPdf: [
     {
       question: "Is my scanned PDF uploaded?",
@@ -819,6 +846,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "ocrPdf",
   "batesNumberingPdf",
   "flattenPdf",
+  "fillPdfForm",
   "deskewPdf",
   "metadataPdf",
   "comparePdf",
@@ -841,7 +869,9 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || page === "tools"
+  return page === "fillPdfForm" || page === "tools"
+    ? "2026-10-08"
+    : page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -914,6 +944,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "ocrPdf" ||
     page === "batesNumberingPdf" ||
     page === "flattenPdf" ||
+    page === "fillPdfForm" ||
     page === "deskewPdf" ||
     page === "metadataPdf" ||
     page === "comparePdf" ||

@@ -144,6 +144,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "fillPdfForm" &&
+    (!html.includes("How to fill a PDF form online") ||
+      !html.includes("Common interactive PDF fields") ||
+      !html.includes("Editable or flattened output") ||
+      !html.includes("Private browser-local form filling") ||
+      !html.includes('/fill-pdf-form#fill-pdf-form-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable form-filling instructions, supported controls, output choices, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "deskewPdf" &&
     (!html.includes("How to straighten a scanned PDF") ||
       !html.includes("Automatic and manual deskew") ||

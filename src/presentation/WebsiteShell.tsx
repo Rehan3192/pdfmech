@@ -38,10 +38,11 @@ import { PdfToJpgPage } from "./PdfToJpgPage";
 import { JpgToPdfPage } from "./JpgToPdfPage";
 import { WatermarkPdfPage } from "./WatermarkPdfPage";
 import { SignPdfPage } from "./SignPdfPage";
+import { FillPdfFormPage } from "./FillPdfFormPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "watermarkPdf" | "signPdf" | "tools" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "fillPdfForm" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "watermarkPdf" | "signPdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -66,6 +67,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   [TOOL_ROUTES.ocrPdf.slug]: "ocrPdf",
   "/bates-numbering-pdf": "batesNumberingPdf",
   "/flatten-pdf": "flattenPdf",
+  "/fill-pdf-form": "fillPdfForm",
   "/deskew-pdf": "deskewPdf",
   "/remove-pdf-metadata": "metadataPdf",
   "/compare-pdf": "comparePdf",
@@ -280,7 +282,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -362,7 +364,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             className="tools-nav-link"
             href="/tools"
             aria-current={page === "tools" ? "page" : undefined}
-            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || activeToolRoute !== null ? "true" : "false"}
             onClick={(event) => {
               event.preventDefault();
               navigateTo("/tools");
@@ -426,6 +428,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="flattenPdf" />
           <FlattenPdfPage />
+        </>
+      ) : page === "fillPdfForm" ? (
+        <>
+          <Breadcrumbs page="fillPdfForm" />
+          <FillPdfFormPage />
         </>
       ) : page === "deskewPdf" ? (
         <>
@@ -603,6 +610,7 @@ function SiteFooter() {
           <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
           <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
           <SiteLink path="/flatten-pdf">Flatten PDF Forms</SiteLink>
+          <SiteLink path="/fill-pdf-form">Fill PDF Forms</SiteLink>
           <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
           <SiteLink path="/remove-pdf-metadata">Remove PDF Metadata</SiteLink>
           <SiteLink path="/compare-pdf">Compare PDFs</SiteLink>

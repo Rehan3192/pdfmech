@@ -53,6 +53,7 @@ function renderSnapshot(page) {
     ocrPdf: "OCR PDF",
     batesNumberingPdf: "Bates Numbering PDF",
     flattenPdf: "Flatten PDF Forms",
+    fillPdfForm: "Fill PDF Forms",
     deskewPdf: "Deskew PDF",
     metadataPdf: "Remove PDF Metadata",
     comparePdf: "Compare PDFs",
@@ -95,6 +96,7 @@ function renderSnapshot(page) {
   const isOcrTool = page === "ocrPdf";
   const isBatesTool = page === "batesNumberingPdf";
   const isFlattenTool = page === "flattenPdf";
+  const isFillFormTool = page === "fillPdfForm";
   const isDeskewTool = page === "deskewPdf";
   const isMetadataTool = page === "metadataPdf";
   const isCompareTool = page === "comparePdf";
@@ -133,6 +135,8 @@ function renderSnapshot(page) {
                 ? `<section><h2>How to add Bates numbers to a PDF</h2><ol><li>Choose one or more PDFs and arrange them in sequence.</li><li>Select all pages or enter a page range for each file.</li><li>Set the starting number, prefix, suffix, digits, and position.</li><li>Process locally and download each numbered PDF.</li></ol><h2>Continuous numbering across PDFs</h2><p>PDFMech continues one sequence across selected pages in the exact file order you choose.</p><h2>Private local processing</h2><p>Your source documents are numbered in this browser and are not uploaded to a PDFMech processing server.</p></section>`
                 : isFlattenTool
                   ? `<section><h2>How to flatten PDF form fields</h2><ol><li>Choose a completed PDF form.</li><li>Review the editable AcroForm fields found.</li><li>Flatten the current field appearances locally.</li><li>Download a validated non-editable copy.</li></ol><h2>AcroForm fields become fixed content</h2><p>Supported text fields, checkboxes, radio buttons, and dropdown appearances become part of the page and are no longer editable.</p><h2>Private local form processing</h2><p>PDFMech inspects and flattens the form in your browser without uploading it to a document-processing server.</p><h2>Clear product limits</h2><p>This tool flattens AcroForm fields, not arbitrary annotations, layers, scripts, or XFA forms.</p></section>`
+                  : isFillFormTool
+                    ? `<section><h2>How to fill a PDF form online</h2><ol><li>Choose a PDF containing interactive AcroForm fields.</li><li>Complete supported text, checkbox, radio, dropdown, and list fields.</li><li>Keep the fields editable or flatten their current appearances.</li><li>Save and download the completed PDF locally.</li></ol><h2>Common interactive PDF fields</h2><p>PDFMech reads and updates supported AcroForm controls while preserving unsupported buttons and signature fields unchanged.</p><h2>Editable or flattened output</h2><p>Keep fields interactive for later changes or make the supported field appearances fixed and non-editable.</p><h2>Private browser-local form filling</h2><p>Your source PDF and entered field values stay in your browser during supported processing and validation.</p></section>`
                   : isDeskewTool
                     ? `<section><h2>How to straighten a scanned PDF</h2><ol><li>Choose a scanned or image-based PDF.</li><li>Review each automatically detected correction angle.</li><li>Fine-tune individual pages when needed.</li><li>Create the corrected PDF locally and download it.</li></ol><h2>Automatic and manual deskew</h2><p>PDFMech estimates small page rotations from horizontal printed text and lets you adjust every page in quarter-degree steps.</p><h2>Private scan processing</h2><p>Page analysis, rendering, correction, and PDF export happen in your browser without uploading the source document.</p><h2>Scan-specific raster output</h2><p>Corrected pages are rasterized and should be sent through OCR afterward if searchable text is required. Pages at zero degrees are preserved.</p></section>`
                     : isMetadataTool
@@ -186,6 +190,8 @@ function renderSnapshot(page) {
                 ? "/bates-numbering-pdf#bates-numbering-tool"
                 : isFlattenTool
                   ? "/flatten-pdf#flatten-pdf-tool"
+                  : isFillFormTool
+                    ? "/fill-pdf-form#fill-pdf-form-tool"
                   : isDeskewTool
                     ? "/deskew-pdf#deskew-pdf-tool"
                     : isMetadataTool
@@ -235,6 +241,8 @@ function renderSnapshot(page) {
                 ? "Choose PDFs for Bates numbering"
                 : isFlattenTool
                   ? "Choose a PDF form to flatten"
+                  : isFillFormTool
+                    ? "Choose a PDF form to fill"
                   : isDeskewTool
                     ? "Choose a scanned PDF to straighten"
                     : isMetadataTool
