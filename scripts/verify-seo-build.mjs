@@ -252,6 +252,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "unlockPdf" &&
+    (!html.includes("How to remove a password from a PDF") ||
+      !html.includes("Private browser-local PDF decryption") ||
+      !html.includes("Known-password removal only") ||
+      !html.includes("What changes after unlocking") ||
+      !html.includes('/unlock-pdf#unlock-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable password-removal instructions, authorization limits, local processing details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

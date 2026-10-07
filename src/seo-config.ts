@@ -21,6 +21,7 @@ export type SeoPageKey =
   | "compressPdf"
   | "redactPdf"
   | "protectPdf"
+  | "unlockPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -194,6 +195,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Password protect a PDF online for free with AES-256 encryption. Secure your document locally in your browser without uploading the PDF or password.",
     h1: "Password protect a PDF online for free.",
     intro: "Add an open password and optional reader permissions, then download an AES-256 encrypted copy created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  unlockPdf: {
+    path: "/unlock-pdf",
+    title: "Unlock PDF Online Free - Remove PDF Password | PDFMech",
+    description: "Unlock a PDF online for free when you know its password. Remove PDF encryption locally in your browser without uploading the document or password.",
+    h1: "Unlock a PDF online for free.",
+    intro: "Enter the current PDF password and download a separate unencrypted copy created privately in your browser.",
     schemaType: "WebPage",
   },
   tools: {
@@ -637,6 +646,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Not on this page. Remove the existing password first, then protect the unencrypted copy with a new password.",
     },
   ],
+  unlockPdf: [
+    {
+      question: "Can PDFMech unlock a PDF without its password?",
+      answer: "No. If the file requires an open password, you must provide a valid current user or owner password.",
+    },
+    {
+      question: "Does PDFMech upload my PDF or password?",
+      answer: "No. Protection checks, decryption, verification, and download happen locally in your browser.",
+    },
+    {
+      question: "Does unlocking change the original PDF?",
+      answer: "No. PDFMech creates a separate unencrypted copy and leaves the protected source file unchanged.",
+    },
+    {
+      question: "Why does my PDF open without asking for a password?",
+      answer: "Some encrypted PDFs use only permission restrictions. PDFMech can remove those restrictions without an open password.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -693,6 +720,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "compressPdf",
   "redactPdf",
   "protectPdf",
+  "unlockPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -701,7 +729,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -783,6 +811,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "compressPdf" ||
     page === "redactPdf" ||
     page === "protectPdf" ||
+    page === "unlockPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({
