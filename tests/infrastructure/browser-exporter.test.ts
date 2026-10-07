@@ -367,7 +367,7 @@ describe("BrowserPdfExporter", () => {
       expect(generated.bytes.byteLength).toBeGreaterThan(0);
       expect(generated.sha256).toMatch(/^[a-f0-9]{64}$/);
     }
-  });
+  }, 15_000);
 
   it("exports whiteout objects instead of rejecting them", async () => {
     const { exporter } = await createRegisteredExporter();

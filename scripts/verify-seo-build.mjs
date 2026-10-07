@@ -240,6 +240,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "protectPdf" &&
+    (!html.includes("How to password protect a PDF online") ||
+      !html.includes("Private browser-local PDF encryption") ||
+      !html.includes("AES-256 open-password protection") ||
+      !html.includes("PDF permission limits") ||
+      !html.includes('/protect-pdf#protect-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable password-protection instructions, encryption details, permission limits, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

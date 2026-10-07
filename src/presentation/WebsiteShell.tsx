@@ -32,10 +32,11 @@ import { ToolsDirectoryPage } from "./ToolsDirectoryPage";
 import { SplitPdfPage } from "./SplitPdfPage";
 import { CompressPdfPage } from "./CompressPdfPage";
 import { RedactPdfPage } from "./RedactPdfPage";
+import { ProtectPdfPage } from "./ProtectPdfPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "tools" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "protectPdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -68,6 +69,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/split-pdf": "splitPdf",
   "/compress-pdf": "compressPdf",
   "/redact-pdf": "redactPdf",
+  "/protect-pdf": "protectPdf",
   "/tools": "tools",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
@@ -268,7 +270,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -350,7 +352,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             className="tools-nav-link"
             href="/tools"
             aria-current={page === "tools" ? "page" : undefined}
-            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || activeToolRoute !== null ? "true" : "false"}
             onClick={(event) => {
               event.preventDefault();
               navigateTo("/tools");
@@ -454,6 +456,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="redactPdf" />
           <RedactPdfPage />
+        </>
+      ) : page === "protectPdf" ? (
+        <>
+          <Breadcrumbs page="protectPdf" />
+          <ProtectPdfPage />
         </>
       ) : page === "tools" ? (
         <>
@@ -569,6 +576,7 @@ function SiteFooter() {
           <SiteLink path="/split-pdf">Split PDF</SiteLink>
           <SiteLink path="/compress-pdf">Compress PDF</SiteLink>
           <SiteLink path="/redact-pdf">Secure PDF Redaction</SiteLink>
+          <SiteLink path="/protect-pdf">Protect PDF</SiteLink>
           <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
           <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
           <SiteLink path="/tools">All PDF tools</SiteLink>

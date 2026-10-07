@@ -20,6 +20,7 @@ export type SeoPageKey =
   | "splitPdf"
   | "compressPdf"
   | "redactPdf"
+  | "protectPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -185,6 +186,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Redact PDF content permanently online for free. Remove sensitive text and graphics locally in your browser without uploading your document.",
     h1: "Redact PDF content securely online.",
     intro: "Draw over sensitive content and create a new PDF with the covered text and graphics permanently removed from marked pages.",
+    schemaType: "WebPage",
+  },
+  protectPdf: {
+    path: "/protect-pdf",
+    title: "Password Protect PDF Online Free - AES-256 | PDFMech",
+    description: "Password protect a PDF online for free with AES-256 encryption. Secure your document locally in your browser without uploading the PDF or password.",
+    h1: "Password protect a PDF online for free.",
+    intro: "Add an open password and optional reader permissions, then download an AES-256 encrypted copy created privately in your browser.",
     schemaType: "WebPage",
   },
   tools: {
@@ -610,6 +619,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. Applied redactions are permanent in the generated copy. Your original source PDF remains unchanged on your device.",
     },
   ],
+  protectPdf: [
+    {
+      question: "Does PDFMech upload my PDF or password?",
+      answer: "No. Inspection, encryption, verification, and download happen locally in your browser.",
+    },
+    {
+      question: "What encryption does PDFMech use?",
+      answer: "The protected output uses AES-256 PDF encryption.",
+    },
+    {
+      question: "Can PDFMech recover a forgotten password?",
+      answer: "No. PDFMech never receives or stores the password. Keep it in a trusted password manager or another safe place.",
+    },
+    {
+      question: "Can I protect an already encrypted PDF?",
+      answer: "Not on this page. Remove the existing password first, then protect the unencrypted copy with a new password.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -665,6 +692,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "splitPdf",
   "compressPdf",
   "redactPdf",
+  "protectPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -673,7 +701,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -754,6 +782,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "splitPdf" ||
     page === "compressPdf" ||
     page === "redactPdf" ||
+    page === "protectPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({
