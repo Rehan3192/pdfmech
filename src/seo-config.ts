@@ -22,6 +22,7 @@ export type SeoPageKey =
   | "redactPdf"
   | "protectPdf"
   | "unlockPdf"
+  | "pdfToJpg"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -203,6 +204,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Unlock a PDF online for free when you know its password. Remove PDF encryption locally in your browser without uploading the document or password.",
     h1: "Unlock a PDF online for free.",
     intro: "Enter the current PDF password and download a separate unencrypted copy created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  pdfToJpg: {
+    path: "/pdf-to-jpg",
+    title: "PDF to JPG Converter Online Free - No Upload | PDFMech",
+    description: "Convert PDF pages to JPG images online for free. Choose all or selected pages and create JPG files locally in your browser without uploading your PDF.",
+    h1: "Convert PDF pages to JPG images.",
+    intro: "Export every PDF page or a custom page range as clear JPG images, with private browser-local processing and no account.",
     schemaType: "WebPage",
   },
   tools: {
@@ -664,6 +673,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Some encrypted PDFs use only permission restrictions. PDFMech can remove those restrictions without an open password.",
     },
   ],
+  pdfToJpg: [
+    {
+      question: "Does PDFMech upload my PDF?",
+      answer: "No. PDF rendering, JPG creation, and ZIP packaging happen locally in your browser.",
+    },
+    {
+      question: "Can I convert only one PDF page?",
+      answer: "Yes. Choose Custom pages, enter one page number, or tap a page preview. A single selection downloads directly as a JPG.",
+    },
+    {
+      question: "Why do multiple pages download as a ZIP?",
+      answer: "A ZIP keeps all selected JPG images together and avoids triggering a separate browser download for every page.",
+    },
+    {
+      question: "Which JPG quality should I choose?",
+      answer: "Balanced is recommended for most documents. Choose Web for smaller images or High when fine text and graphics need more detail.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -721,6 +748,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "redactPdf",
   "protectPdf",
   "unlockPdf",
+  "pdfToJpg",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -729,7 +757,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -812,6 +840,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "redactPdf" ||
     page === "protectPdf" ||
     page === "unlockPdf" ||
+    page === "pdfToJpg" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

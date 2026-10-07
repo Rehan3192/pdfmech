@@ -63,6 +63,7 @@ function renderSnapshot(page) {
     redactPdf: "Secure PDF Redaction",
     protectPdf: "Protect PDF",
     unlockPdf: "Unlock PDF",
+    pdfToJpg: "PDF to JPG",
     tools: "All PDF Tools",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
@@ -101,6 +102,7 @@ function renderSnapshot(page) {
   const isRedactTool = page === "redactPdf";
   const isProtectTool = page === "protectPdf";
   const isUnlockTool = page === "unlockPdf";
+  const isPdfToJpgTool = page === "pdfToJpg";
   const isToolsDirectory = page === "tools";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
@@ -145,6 +147,8 @@ function renderSnapshot(page) {
                               ? `<section><h2>How to password protect a PDF online</h2><ol><li>Choose an unprotected PDF from your device.</li><li>Create and confirm a strong open password.</li><li>Optionally choose printing, copying, and editing permissions.</li><li>Protect and download the AES-256 encrypted copy.</li></ol><h2>Private browser-local PDF encryption</h2><p>PDFMech loads the encryption engine and processes the document in a browser worker without uploading the PDF or password.</p><h2>AES-256 open-password protection</h2><p>The new PDF requires the password to open. Store it safely because PDFMech cannot receive or recover it.</p><h2>PDF permission limits</h2><p>Printing, copying, and editing restrictions depend on the PDF reader. A strong open password provides the meaningful protection.</p></section>`
                             : isUnlockTool
                               ? `<section><h2>How to remove a password from a PDF</h2><ol><li>Choose an encrypted PDF from your device.</li><li>Enter the current user or owner password.</li><li>Unlock and verify the PDF locally in your browser.</li><li>Download the separate password-free copy.</li></ol><h2>Private browser-local PDF decryption</h2><p>PDFMech loads the security engine in a browser worker without uploading the PDF or password.</p><h2>Known-password removal only</h2><p>This tool does not guess, recover, bypass, or crack unknown PDF passwords.</p><h2>What changes after unlocking</h2><p>The new copy no longer requires the PDF password and no longer carries encryption permissions. Store and share it carefully.</p></section>`
+                            : isPdfToJpgTool
+                              ? `<section><h2>How to convert a PDF to JPG</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High JPG quality.</li><li>Download one JPG or a ZIP containing multiple page images.</li></ol><h2>Private browser-local PDF conversion</h2><p>PDFMech renders the selected pages and creates JPG images inside your browser without uploading the source PDF.</p><h2>Page selection and JPG quality</h2><p>Convert every page or a custom range with three useful quality levels.</p><h2>What changes when PDF pages become images</h2><p>JPG preserves the visible page as a flat image, not interactive PDF text, links, forms, layers, or signatures.</p></section>`
                           : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
@@ -190,6 +194,8 @@ function renderSnapshot(page) {
                               ? "/protect-pdf#protect-pdf-tool"
                             : isUnlockTool
                               ? "/unlock-pdf#unlock-pdf-tool"
+                            : isPdfToJpgTool
+                              ? "/pdf-to-jpg#pdf-to-jpg-tool"
                           : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
@@ -231,6 +237,8 @@ function renderSnapshot(page) {
                               ? "Choose a PDF to password protect"
                             : isUnlockTool
                               ? "Choose a protected PDF to unlock"
+                            : isPdfToJpgTool
+                              ? "Choose a PDF to convert to JPG"
                           : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide

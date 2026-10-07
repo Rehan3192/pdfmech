@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-type ToolCategory = "Edit & Annotate" | "Organize PDF" | "Scan & Forms" | "Privacy & Review";
+type ToolCategory = "Edit & Annotate" | "Organize PDF" | "Convert PDF" | "Scan & Forms" | "Privacy & Review";
 
 interface DirectoryTool {
   readonly name: string;
@@ -12,7 +12,7 @@ interface DirectoryTool {
   readonly keywords: string;
 }
 
-const categories = ["All tools", "Edit & Annotate", "Organize PDF", "Scan & Forms", "Privacy & Review"] as const;
+const categories = ["All tools", "Edit & Annotate", "Organize PDF", "Convert PDF", "Scan & Forms", "Privacy & Review"] as const;
 
 const tools: readonly DirectoryTool[] = [
   { name: "PDF Editor", description: "Open a PDF and make supported text, whiteout, and page changes.", path: "/editor", category: "Edit & Annotate", icon: "PDF", tone: "blue", keywords: "edit annotate document" },
@@ -21,6 +21,7 @@ const tools: readonly DirectoryTool[] = [
   { name: "Merge PDF", description: "Arrange several PDFs and combine their native pages into one document.", path: "/merge-pdf", category: "Organize PDF", icon: "⊕", tone: "orange", keywords: "combine join files" },
   { name: "Split PDF", description: "Create one PDF per page or divide a document into custom page ranges.", path: "/split-pdf", category: "Organize PDF", icon: "↔", tone: "blue", keywords: "separate divide ranges chapters" },
   { name: "Compress PDF", description: "Reduce scanned and image-heavy PDF sizes with three quality levels.", path: "/compress-pdf", category: "Organize PDF", icon: "%", tone: "green", keywords: "reduce shrink optimize file size scan image" },
+  { name: "PDF to JPG", description: "Convert all or selected PDF pages into clear JPG images.", path: "/pdf-to-jpg", category: "Convert PDF", icon: "JPG", tone: "orange", keywords: "convert image photo jpeg export pages zip" },
   { name: "Extract PDF Pages", description: "Select page thumbnails or ranges and save them as a separate PDF.", path: "/extract-pdf-pages", category: "Organize PDF", icon: "⇱", tone: "green", keywords: "separate select pages" },
   { name: "Delete PDF Pages", description: "Remove complete unwanted pages and download a separate copy.", path: "/delete-pdf-pages", category: "Organize PDF", icon: "×", tone: "orange", keywords: "remove pages" },
   { name: "Reorder PDF Pages", description: "Move pages earlier or later and export the corrected sequence.", path: "/reorder-pdf-pages", category: "Organize PDF", icon: "↕", tone: "blue", keywords: "arrange order move pages" },

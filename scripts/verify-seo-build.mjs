@@ -264,6 +264,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "pdfToJpg" &&
+    (!html.includes("How to convert a PDF to JPG") ||
+      !html.includes("Private browser-local PDF conversion") ||
+      !html.includes("Page selection and JPG quality") ||
+      !html.includes("What changes when PDF pages become images") ||
+      !html.includes('/pdf-to-jpg#pdf-to-jpg-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable PDF-to-JPG instructions, page and quality controls, output limits, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||
