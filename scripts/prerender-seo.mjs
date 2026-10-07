@@ -66,6 +66,7 @@ function renderSnapshot(page) {
     pdfToJpg: "PDF to JPG",
     jpgToPdf: "JPG to PDF",
     watermarkPdf: "Watermark PDF",
+    signPdf: "Sign PDF",
     tools: "All PDF Tools",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
@@ -107,6 +108,7 @@ function renderSnapshot(page) {
   const isPdfToJpgTool = page === "pdfToJpg";
   const isJpgToPdfTool = page === "jpgToPdf";
   const isWatermarkTool = page === "watermarkPdf";
+  const isSignTool = page === "signPdf";
   const isToolsDirectory = page === "tools";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
@@ -157,6 +159,8 @@ function renderSnapshot(page) {
                               ? `<section><h2>How to convert JPG images to PDF</h2><ol><li>Choose one or more JPG images from your device.</li><li>Move images up or down into the required page order.</li><li>Select Fit image, A4, or Letter pages, then choose orientation and margins.</li><li>Create and download one validated PDF in your browser.</li></ol><h2>Combine multiple JPG files into one PDF</h2><p>Each image becomes one PDF page in the exact order shown.</p><h2>Private browser-local image conversion</h2><p>PDFMech decodes the JPG files, builds the PDF, and validates it without uploading your images.</p><h2>Page size, orientation, and margin options</h2><p>Choose fitted pages or printable A4 and Letter paper without cropping or stretching images.</p></section>`
                             : isWatermarkTool
                               ? `<section><h2>How to add a watermark to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Enter watermark text and adjust its color, size, opacity, rotation, and position.</li><li>Select every page or enter a custom page range.</li><li>Apply the watermark and download the separate PDF created in your browser.</li></ol><h2>Custom text watermark controls</h2><p>Add labels such as Confidential, Draft, Sample, Copy, or a company name and check their placement in the live preview.</p><h2>Private browser-local PDF watermarking</h2><p>PDFMech previews, modifies, validates, and downloads the PDF locally without uploading the source document.</p><h2>Watermark scope and document limits</h2><p>A watermark is a visible label rather than access control, encryption, redaction, or copy prevention. Modifying a signed PDF invalidates its existing signatures.</p></section>`
+                            : isSignTool
+                              ? `<section><h2>How to sign a PDF online</h2><ol><li>Choose a PDF from your device.</li><li>Draw, type, or upload your electronic signature.</li><li>Add it to one or more pages, then move and resize each placement.</li><li>Create and download the separate signed copy.</li></ol><h2>Draw, type, or upload an electronic signature</h2><p>Create a signature with a mouse or touchscreen, render typed text, or use an existing PNG or JPG image.</p><h2>Private browser-local PDF signing</h2><p>PDFMech creates page previews, embeds signatures, validates the output, and downloads it locally without uploading the PDF or signature.</p><h2>Electronic signatures and digital signatures are different</h2><p>This tool adds a visible electronic signature image. It does not create a digital certificate, trusted timestamp, identity verification, or cryptographic signature.</p></section>`
                           : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
@@ -208,6 +212,8 @@ function renderSnapshot(page) {
                               ? "/jpg-to-pdf#jpg-to-pdf-tool"
                             : isWatermarkTool
                               ? "/watermark-pdf#watermark-pdf-tool"
+                            : isSignTool
+                              ? "/sign-pdf#sign-pdf-tool"
                           : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
@@ -255,6 +261,8 @@ function renderSnapshot(page) {
                               ? "Choose JPG images to convert to PDF"
                             : isWatermarkTool
                               ? "Choose a PDF to watermark"
+                            : isSignTool
+                              ? "Choose a PDF to sign"
                           : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide

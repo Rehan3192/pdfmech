@@ -73,6 +73,7 @@ import "./presentation/unlock-pdf.css";
 import "./presentation/pdf-to-jpg.css";
 import "./presentation/jpg-to-pdf.css";
 import "./presentation/watermark-pdf.css";
+import "./presentation/sign-pdf.css";
 import "./presentation/tools-directory.css";
 import "./presentation/blog.css";
 

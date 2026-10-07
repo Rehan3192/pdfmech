@@ -25,6 +25,7 @@ export type SeoPageKey =
   | "pdfToJpg"
   | "jpgToPdf"
   | "watermarkPdf"
+  | "signPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -230,6 +231,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Add a text watermark to a PDF online for free. Customize color, size, opacity, rotation, position, and pages locally without uploading your document.",
     h1: "Add a watermark to a PDF online.",
     intro: "Place customizable text on every page or a selected range, preview the result, and download a separate PDF created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  signPdf: {
+    path: "/sign-pdf",
+    title: "Sign PDF Online Free - Private Electronic Signature | PDFMech",
+    description: "Sign a PDF online for free. Draw, type, or upload an electronic signature and place it on PDF pages locally without uploading your document.",
+    h1: "Sign a PDF online for free.",
+    intro: "Create a visible electronic signature, place and resize it on one or more pages, then download a separate signed copy made privately in your browser.",
     schemaType: "WebPage",
   },
   tools: {
@@ -745,6 +754,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. A watermark is a visible label. Use password protection, secure redaction, and appropriate access controls for sensitive documents.",
     },
   ],
+  signPdf: [
+    {
+      question: "Does PDFMech upload my PDF or signature?",
+      answer: "No. Previewing, signature creation, placement, PDF generation, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Can I sign more than one page?",
+      answer: "Yes. Open each page, add the current signature, and place it wherever required before creating the signed PDF.",
+    },
+    {
+      question: "Can I move and resize my signature?",
+      answer: "Yes. Drag a placed signature directly on the page and use the size control for the selected placement.",
+    },
+    {
+      question: "Is this a certificate-based digital signature?",
+      answer: "No. It is a visible electronic signature. It does not include identity validation, a digital certificate, or cryptographic verification.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -805,6 +832,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "pdfToJpg",
   "jpgToPdf",
   "watermarkPdf",
+  "signPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -813,7 +841,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -899,6 +927,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "pdfToJpg" ||
     page === "jpgToPdf" ||
     page === "watermarkPdf" ||
+    page === "signPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

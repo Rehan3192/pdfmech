@@ -300,6 +300,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "signPdf" &&
+    (!html.includes("How to sign a PDF online") ||
+      !html.includes("Draw, type, or upload an electronic signature") ||
+      !html.includes("Private browser-local PDF signing") ||
+      !html.includes("Electronic signatures and digital signatures are different") ||
+      !html.includes('/sign-pdf#sign-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable signing instructions, signature input options, privacy details, legal scope, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||
