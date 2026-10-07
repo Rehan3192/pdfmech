@@ -65,6 +65,7 @@ function renderSnapshot(page) {
     unlockPdf: "Unlock PDF",
     pdfToJpg: "PDF to JPG",
     jpgToPdf: "JPG to PDF",
+    watermarkPdf: "Watermark PDF",
     tools: "All PDF Tools",
     privatePdfEditor: "Private PDF Editor",
     editPdfOnIphone: "Edit PDF on iPhone",
@@ -105,6 +106,7 @@ function renderSnapshot(page) {
   const isUnlockTool = page === "unlockPdf";
   const isPdfToJpgTool = page === "pdfToJpg";
   const isJpgToPdfTool = page === "jpgToPdf";
+  const isWatermarkTool = page === "watermarkPdf";
   const isToolsDirectory = page === "tools";
   const isPrivateEditor = page === "privatePdfEditor";
   const isIphoneGuide = page === "editPdfOnIphone";
@@ -153,6 +155,8 @@ function renderSnapshot(page) {
                               ? `<section><h2>How to convert a PDF to JPG</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High JPG quality.</li><li>Download one JPG or a ZIP containing multiple page images.</li></ol><h2>Private browser-local PDF conversion</h2><p>PDFMech renders the selected pages and creates JPG images inside your browser without uploading the source PDF.</p><h2>Page selection and JPG quality</h2><p>Convert every page or a custom range with three useful quality levels.</p><h2>What changes when PDF pages become images</h2><p>JPG preserves the visible page as a flat image, not interactive PDF text, links, forms, layers, or signatures.</p></section>`
                             : isJpgToPdfTool
                               ? `<section><h2>How to convert JPG images to PDF</h2><ol><li>Choose one or more JPG images from your device.</li><li>Move images up or down into the required page order.</li><li>Select Fit image, A4, or Letter pages, then choose orientation and margins.</li><li>Create and download one validated PDF in your browser.</li></ol><h2>Combine multiple JPG files into one PDF</h2><p>Each image becomes one PDF page in the exact order shown.</p><h2>Private browser-local image conversion</h2><p>PDFMech decodes the JPG files, builds the PDF, and validates it without uploading your images.</p><h2>Page size, orientation, and margin options</h2><p>Choose fitted pages or printable A4 and Letter paper without cropping or stretching images.</p></section>`
+                            : isWatermarkTool
+                              ? `<section><h2>How to add a watermark to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Enter watermark text and adjust its color, size, opacity, rotation, and position.</li><li>Select every page or enter a custom page range.</li><li>Apply the watermark and download the separate PDF created in your browser.</li></ol><h2>Custom text watermark controls</h2><p>Add labels such as Confidential, Draft, Sample, Copy, or a company name and check their placement in the live preview.</p><h2>Private browser-local PDF watermarking</h2><p>PDFMech previews, modifies, validates, and downloads the PDF locally without uploading the source document.</p><h2>Watermark scope and document limits</h2><p>A watermark is a visible label rather than access control, encryption, redaction, or copy prevention. Modifying a signed PDF invalidates its existing signatures.</p></section>`
                           : isPrivateEditor
               ? `<section><h2>How private browser PDF editing works</h2><ol><li>Choose a PDF from your device.</li><li>The browser reads and renders the document locally.</li><li>Make supported text, visual cover, or page changes.</li><li>Validate and download a separate PDF generated in your browser.</li></ol><h2>Local recovery under your control</h2><p>Recovery may store the source PDF and editing state in IndexedDB in the current browser. Clear Document removes the current local checkpoint.</p><h2>Verify local processing</h2><p>Open the browser Network panel before choosing a test PDF. The source document is processed locally rather than posted to a PDFMech editing endpoint.</p></section>`
               : isIphoneGuide
@@ -202,6 +206,8 @@ function renderSnapshot(page) {
                               ? "/pdf-to-jpg#pdf-to-jpg-tool"
                             : isJpgToPdfTool
                               ? "/jpg-to-pdf#jpg-to-pdf-tool"
+                            : isWatermarkTool
+                              ? "/watermark-pdf#watermark-pdf-tool"
                           : isPrivateEditor
               ? "/private-pdf-editor#private-pdf-editor-tool"
               : isIphoneGuide
@@ -247,6 +253,8 @@ function renderSnapshot(page) {
                               ? "Choose a PDF to convert to JPG"
                             : isJpgToPdfTool
                               ? "Choose JPG images to convert to PDF"
+                            : isWatermarkTool
+                              ? "Choose a PDF to watermark"
                           : isPrivateEditor
               ? "Choose a PDF to edit privately"
               : isIphoneGuide

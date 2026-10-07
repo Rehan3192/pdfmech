@@ -36,10 +36,11 @@ import { ProtectPdfPage } from "./ProtectPdfPage";
 import { UnlockPdfPage } from "./UnlockPdfPage";
 import { PdfToJpgPage } from "./PdfToJpgPage";
 import { JpgToPdfPage } from "./JpgToPdfPage";
+import { WatermarkPdfPage } from "./WatermarkPdfPage";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "tools" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "watermarkPdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -76,6 +77,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/unlock-pdf": "unlockPdf",
   "/pdf-to-jpg": "pdfToJpg",
   "/jpg-to-pdf": "jpgToPdf",
+  "/watermark-pdf": "watermarkPdf",
   "/tools": "tools",
   [TOOL_ROUTES.privatePdfEditor.slug]: "privatePdfEditor",
   [TOOL_ROUTES.editPdfOnIphone.slug]: "editPdfOnIphone",
@@ -276,7 +278,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -358,7 +360,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             className="tools-nav-link"
             href="/tools"
             aria-current={page === "tools" ? "page" : undefined}
-            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || activeToolRoute !== null ? "true" : "false"}
             onClick={(event) => {
               event.preventDefault();
               navigateTo("/tools");
@@ -483,6 +485,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
           <Breadcrumbs page="jpgToPdf" />
           <JpgToPdfPage />
         </>
+      ) : page === "watermarkPdf" ? (
+        <>
+          <Breadcrumbs page="watermarkPdf" />
+          <WatermarkPdfPage />
+        </>
       ) : page === "tools" ? (
         <>
           <Breadcrumbs page="tools" />
@@ -601,6 +608,7 @@ function SiteFooter() {
           <SiteLink path="/unlock-pdf">Unlock PDF</SiteLink>
           <SiteLink path="/pdf-to-jpg">PDF to JPG</SiteLink>
           <SiteLink path="/jpg-to-pdf">JPG to PDF</SiteLink>
+          <SiteLink path="/watermark-pdf">Watermark PDF</SiteLink>
           <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
           <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
           <SiteLink path="/tools">All PDF tools</SiteLink>

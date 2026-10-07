@@ -288,6 +288,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "watermarkPdf" &&
+    (!html.includes("How to add a watermark to a PDF") ||
+      !html.includes("Custom text watermark controls") ||
+      !html.includes("Private browser-local PDF watermarking") ||
+      !html.includes("Watermark scope and document limits") ||
+      !html.includes('/watermark-pdf#watermark-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable watermark instructions, styling controls, scope limits, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||

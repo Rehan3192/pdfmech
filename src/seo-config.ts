@@ -24,6 +24,7 @@ export type SeoPageKey =
   | "unlockPdf"
   | "pdfToJpg"
   | "jpgToPdf"
+  | "watermarkPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -221,6 +222,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Convert JPG images to one PDF online for free. Arrange photos, choose A4, Letter, or fitted pages, and create the PDF locally without uploading images.",
     h1: "Convert JPG images to one PDF.",
     intro: "Arrange multiple JPG files, choose page size, orientation, and margins, then download one validated PDF created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  watermarkPdf: {
+    path: "/watermark-pdf",
+    title: "Watermark PDF Online Free - Add Text Privately | PDFMech",
+    description: "Add a text watermark to a PDF online for free. Customize color, size, opacity, rotation, position, and pages locally without uploading your document.",
+    h1: "Add a watermark to a PDF online.",
+    intro: "Place customizable text on every page or a selected range, preview the result, and download a separate PDF created privately in your browser.",
     schemaType: "WebPage",
   },
   tools: {
@@ -718,6 +727,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Fit image is best for preserving the original image shape. Choose A4 or Letter when you need standard printable pages.",
     },
   ],
+  watermarkPdf: [
+    {
+      question: "Does PDFMech upload my PDF?",
+      answer: "No. Page previews, watermarking, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Can I watermark only certain pages?",
+      answer: "Yes. Choose Custom range and enter pages such as 1, 3-5, 8.",
+    },
+    {
+      question: "Can I use a transparent watermark?",
+      answer: "Yes. Adjust opacity from 5% to 100% and review the result in the live page preview.",
+    },
+    {
+      question: "Does a watermark protect confidential information?",
+      answer: "No. A watermark is a visible label. Use password protection, secure redaction, and appropriate access controls for sensitive documents.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -777,6 +804,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "unlockPdf",
   "pdfToJpg",
   "jpgToPdf",
+  "watermarkPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -785,7 +813,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -870,6 +898,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "unlockPdf" ||
     page === "pdfToJpg" ||
     page === "jpgToPdf" ||
+    page === "watermarkPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({
