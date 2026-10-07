@@ -23,6 +23,7 @@ export type SeoPageKey =
   | "protectPdf"
   | "unlockPdf"
   | "pdfToJpg"
+  | "jpgToPdf"
   | "tools"
   | "privatePdfEditor"
   | "editPdfOnIphone"
@@ -212,6 +213,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Convert PDF pages to JPG images online for free. Choose all or selected pages and create JPG files locally in your browser without uploading your PDF.",
     h1: "Convert PDF pages to JPG images.",
     intro: "Export every PDF page or a custom page range as clear JPG images, with private browser-local processing and no account.",
+    schemaType: "WebPage",
+  },
+  jpgToPdf: {
+    path: "/jpg-to-pdf",
+    title: "JPG to PDF Converter Online Free - No Upload | PDFMech",
+    description: "Convert JPG images to one PDF online for free. Arrange photos, choose A4, Letter, or fitted pages, and create the PDF locally without uploading images.",
+    h1: "Convert JPG images to one PDF.",
+    intro: "Arrange multiple JPG files, choose page size, orientation, and margins, then download one validated PDF created privately in your browser.",
     schemaType: "WebPage",
   },
   tools: {
@@ -691,6 +700,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Balanced is recommended for most documents. Choose Web for smaller images or High when fine text and graphics need more detail.",
     },
   ],
+  jpgToPdf: [
+    {
+      question: "Are my JPG images uploaded?",
+      answer: "No. JPG inspection, arrangement, PDF creation, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Can I combine several JPGs into one PDF?",
+      answer: "Yes. Add up to 25 images and arrange them. Each image becomes one page in the finished PDF.",
+    },
+    {
+      question: "Will PDFMech crop or stretch my images?",
+      answer: "No. Each JPG is scaled proportionally to fit the selected page and margin area.",
+    },
+    {
+      question: "Should I choose Fit image, A4, or Letter?",
+      answer: "Fit image is best for preserving the original image shape. Choose A4 or Letter when you need standard printable pages.",
+    },
+  ],
   privatePdfEditor: [
     {
       question: "Does PDFMech upload my source PDF?",
@@ -749,6 +776,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "protectPdf",
   "unlockPdf",
   "pdfToJpg",
+  "jpgToPdf",
   "privatePdfEditor",
 ] as const satisfies readonly SeoPageKey[];
 
@@ -757,7 +785,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 }
 
 export function lastModifiedDate(page: SeoPageKey): string {
-  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "tools"
+  return page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "tools"
     ? "2026-10-07"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
@@ -841,6 +869,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "protectPdf" ||
     page === "unlockPdf" ||
     page === "pdfToJpg" ||
+    page === "jpgToPdf" ||
     page === "privatePdfEditor"
   ) {
     graph.push({

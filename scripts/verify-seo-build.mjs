@@ -276,6 +276,18 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "jpgToPdf" &&
+    (!html.includes("How to convert JPG images to PDF") ||
+      !html.includes("Combine multiple JPG files into one PDF") ||
+      !html.includes("Private browser-local image conversion") ||
+      !html.includes("Page size, orientation, and margin options") ||
+      !html.includes('/jpg-to-pdf#jpg-to-pdf-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable JPG-to-PDF instructions, arrangement and page controls, privacy details, and a same-route action.`,
+    );
+  }
+  if (
     page === "privatePdfEditor" &&
     (!html.includes("How private browser PDF editing works") ||
       !html.includes("Local recovery under your control") ||
