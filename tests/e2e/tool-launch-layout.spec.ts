@@ -63,3 +63,30 @@ test("mobile tool pages put the upload action before supporting copy", async ({ 
     expect(overflow, `${route} horizontal overflow`).toBeLessThanOrEqual(1);
   }
 });
+
+test("the tools directory exposes search and tool choices without a giant hero", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/tools");
+
+  const heading = page.getByRole("heading", { level: 1 });
+  const search = page.getByRole("searchbox", { name: "Search PDF tools" });
+  const firstTool = page.locator(".tools-directory-card").first();
+  await expect(heading).toBeVisible();
+  await expect(search).toBeVisible();
+  await expect(firstTool).toBeVisible();
+
+  const headingSize = await heading.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+  expect(headingSize).toBeLessThanOrEqual(50);
+  const cardBox = await firstTool.boundingBox();
+  expect(cardBox).not.toBeNull();
+  expect(cardBox!.y).toBeLessThan(900);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  await expect(search).toBeVisible();
+  const mobileCardBox = await firstTool.boundingBox();
+  expect(mobileCardBox).not.toBeNull();
+  expect(mobileCardBox!.y).toBeLessThan(844);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});

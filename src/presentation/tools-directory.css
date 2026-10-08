@@ -2,3 +2,73 @@
 @media(max-width:1100px){.tools-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:820px){.tools-directory-controls{align-items:stretch;flex-direction:column}.tools-directory-controls label{width:100%;box-sizing:border-box}.tools-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tools-directory-explainer{grid-template-columns:1fr}}
 @media(max-width:520px){.tools-directory{padding:22px 10px 48px}.tools-directory-hero h1{font-size:2.25rem}.tools-directory-proof{gap:10px 16px;font-size:.82rem}.tools-directory-proof b{width:28px;height:28px}.tools-directory-browser{padding:14px;border-radius:20px}.tools-directory-controls h2{font-size:1.3rem}.tools-directory-filters{margin:17px 0}.tools-directory-filters button{padding:9px 13px;font-size:.78rem}.tools-directory-grid{grid-template-columns:1fr;gap:11px}.tools-directory-card{min-height:220px;padding:19px}.tools-directory-card h2{font-size:1.18rem}.tools-directory-icon{width:48px;height:48px}.tools-directory-explainer article{padding:17px}}
+
+/* Put discovery, not marketing copy, at the top of the tools directory. */
+.website-shell[data-route="tools"] .site-breadcrumbs { margin-top: 10px; }
+.tools-directory { padding-top: 12px; }
+.tools-directory-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "kicker proof"
+    "title proof"
+    "summary proof";
+  align-items: center;
+  gap: 4px 40px;
+  box-sizing: border-box;
+  max-width: 1440px;
+  margin-bottom: 14px;
+  padding: 22px 30px;
+  border: 1px solid #cfe3ed;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 94% 0, rgb(27 177 220 / 14%), transparent 15rem),
+    linear-gradient(135deg, #fff, #f3fbff);
+  box-shadow: 0 14px 38px rgb(25 74 105 / 9%);
+  text-align: left;
+}
+.tools-directory-hero .hero-kicker { grid-area: kicker; justify-self: start; padding: 6px 11px; font-size: 11px; }
+.tools-directory-hero h1 { grid-area: title; margin: 8px 0 5px; font-size: clamp(2rem, 3vw, 3.1rem); line-height: 1.04; }
+.tools-directory-hero > p { grid-area: summary; max-width: 850px; margin: 0; font-size: 1rem; line-height: 1.5; }
+.tools-directory-proof { grid-area: proof; display: grid; justify-content: stretch; gap: 8px; margin: 0; }
+.tools-directory-proof span { min-width: 160px; }
+.tools-directory-proof b { width: 28px; height: 28px; }
+
+.tools-directory-browser { padding: 20px; border-radius: 23px; }
+.tools-directory-controls { gap: 18px; }
+.tools-directory-controls h2 { font-size: 1.35rem; }
+.tools-directory-controls p { margin-top: 2px; font-size: .9rem; }
+.tools-directory-controls input { min-height: 44px; }
+.tools-directory-filters { margin: 14px 0 17px; }
+.tools-directory-filters button { padding: 8px 14px; font-size: .87rem; }
+.tools-directory-grid { gap: 13px; }
+.tools-directory-card { min-height: 235px; padding: 20px; border-radius: 17px; }
+.tools-directory-icon { width: 48px; height: 48px; border-radius: 13px; }
+.tools-directory-category { margin-top: 14px; }
+.tools-directory-card h2 { margin: 6px 0 7px; font-size: 1.16rem; }
+.tools-directory-card p { font-size: .87rem; line-height: 1.45; }
+.tools-directory-card > strong { padding-top: 13px; }
+
+@media (max-width: 820px) {
+  .tools-directory-hero {
+    grid-template-columns: 1fr;
+    grid-template-areas: "kicker" "title" "summary" "proof";
+    padding: 20px;
+  }
+  .tools-directory-proof { display: flex; margin-top: 10px; }
+  .tools-directory-proof span { min-width: 0; }
+}
+
+@media (max-width: 520px) {
+  .website-shell[data-route="tools"] .site-breadcrumbs { width: calc(100% - 24px); margin-top: 7px; font-size: 11px; }
+  .tools-directory { padding-top: 8px; }
+  .tools-directory-hero { margin-bottom: 9px; padding: 15px 16px; border-radius: 17px; }
+  .tools-directory-hero h1 { margin-top: 7px; font-size: clamp(1.7rem, 7.8vw, 2rem); }
+  .tools-directory-hero > p { font-size: .88rem; line-height: 1.42; }
+  .tools-directory-proof { gap: 6px 12px; font-size: .75rem; }
+  .tools-directory-proof b { width: 26px; height: 26px; }
+  .tools-directory-browser { padding: 13px; }
+  .tools-directory-controls { gap: 12px; }
+  .tools-directory-filters { margin: 12px 0 14px; }
+  .tools-directory-card { min-height: 205px; padding: 17px; }
+}
