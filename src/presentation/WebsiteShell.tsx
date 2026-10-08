@@ -345,6 +345,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
       className="website-shell"
       data-page={documentEditorActive ? "editor" : page}
       data-route={page}
+      data-tool-page={toolLandingPages.has(page) && !toolEditorActive ? "true" : "false"}
     >
       <header className="site-header" data-menu-open={mobileMenuOpen ? "true" : "false"}>
         <a

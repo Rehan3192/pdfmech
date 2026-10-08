@@ -18,7 +18,7 @@ test("blocks incomplete mappings and exports a verified named ZIP", async ({ pag
     if (request.method() !== "GET" && request.method() !== "HEAD") documentUploads.push(`${request.method()} ${request.url()}`);
   });
   await page.goto("/split-pdf-and-rename");
-  await expect(page.getByRole("heading", { name: "Split a PDF into Multiple Files and Automatically Rename Them" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Split and rename PDF files in bulk." })).toBeVisible();
 
   await page.locator('input[accept*="application/pdf"]').setInputFiles({ name: "payslips.pdf", mimeType: "application/pdf", buffer: await makePdf() });
   await expect(page.getByText("payslips.pdf", { exact: true })).toBeVisible();

@@ -267,7 +267,7 @@ export function SplitRenamePage() {
     <main className="split-rename-page">
       <section className="split-rename-hero">
         <span className="hero-kicker">SAFE BATCH DOCUMENT WORKFLOW</span>
-        <h1>Split a PDF into Multiple Files and Automatically Rename Them</h1>
+        <h1>Split and rename PDF files in bulk.</h1>
         <p>Import filenames from CSV or TXT, verify every document-to-name match, and download a locally generated ZIP.</p>
         <div aria-label="Tool benefits"><span><b>✓</b> No upload</span><span><b>✓</b> Strict matching</span><span><b>✓</b> Verified export</span></div>
       </section>
