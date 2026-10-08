@@ -813,6 +813,12 @@ function finishTutorial(): void {
         return;
       }
 
+      if (key === "escape" && pageStripVisible) {
+        event.preventDefault();
+        setPageStripVisible(false);
+        return;
+      }
+
       if (key === "escape" && selectedObjectId !== null) {
         event.preventDefault();
         setSelectedObjectId(null);
@@ -843,6 +849,7 @@ function finishTutorial(): void {
     canRedo,
     canUndo,
     documentState,
+    pageStripVisible,
     selectedObjectId,
     redoLastChange,
     undoLastChange,
@@ -2916,12 +2923,13 @@ function finishTutorial(): void {
                 <strong>{documentState.pages.length}</strong>
                 <button
                   className="bar-collapse-arrow"
+                  data-testid="production-close-pages"
                   type="button"
                   aria-label="Hide page thumbnails"
-                  title="Hide page thumbnails"
+                  title="Close Pages"
                   onClick={() => setPageStripVisible(false)}
                 >
-                  ⌄
+                  <span aria-hidden="true">{"\u00d7"}</span>
                 </button>
               </div>
               <ol className="page-list" data-testid="production-page-list">

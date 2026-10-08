@@ -48,6 +48,10 @@ test("reorder-pages landing opens the real editor with page movement ready", asy
   );
   await expect(page.getByTestId("production-page-count")).toHaveText("4");
   await expect(page.getByTestId("production-page-list")).toBeVisible();
+  await expect(page.getByTestId("production-close-pages")).toBeVisible();
+  const pagesSheetBox = await page.locator(".page-strip").boundingBox();
+  expect(pagesSheetBox).not.toBeNull();
+  expect(pagesSheetBox!.height).toBeLessThanOrEqual(522);
 
   await page.getByTestId("production-page-list").getByRole("button", {
     name: /Page 2/,
