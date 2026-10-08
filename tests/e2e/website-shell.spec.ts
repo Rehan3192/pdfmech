@@ -9,14 +9,17 @@ test("website shell has clear navigation and SEO support pages", async ({
   await expect(mainNavigation).toBeVisible();
   await expect(page.getByRole("link", { name: "PDFMech home" })).toBeVisible();
   await expect(page.getByTestId("site-home")).toContainText(
-    "Edit your PDFs without uploading them.",
+    "Work with PDFs privately in your browser.",
   );
   await expect(
     page
-      .getByRole("heading", { name: "Edit your PDFs without uploading them." })
+      .getByRole("heading", { name: "Work with PDFs privately in your browser." })
       .locator("..")
-      .getByRole("button", { name: "Open PDF" }),
+      .getByRole("button", { name: "Choose a PDF tool" }),
   ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hide visually or remove permanently?" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Use visual whiteout/ })).toHaveAttribute("href", "/whiteout-pdf");
+  await expect(page.getByRole("link", { name: /Use secure redaction/ })).toHaveAttribute("href", "/redact-pdf");
 
   await mainNavigation.getByRole("link", { name: "About" }).click();
   await expect(page).toHaveURL(/\/about$/);
@@ -70,6 +73,19 @@ test("website shell has clear navigation and SEO support pages", async ({
   await expect(page.getByTestId("production-empty")).toContainText(
     "Edit PDFs privately in your browser",
   );
+});
+
+test("tool pages clarify whiteout and redaction and share related tools", async ({ page }) => {
+  await page.goto("/whiteout-pdf");
+  await expect(page.getByRole("heading", { name: "A visual cover and secure redaction are not the same." })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open secure redaction/ })).toHaveAttribute("href", "/redact-pdf");
+  const related = page.getByRole("complementary", { name: /Useful tools for your next PDF task/ });
+  await expect(related).toBeVisible();
+  await expect(related.getByRole("link", { name: /Redact \(permanent\)/ })).toHaveAttribute("href", "/redact-pdf");
+
+  await page.goto("/redact-pdf");
+  await expect(page.getByRole("heading", { name: "Do you need permanent removal?" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Use Whiteout PDF/ })).toHaveAttribute("href", "/whiteout-pdf");
 });
 
 test("marketing pages describe the current document-first editor", async ({ page }) => {

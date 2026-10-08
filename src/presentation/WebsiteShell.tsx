@@ -39,6 +39,8 @@ import { JpgToPdfPage } from "./JpgToPdfPage";
 import { WatermarkPdfPage } from "./WatermarkPdfPage";
 import { SignPdfPage } from "./SignPdfPage";
 import { FillPdfFormPage } from "./FillPdfFormPage";
+import { ToolDiscoveryStrip } from "./ToolDiscoveryStrip";
+import { HomePageRedesign } from "./HomePageRedesign";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
@@ -96,8 +98,31 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/contact": "contact",
 };
 
-const freeCampaignFirstCycleEndsAt = new Date("2026-10-17T00:00:00+05:00").getTime();
-const freeCampaignCycleLength = 37 * 24 * 60 * 60 * 1000;
+const toolLandingPages = new Set<WebsitePage>([
+  "addTextToPdf",
+  "deletePdfPages",
+  "reorderPdfPages",
+  "rotatePdfPages",
+  "whiteoutPdf",
+  "ocrPdf",
+  "batesNumberingPdf",
+  "flattenPdf",
+  "fillPdfForm",
+  "deskewPdf",
+  "metadataPdf",
+  "comparePdf",
+  "extractPdfPages",
+  "mergePdf",
+  "splitPdf",
+  "compressPdf",
+  "redactPdf",
+  "protectPdf",
+  "unlockPdf",
+  "pdfToJpg",
+  "jpgToPdf",
+  "watermarkPdf",
+  "signPdf",
+]);
 
 function pageFromPath(pathname: string): WebsitePage {
   const normalizedPath = pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
@@ -537,10 +562,13 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
               setToolEditorSession({ route, initialFile });
             }}
           />
-          <SearchIntentSection page={page} />
-          <InternalLinkSilo page={page} />
+          {page !== "home" ? <SearchIntentSection page={page} /> : null}
+          {page !== "home" && !toolLandingPages.has(page) ? <InternalLinkSilo page={page} /> : null}
         </>
       )}
+      {toolLandingPages.has(page) && !toolEditorActive ? (
+        <ToolDiscoveryStrip currentPath={window.location.pathname.replace(/\/+$/, "")} />
+      ) : null}
       <SiteFooter />
     </div>
   );
@@ -601,35 +629,14 @@ function SiteFooter() {
       <nav className="footer-column footer-product-column" aria-label="Product links">
         <strong>PDF tools</strong>
         <div className="footer-link-grid">
-          <SiteLink path="/editor">PDFMech App</SiteLink>
-          <SiteLink path={TOOL_ROUTES.addTextToPdf.slug}>Add Text to PDF</SiteLink>
-          <SiteLink path={TOOL_ROUTES.deletePdfPages.slug}>Delete PDF Pages</SiteLink>
-          <SiteLink path={TOOL_ROUTES.reorderPdfPages.slug}>Reorder PDF Pages</SiteLink>
-          <SiteLink path={TOOL_ROUTES.rotatePdfPages.slug}>Rotate PDF Pages</SiteLink>
-          <SiteLink path={TOOL_ROUTES.whiteoutPdf.slug}>White Out PDF</SiteLink>
-          <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
-          <SiteLink path="/bates-numbering-pdf">Bates Numbering PDF</SiteLink>
-          <SiteLink path="/flatten-pdf">Flatten PDF Forms</SiteLink>
-          <SiteLink path="/fill-pdf-form">Fill PDF Forms</SiteLink>
-          <SiteLink path="/deskew-pdf">Deskew PDF</SiteLink>
-          <SiteLink path="/remove-pdf-metadata">Remove PDF Metadata</SiteLink>
-          <SiteLink path="/compare-pdf">Compare PDFs</SiteLink>
-          <SiteLink path="/extract-pdf-pages">Extract PDF Pages</SiteLink>
-          <SiteLink path="/merge-pdf">Merge PDF</SiteLink>
-          <SiteLink path="/split-pdf">Split PDF</SiteLink>
+          <SiteLink path="/editor">PDF Editor</SiteLink>
           <SiteLink path="/compress-pdf">Compress PDF</SiteLink>
-          <SiteLink path="/redact-pdf">Secure PDF Redaction</SiteLink>
-          <SiteLink path="/protect-pdf">Protect PDF</SiteLink>
-          <SiteLink path="/unlock-pdf">Unlock PDF</SiteLink>
-          <SiteLink path="/pdf-to-jpg">PDF to JPG</SiteLink>
-          <SiteLink path="/jpg-to-pdf">JPG to PDF</SiteLink>
-          <SiteLink path="/watermark-pdf">Watermark PDF</SiteLink>
+          <SiteLink path="/merge-pdf">Merge PDF</SiteLink>
+          <SiteLink path={TOOL_ROUTES.ocrPdf.slug}>OCR PDF</SiteLink>
+          <SiteLink path="/fill-pdf-form">Fill PDF Forms</SiteLink>
           <SiteLink path="/sign-pdf">Sign PDF</SiteLink>
-          <SiteLink path={TOOL_ROUTES.privatePdfEditor.slug}>Private PDF Editor</SiteLink>
-          <SiteLink path={TOOL_ROUTES.editPdfOnIphone.slug}>Edit PDF on iPhone</SiteLink>
-          <SiteLink path="/tools">All PDF tools</SiteLink>
-          <SiteLink path="/how-it-works">How It Works</SiteLink>
-          <SiteLink path="/faq">FAQ</SiteLink>
+          <SiteLink path="/redact-pdf">Redact PDF</SiteLink>
+          <SiteLink path="/tools">View all 25 tools</SiteLink>
         </div>
       </nav>
       <nav className="footer-column" aria-label="Company links">
@@ -638,6 +645,8 @@ function SiteFooter() {
           <SiteLink path="/about">About</SiteLink>
           <SiteLink path="/contact">Contact</SiteLink>
           <SiteLink path="/blog">Blog</SiteLink>
+          <SiteLink path="/how-it-works">How It Works</SiteLink>
+          <SiteLink path="/faq">FAQ</SiteLink>
         </div>
       </nav>
       <nav className="footer-column" aria-label="Trust and legal links">
@@ -945,7 +954,7 @@ function MarketingPage({
 }) {
   switch (page) {
     case "home":
-      return <HomePage />;
+      return <HomePageRedesign onNavigate={navigateTo} />;
     case "features":
       return <FeaturesPage />;
     case "howItWorks":
@@ -1680,6 +1689,28 @@ function WhiteoutPdfPage({
         </article>
       </section>
 
+      <section className="cover-redact-choice" aria-labelledby="cover-redact-choice-title">
+        <header>
+          <span className="hero-kicker">Choose the correct result</span>
+          <h2 id="cover-redact-choice-title">A visual cover and secure redaction are not the same.</h2>
+          <p>Use whiteout for a visible page correction. Use redaction when information must be permanently removed before sharing.</p>
+        </header>
+        <div>
+          <article>
+            <span>Visual only</span>
+            <h3>Whiteout PDF</h3>
+            <p>Adds an opaque, adjustable cover above the page. Underlying PDF data may still exist.</p>
+            <a href="#whiteout-pdf-tool">Continue with whiteout</a>
+          </article>
+          <article className="is-secure">
+            <span>Permanent removal</span>
+            <h3>Secure PDF redaction</h3>
+            <p>Rebuilds marked pages so selected text and graphics are not retained beneath the cover.</p>
+            <a href="/redact-pdf">Open secure redaction <b aria-hidden="true">→</b></a>
+          </article>
+        </div>
+      </section>
+
       <section className="tool-route-faq" aria-labelledby="whiteout-pdf-faq-title">
         <span className="hero-kicker">Whiteout PDF FAQ</span>
         <h2 id="whiteout-pdf-faq-title">Useful answers before you begin.</h2>
@@ -2025,272 +2056,6 @@ function EditPdfOnIphonePage({
         </details>
       </section>
     </main>
-  );
-}
-
-function HomePage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const homeFaqs = [
-    { question: "Is my PDF uploaded?", answer: "No. PDFMech processes supported edits locally in your browser while you work." },
-    { question: "Do I need an account?", answer: "No. Open the editor and start working without creating an account." },
-    { question: "Is my PDF stored?", answer: "Local recovery can save your source PDF and editing state in this browser. You can clear that data from the editor." },
-    { question: "Is my work lost after a reload?", answer: "Not necessarily. If a local checkpoint is available, PDFMech can offer to restore your previous session." },
-    { question: "Is PDFMech free?", answer: "Yes. PDFMech is free to use, with no account required." },
-    { question: "Does download replace my original?", answer: "No. Download creates a new edited PDF and leaves the original file unchanged." },
-  ] as const;
-
-  return (
-    <main className="site-page" data-testid="site-home">
-      <section className="hero-section">
-        <div>
-          <span className="hero-kicker">Private browser PDF editor</span>
-          <h1>Edit your PDFs without uploading them.</h1>
-          <p>
-            Private PDF editing in your browser. Add text, cover visible
-            content, organize pages, focus the workspace, and download your
-            edited PDF without sending the document to an editing server.
-          </p>
-          <div className="hero-actions">
-            <button type="button" onClick={() => navigateTo("/editor")}>
-              Open PDFMech
-            </button>
-            <button type="button" className="secondary" onClick={() => navigateTo("/how-it-works")}>
-              How It Works
-            </button>
-          </div>
-          <FreeAccessCountdown />
-          <p className="hero-proof">No upload · No account · No watermark</p>
-        </div>
-        <div className="hero-visual product-mockup-card" aria-hidden="true">
-          <ProductMockup />
-          <img
-            src="/home-pdf-repair.webp"
-            alt=""
-            width="900"
-            height="900"
-            decoding="async"
-            fetchPriority="high"
-          />
-          <div>
-            <span>PDFMech workspace</span>
-            <strong>Open → Edit → Download</strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="trust-strip" aria-label="Privacy promises">
-        <TrustItem icon="▣" title="No upload" text="Your PDF stays on your device" />
-        <TrustItem icon="✓" title="No account" text="Open the editor and start" />
-        <TrustItem icon="↺" title="Local recovery" text="Restore work after a reload" />
-      </section>
-
-      <section className="tools-section" aria-label="PDFMech tools">
-        <SectionIntro
-          kicker="What you can do"
-          title="Simple tools for everyday PDF edits."
-          text="Everything you need for quick changes, right in your browser."
-        />
-        <div className="content-grid">
-          <FeatureCard title="Add Text" text="Add text wherever you need it, then adjust font, size, color, bold style, and alignment." path="M4 5h16M12 5v15M8 20h8M4 5v3M20 5v3" />
-          <FeatureCard title="Cover Content" text="Place visual cover blocks over information and pick a color that blends with the page." path="M8 4h13l-5 16H3L8 4Z" />
-          <FeatureCard title="Organize Pages" text="Rotate pages, move pages earlier or later, and delete pages you do not need." path="M8 3h12v15H8zM4 7v14h12" />
-          <FeatureCard title="Make Corrections" text="Move, resize, duplicate, or delete objects you added to the document." path="M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5" />
-          <FeatureCard title="Undo Mistakes" text="Go backward or forward through meaningful document edits while you work." path="M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7" />
-          <FeatureCard title="Recover Your Work" text="Local recovery can offer to restore your editing session after a browser reload." path="M12 8v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0" />
-          <FeatureCard title="Focused Workspace" text="Keep the PDF central while tools, properties, and pages open only when you need them." path="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
-          <FeatureCard title="Safer Placement" text="Each add tool places one object, then disarms to prevent an unwanted duplicate." path="m5 12 4 4L19 6" />
-        </div>
-      </section>
-
-      <section className="split-section boxed-home-section workflow-home-section" aria-label="PDFMech workflow">
-        <div className="content-card">
-          <span className="hero-kicker">Workflow</span>
-          <h2>From PDF to finished document in three steps.</h2>
-          <ol className="step-list">
-            <li>
-              <strong>Open your PDF</strong>
-              <span>Choose a PDF from your device.</span>
-            </li>
-            <li>
-              <strong>Make your edits</strong>
-              <span>Choose a dock tool, place one object, then refine it in its contextual sheet.</span>
-            </li>
-            <li>
-              <strong>Download the result</strong>
-              <span>PDFMech validates the generated PDF before download.</span>
-            </li>
-          </ol>
-        </div>
-        <ImageCard
-          src="/home-pdf-workflow.webp"
-          alt="Illustration of a person editing a PDF document"
-          caption="Quick edits without a heavy desktop app."
-          width={760}
-          height={760}
-        />
-      </section>
-
-      <section className="split-section boxed-home-section examples-home-section" aria-label="Common PDF edit examples">
-        <ImageCard
-          src="/home-pdf-editing.webp"
-          alt="Illustration of text and image boxes being edited on a PDF"
-          caption="Add text, move objects, and adjust the page."
-          width={659}
-          height={496}
-        />
-        <div className="content-card">
-          <span className="hero-kicker">Popular uses</span>
-          <h2>Useful when you just need the job done.</h2>
-          <ul className="plain-list">
-            <li>Add information to non-editable PDFs using text boxes.</li>
-            <li>Add a name, date, address, or short note.</li>
-            <li>Cover outdated text before sending a copy.</li>
-            <li>Rotate scanned pages that face the wrong way.</li>
-            <li>Delete extra pages before downloading.</li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="boxed-home-section feature-list-home-section" aria-label="Detailed PDFMech features">
-        <SectionIntro
-          kicker="Tools"
-          title="Simple tools for common PDF edits."
-          text="Add text, organize pages, cover visible content, undo changes, and download your edited document."
-        />
-        <div className="feature-table">
-          <FeatureRow feature="Text editing" description="Add text and adjust its font, size, color, and alignment." path="M4 5h16M12 5v15M8 20h8" />
-          <FeatureRow feature="Visual whiteout" description="Cover existing content with a block that matches the page." path="M8 4h13l-5 16H3L8 4Z" />
-          <FeatureRow feature="Object positioning" description="Move added elements and resize them precisely." path="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
-          <FeatureRow feature="Object controls" description="Duplicate an added element or remove it from the page." path="M8 3h12v15H8zM4 7v14h12" />
-          <FeatureRow feature="Page organization" description="Rotate, reorder, or delete pages from the document." path="M4 7h16M4 12h16M4 17h10" />
-          <FeatureRow feature="Undo and redo" description="Reverse or restore meaningful editing changes." path="M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7" />
-          <FeatureRow feature="Session recovery" description="Restore the latest available browser-local session." path="M12 8v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0" />
-          <FeatureRow feature="Checked download" description="Validate the generated PDF before saving it." path="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14" />
-          <FeatureRow feature="Contextual sheets" description="Open properties, page thumbnails, and additional actions only when needed." path="M4 4h16v16H4zM9 4v16M15 4v16" />
-          <FeatureRow feature="Full-screen workspace" description="Give the document more room while keeping an exit control visible." path="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />
-          <FeatureRow feature="One-shot tools" description="Place one object per activation to avoid accidental duplicates." path="m5 12 4 4L19 6" />
-          <FeatureRow feature="Move pages" description="Open Pages and move the selected thumbnail up or down." path="m8 7 4-4 4 4m0 10-4 4-4-4M12 3v18" />
-        </div>
-      </section>
-
-      <section className="content-card recovery-section">
-        <div className="recovery-copy">
-          <span className="hero-kicker">Local recovery</span>
-          <h2>Close the tab. Come back later.</h2>
-          <p>
-            PDFMech can save your editing session locally in your browser. If
-            something interrupts your work, the editor can offer to restore the
-            latest available session.
-          </p>
-        </div>
-        <div className="recovery-preview" aria-hidden="true">
-          <span className="recovery-preview-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v5l3 2M21 12a9 9 0 1 1-3-6.7M21 3v6h-6" /></svg></span>
-          <div><span>Recovery ready</span><strong>Saved locally</strong><small>No document upload required</small></div>
-          <i><b /></i>
-        </div>
-      </section>
-
-      <section className="split-section boxed-home-section privacy-home-section" aria-label="Privacy and browser limits">
-        <div className="content-card">
-          <span className="privacy-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 5 6v5c0 4.8 2.8 8.2 7 10 4.2-1.8 7-5.2 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></svg></span>
-          <span className="hero-kicker">Privacy first</span>
-          <h2>Private by default.</h2>
-          <p>
-            No upload queue or editing server. Supported PDF work happens
-            directly in your browser.
-          </p>
-          <FeatureList
-            title="Stays on your device"
-            items={[
-              "Your PDF",
-              "Your document edits",
-              "Your editing session",
-              "Local recovery data",
-            ]}
-          />
-        </div>
-        <div className="content-card">
-          <span className="privacy-card-icon limits-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></svg></span>
-          <span className="hero-kicker">Browser limits</span>
-          <h2>Clear browser limits.</h2>
-          <p>
-            Sensible limits keep local editing responsive and predictable,
-            even when a document contains many pages.
-          </p>
-          <div className="limit-grid">
-            <Metric value="100 MB" label="Maximum file size" />
-            <Metric value="500 pages" label="Maximum pages" />
-            <Metric value="400%" label="Maximum zoom" />
-          </div>
-        </div>
-      </section>
-
-      <section className="boxed-home-section faq-home-section" aria-label="Frequently asked questions">
-        <SectionIntro
-          kicker="FAQ"
-          title="Common questions, clear answers."
-          text="The essentials about local editing, recovery, accounts, and downloads."
-        />
-        <div className="faq-accordion">
-          {homeFaqs.map((item, index) => (
-            <FaqItem
-              key={item.question}
-              question={item.question}
-              answer={item.answer}
-              open={openFaq === index}
-              onToggle={() => setOpenFaq((current) => current === index ? null : index)}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="final-cta">
-        <span className="hero-kicker">Ready when you are</span>
-        <h2>Got a PDF that needs work?</h2>
-        <p>Bring it to PDFMech. Edit it locally, make your changes, and download the finished document.</p>
-        <button type="button" onClick={() => navigateTo("/editor")}>
-          Open PDF
-        </button>
-        <small>No account · No upload · No watermark</small>
-      </section>
-    </main>
-  );
-}
-
-function FreeAccessCountdown() {
-  const getRemaining = () => {
-    const now = Date.now();
-    if (now < freeCampaignFirstCycleEndsAt) return freeCampaignFirstCycleEndsAt - now;
-    const elapsedInCycles = (now - freeCampaignFirstCycleEndsAt) % freeCampaignCycleLength;
-    return elapsedInCycles === 0 ? freeCampaignCycleLength : freeCampaignCycleLength - elapsedInCycles;
-  };
-  const [remaining, setRemaining] = useState(getRemaining);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setRemaining(getRemaining()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const totalSeconds = Math.floor(remaining / 1000);
-  const units = [
-    { value: Math.floor(totalSeconds / 86400), label: "Days" },
-    { value: Math.floor((totalSeconds % 86400) / 3600), label: "Hours" },
-    { value: Math.floor((totalSeconds % 3600) / 60), label: "Minutes" },
-    { value: totalSeconds % 60, label: "Seconds" },
-  ];
-
-  return (
-    <section className="free-countdown" aria-label="Free access countdown">
-      <div className="free-countdown-label"><i aria-hidden="true" /><span>Free early access ends in</span></div>
-      <div className="free-countdown-units">
-        {units.map((unit) => (
-          <time key={unit.label}>
-            <strong>{String(unit.value).padStart(2, "0")}</strong>
-            <small>{unit.label}</small>
-          </time>
-        ))}
-      </div>
-    </section>
   );
 }
 
@@ -2733,42 +2498,6 @@ function ControlGuideGroup({
   );
 }
 
-function ProductMockup() {
-  return (
-    <div className="pdfmech-product-mockup">
-      <div className="mockup-titlebar">
-        <span className="mockup-dots">
-          <i />
-          <i />
-          <i />
-        </span>
-        <strong>sample.pdf</strong>
-        <span className="mockup-saved">Saved locally</span>
-      </div>
-      <div className="mockup-body mockup-document-first">
-        <div className="mockup-document">
-          <div className="mockup-text-box">
-            <strong>Edit PDFs</strong>
-            <strong>Your Way</strong>
-          </div>
-          <span className="mockup-line long" />
-          <span className="mockup-line" />
-          <span className="mockup-cover" />
-          <span className="mockup-line short" />
-        </div>
-        <div className="mockup-zoom"><span>-</span><strong>100%</strong><span>+</span></div>
-        <div className="mockup-action-dock">
-          <span className="active">Select</span>
-          <span>Text</span>
-          <span>Whiteout</span>
-          <span>More</span>
-          <strong>Download</strong>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function AboutPage() {
   return (
     <main className="site-page modern-page" data-testid="site-about">
@@ -2955,112 +2684,6 @@ function ContactPage() {
   );
 }
 
-function SectionIntro({
-  kicker,
-  title,
-  text,
-}: {
-  readonly kicker: string;
-  readonly title: string;
-  readonly text: string;
-}) {
-  return (
-    <section className="section-intro">
-      <span className="hero-kicker">{kicker}</span>
-      <h2>{title}</h2>
-      <p>{text}</p>
-    </section>
-  );
-}
-
-function TrustItem({
-  icon,
-  title,
-  text,
-}: {
-  readonly icon: string;
-  readonly title: string;
-  readonly text: string;
-}) {
-  return (
-    <article>
-      <span className="trust-icon" aria-hidden="true">{icon}</span>
-      <span>
-        <strong>{title}</strong>
-        <small>{text}</small>
-      </span>
-    </article>
-  );
-}
-
-function FeatureCard({
-  title,
-  text,
-  path,
-}: {
-  readonly title: string;
-  readonly text: string;
-  readonly path: string;
-}) {
-  return (
-    <article className="content-card">
-      <span className="home-tool-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={path} /></svg>
-      </span>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </article>
-  );
-}
-
-function FeatureRow({
-  feature,
-  description,
-  path,
-}: {
-  readonly feature: string;
-  readonly description: string;
-  readonly path: string;
-}) {
-  return (
-    <article>
-      <span className="feature-row-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={path} /></svg>
-      </span>
-      <strong>{feature}</strong>
-      <span>{description}</span>
-    </article>
-  );
-}
-
-function ImageCard({
-  src,
-  alt,
-  caption,
-  width,
-  height,
-}: {
-  readonly src: string;
-  readonly alt: string;
-  readonly caption: string;
-  readonly width: number;
-  readonly height: number;
-}) {
-  return (
-    <figure className="image-card">
-      <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>{caption}</figcaption>
-    </figure>
-  );
-}
-
 function FeatureList({
   title,
   items,
@@ -3077,44 +2700,5 @@ function FeatureList({
         ))}
       </ul>
     </div>
-  );
-}
-
-function Metric({
-  value,
-  label,
-}: {
-  readonly value: string;
-  readonly label: string;
-}) {
-  return (
-    <article className="limit-metric">
-      <strong>{value}</strong>
-      <span>{label}</span>
-    </article>
-  );
-}
-
-function FaqItem({
-  question,
-  answer,
-  open,
-  onToggle,
-}: {
-  readonly question: string;
-  readonly answer: string;
-  readonly open: boolean;
-  readonly onToggle: () => void;
-}) {
-  const answerId = `faq-${question.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-  return (
-    <article className="faq-accordion-item" data-open={open}>
-      <h3>
-        <button type="button" aria-expanded={open} aria-controls={answerId} onClick={onToggle}>
-          <span>{question}</span><b aria-hidden="true">{open ? "−" : "+"}</b>
-        </button>
-      </h3>
-      <div id={answerId} className="faq-answer" hidden={!open}><p>{answer}</p></div>
-    </article>
   );
 }

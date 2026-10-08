@@ -77,6 +77,8 @@ import "./presentation/sign-pdf.css";
 import "./presentation/fill-pdf-form.css";
 import "./presentation/tools-directory.css";
 import "./presentation/blog.css";
+import "./presentation/home-redesign.css";
+import "./presentation/tool-page-system.css";
 
 const rootElement = document.querySelector("#app");
 if (rootElement === null) {

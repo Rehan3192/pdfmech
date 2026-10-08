@@ -1,0 +1,150 @@
+:is(
+  .tool-route-page,
+  .ocr-page,
+  .bates-page,
+  .flatten-page,
+  .fill-form-page,
+  .deskew-page,
+  .metadata-page,
+  .compare-page,
+  .extract-page,
+  .merge-page,
+  .split-page,
+  .compress-pdf-page,
+  .redact-pdf-page,
+  .protect-pdf-page,
+  .unlock-pdf-page,
+  .pdf-jpg-page,
+  .jpg-pdf-page,
+  .watermark-page,
+  .sign-pdf-page
+) {
+  --tool-system-ink: #10283e;
+  --tool-system-muted: #61788d;
+  --tool-system-line: #d7e5ee;
+  color: var(--tool-system-ink);
+}
+
+/* Shared discovery keeps every tool page connected without a large navigation menu. */
+.tool-discovery {
+  width: min(1440px, calc(100% - clamp(32px, 8vw, 128px)));
+  margin: 30px auto 72px;
+  border: 1px solid #d6e4ed;
+  border-radius: 25px;
+  padding: clamp(24px, 3vw, 38px);
+  background: linear-gradient(145deg, #f5fbff, #fff 68%);
+  color: #10283e;
+  box-shadow: 0 18px 48px rgb(31 76 108 / 8%);
+}
+
+.tool-discovery > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.tool-discovery > header > div > span { color: #0781b3; font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.tool-discovery h2 { margin: 7px 0 5px; font-size: clamp(1.6rem, 2.5vw, 2.35rem); letter-spacing: -.035em; }
+.tool-discovery header p { margin: 0; color: #647b8f; line-height: 1.55; }
+.tool-discovery-all { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #bdd9ea; border-radius: 12px; padding: 12px 16px; background: #fff; color: #0877df; text-decoration: none; font-weight: 900; }
+.tool-discovery-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
+.tool-discovery-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 12px;
+  min-height: 142px;
+  align-items: start;
+  border: 1px solid #dbe7ee;
+  border-radius: 17px;
+  padding: 18px;
+  background: #fff;
+  color: #10283e;
+  text-decoration: none;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.tool-discovery-card:hover { transform: translateY(-3px); border-color: #94c8e8; box-shadow: 0 13px 25px rgb(27 76 110 / 10%); }
+.tool-discovery-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: #e7f4ff; color: #0876dd; font-size: .7rem; font-weight: 950; }
+.tool-discovery-card > span:nth-child(2) { display: grid; }
+.tool-discovery-card small { color: #71879a; font-size: .64rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.tool-discovery-card strong { margin-top: 6px; font-size: .96rem; }
+.tool-discovery-card p { margin: 6px 0 0; color: #657b8f; font-size: .82rem; line-height: 1.45; }
+.tool-discovery-card > b { color: #1680e3; }
+
+.cover-redact-choice {
+  max-width: 1200px;
+  margin: 0 auto;
+  border: 1px solid #d4e3ec;
+  border-radius: 25px;
+  padding: clamp(25px, 4vw, 42px);
+  background: linear-gradient(135deg, #f5fbff, #fff);
+}
+.cover-redact-choice > header { max-width: 820px; }
+.cover-redact-choice h2 { margin: 10px 0 10px; font-size: clamp(1.65rem, 3vw, 2.45rem); letter-spacing: -.035em; }
+.cover-redact-choice header p { margin: 0 0 25px; color: #61788d; line-height: 1.65; }
+.cover-redact-choice > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.cover-redact-choice article { border: 1px solid #dbe6ed; border-radius: 17px; padding: 23px; background: #fff; }
+.cover-redact-choice article.is-secure { border-color: #f1b8b8; background: #fffafa; }
+.cover-redact-choice article > span { color: #0780b1; font-size: .7rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.cover-redact-choice .is-secure > span { color: #cd3f40; }
+.cover-redact-choice h3 { margin: 9px 0 8px; font-size: 1.2rem; }
+.cover-redact-choice article p { margin: 0 0 16px; color: #61788d; line-height: 1.55; }
+.cover-redact-choice article a { color: #0876dd; font-weight: 900; text-decoration: none; }
+.cover-redact-choice .is-secure a { color: #c9383a; }
+
+.redact-vs-whiteout {
+  display: grid;
+  grid-template-columns: minmax(260px, .78fr) minmax(0, 1.22fr);
+  gap: 28px;
+  max-width: 1440px;
+  margin: 22px auto;
+  border: 1px solid #d8e5ed;
+  border-radius: 22px;
+  padding: clamp(23px, 3vw, 36px);
+  background: #fff;
+}
+.redact-vs-whiteout > div:first-child > span { color: #d14748; font-size: .72rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.redact-vs-whiteout h2 { margin: 8px 0; font-size: clamp(1.5rem, 2.5vw, 2.15rem); }
+.redact-vs-whiteout p { margin: 0; color: #61788d; line-height: 1.6; }
+.redact-vs-whiteout > div:last-child { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.redact-vs-whiteout a { display: grid; align-content: center; min-height: 130px; border: 1px solid #dce7ee; border-radius: 16px; padding: 19px; background: #f8fbfd; color: #18364f; text-decoration: none; }
+.redact-vs-whiteout a.is-current { border-color: #edb1b2; background: #fff5f5; }
+.redact-vs-whiteout a small { color: #71879a; font-weight: 800; }
+.redact-vs-whiteout a strong { margin: 7px 0; font-size: 1rem; }
+.redact-vs-whiteout a span { color: #0877df; font-size: .8rem; font-weight: 850; }
+.redact-vs-whiteout a.is-current span { color: #c73739; }
+
+/* Give the older editor-backed landing pages the same spacing and hierarchy. */
+.tool-route-page { padding-top: clamp(22px, 3vw, 44px); padding-bottom: 44px; background: linear-gradient(180deg, #f1f9ff 0, #fff 42rem); }
+.tool-route-hero,
+.tool-route-steps,
+.tool-route-details,
+.tool-route-faq,
+.cover-redact-choice { width: min(1200px, calc(100% - 32px)); }
+.tool-route-hero,
+.tool-route-steps,
+.tool-route-details,
+.tool-route-faq { border-color: #d7e5ee; box-shadow: 0 12px 35px rgb(28 74 106 / 7%); }
+.tool-route-copy h1 { max-width: 700px; font-size: clamp(2.35rem, 4.4vw, 4.3rem); line-height: 1.02; letter-spacing: -.05em; }
+.tool-route-copy > p { max-width: 720px; }
+
+/* Keep long-form support copy readable instead of stretching edge to edge. */
+:is(.redact-copy, .protect-pdf-copy, .unlock-pdf-copy, .compress-pdf-copy, .sign-pdf-copy, .watermark-copy) { max-width: 1040px; margin-inline: auto; }
+
+.website-shell:not([data-page="editor"]) .footer-product-column .footer-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+@media (max-width: 1050px) {
+  .tool-discovery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .redact-vs-whiteout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .tool-discovery { width: calc(100% - 24px); margin-top: 20px; margin-bottom: 45px; border-radius: 19px; padding: 20px; }
+  .tool-discovery > header { align-items: stretch; flex-direction: column; gap: 16px; }
+  .tool-discovery-all { justify-content: center; }
+  .tool-discovery-grid { grid-template-columns: 1fr; }
+  .tool-discovery-card { min-height: 120px; }
+  .cover-redact-choice { width: calc(100% - 24px); border-radius: 19px; }
+  .cover-redact-choice > div, .redact-vs-whiteout > div:last-child { grid-template-columns: 1fr; }
+  .redact-vs-whiteout { margin-inline: 12px; border-radius: 19px; }
+}
