@@ -60,6 +60,7 @@ function renderSnapshot(page) {
     extractPdfPages: "Extract PDF Pages",
     mergePdf: "Merge PDF",
     splitPdf: "Split PDF",
+    splitRenamePdf: "Split & Rename PDF",
     compressPdf: "Compress PDF",
     redactPdf: "Secure PDF Redaction",
     protectPdf: "Protect PDF",
@@ -103,6 +104,7 @@ function renderSnapshot(page) {
   const isExtractPagesTool = page === "extractPdfPages";
   const isMergeTool = page === "mergePdf";
   const isSplitTool = page === "splitPdf";
+  const isSplitRenameTool = page === "splitRenamePdf";
   const isCompressTool = page === "compressPdf";
   const isRedactTool = page === "redactPdf";
   const isProtectTool = page === "protectPdf";
@@ -147,6 +149,8 @@ function renderSnapshot(page) {
                           ? `<section><h2>How to extract pages from a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Select page thumbnails or enter a range such as 1-3, 6, 9.</li><li>Review selected and excluded page counts.</li><li>Extract and download one new PDF containing the selected pages.</li></ol><h2>Native PDF page extraction</h2><p>PDFMech copies selected pages into a new PDF without intentionally converting them to screenshots.</p><h2>Private local page processing</h2><p>Page previews, selection, extraction, validation, and download happen in your browser without uploading the source document.</p><h2>Document-level transfer limits</h2><p>Bookmarks, attachments, metadata, scripts, signatures, and some interactive structures may not transfer to the new PDF.</p></section>`
                           : isMergeTool
                             ? `<section><h2>How to merge PDF files online</h2><ol><li>Choose two or more PDF files from your device.</li><li>Review the previews and move files into the required order.</li><li>Merge every page locally in your browser.</li><li>Download one new combined PDF.</li></ol><h2>Native PDF page merging</h2><p>PDFMech copies native pages from every source into one combined document without intentionally converting them into screenshots.</p><h2>Private local PDF merging</h2><p>Previewing, ordering, merging, validation, and download happen in your browser without uploading the source documents.</p><h2>Document-level merge limits</h2><p>Bookmarks, metadata, attachments, scripts, signatures, and some interactive forms or links may not transfer or remain valid.</p></section>`
+                            : isSplitRenameTool
+                              ? `<section><h2>How to split and rename PDF files in bulk</h2><ol><li>Choose the source PDF from your device.</li><li>Split it every N pages or enter complete, nonoverlapping ranges.</li><li>Import CSV or TXT filenames and select the correct column.</li><li>Verify every document-to-filename association before creating the batch.</li><li>Download the locally generated ZIP and optional CSV manifest.</li></ol><h2>Strict document-to-filename validation</h2><p>Export remains blocked when a mapping is missing, filenames collide after safe normalization, page groups overlap, source pages are omitted, or imported rows remain unresolved.</p><h2>Visual matching prevents silent reassignment</h2><p>Each group shows its first page, source range, imported row, proposed filename, and validation result together.</p><h2>Private local batch processing</h2><p>The source PDF, filename list, previews, outputs, and ZIP remain in your browser and are not sent to a PDFMech processing server.</p><h2>Verified ZIP and manifest</h2><p>Generated pages and archive entries are checked before success is reported. The optional manifest records each output filename and its source pages.</p></section>`
                             : isSplitTool
                               ? `<section><h2>How to split a PDF online</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or define separate custom ranges.</li><li>Review the output count and included pages.</li><li>Create the files and download them together as a ZIP.</li></ol><h2>Native PDF page splitting</h2><p>PDFMech copies native pages into separate PDF documents without intentionally converting them into screenshots.</p><h2>Private local PDF splitting</h2><p>Page previews, splitting, validation, ZIP packaging, and downloads happen in your browser without uploading the source document.</p><h2>Document-level split limits</h2><p>Bookmarks, metadata, attachments, scripts, signatures, and some interactive forms or links may not transfer or remain valid.</p></section>`
                             : isCompressTool
@@ -202,6 +206,8 @@ function renderSnapshot(page) {
                           ? "/extract-pdf-pages#extract-pdf-pages-tool"
                           : isMergeTool
                             ? "/merge-pdf#merge-pdf-tool"
+                            : isSplitRenameTool
+                              ? "/split-pdf-and-rename#split-pdf-and-rename-tool"
                             : isSplitTool
                               ? "/split-pdf#split-pdf-tool"
                             : isCompressTool
@@ -253,6 +259,8 @@ function renderSnapshot(page) {
                           ? "Choose a PDF and extract pages"
                           : isMergeTool
                             ? "Choose PDFs to merge"
+                            : isSplitRenameTool
+                              ? "Choose a PDF to split and rename"
                             : isSplitTool
                               ? "Choose a PDF to split"
                             : isCompressTool

@@ -6,9 +6,9 @@ export function createLazyPdfSplitter(): SplitPdfProcessor {
       const { BrowserPdfSplitter } = await import("./browser-pdf-splitter");
       return new BrowserPdfSplitter().inspect(file, onProgress, signal);
     },
-    async split(file, groups, onProgress, signal) {
+    async split(file, groups, onProgress, signal, options) {
       const { BrowserPdfSplitter } = await import("./browser-pdf-splitter");
-      return new BrowserPdfSplitter().split(file, groups, onProgress, signal);
+      return new BrowserPdfSplitter().split(file, groups, onProgress, signal, options);
     },
   };
 }

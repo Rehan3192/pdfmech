@@ -19,6 +19,7 @@ export type SeoPageKey =
   | "extractPdfPages"
   | "mergePdf"
   | "splitPdf"
+  | "splitRenamePdf"
   | "compressPdf"
   | "redactPdf"
   | "protectPdf"
@@ -184,6 +185,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Split PDF files online for free. Create one PDF per page or define custom page ranges, then download locally without uploading your document.",
     h1: "Split PDF pages online for free.",
     intro: "Separate a PDF into individual pages or custom page ranges, preserve native page content, and download every output privately in your browser.",
+    schemaType: "WebPage",
+  },
+  splitRenamePdf: {
+    path: "/split-pdf-and-rename",
+    title: "Split PDF and Rename Files in Bulk — Free Online | PDFMech",
+    description: "Split large PDFs into separate files, import filenames from CSV or TXT, preview every result, and download a ZIP. Private, browser-based processing.",
+    h1: "Split a PDF into Multiple Files and Automatically Rename Them",
+    intro: "Create document groups, import a filename list, verify every visual association, and download a locally generated, integrity-checked ZIP.",
     schemaType: "WebPage",
   },
   compressPdf: {
@@ -655,6 +664,24 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "No. PDFMech creates new files and leaves the source PDF unchanged.",
     },
   ],
+  splitRenamePdf: [
+    {
+      question: "Are my PDF and filename list uploaded?",
+      answer: "No. The source PDF, page previews, CSV or TXT data, generated files, and ZIP remain in your browser during supported processing.",
+    },
+    {
+      question: "What happens if a filename is missing?",
+      answer: "Export remains blocked. The missing association must be assigned manually without shifting later rows onto the wrong documents.",
+    },
+    {
+      question: "Can PDFMech detect duplicate filenames?",
+      answer: "Yes. Filenames are safely normalized and checked case-insensitively for collisions before any batch export begins.",
+    },
+    {
+      question: "How can I verify the generated files?",
+      answer: "PDFMech validates source-page identity, checks every ZIP entry, and can include a CSV manifest listing each output file and its source pages.",
+    },
+  ],
   compressPdf: [
     {
       question: "Does PDFMech upload my PDF?",
@@ -853,6 +880,7 @@ export const TOOL_SEO_PAGE_KEYS = [
   "extractPdfPages",
   "mergePdf",
   "splitPdf",
+  "splitRenamePdf",
   "compressPdf",
   "redactPdf",
   "protectPdf",
@@ -873,6 +901,8 @@ export function lastModifiedDate(page: SeoPageKey): string {
     ? "2026-10-08"
     : page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf"
     ? "2026-10-07"
+    : page === "splitRenamePdf"
+    ? "2026-10-09"
     : page === "mergePdf" || page === "splitPdf"
     ? "2026-10-06"
     : page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages"
@@ -951,6 +981,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     page === "extractPdfPages" ||
     page === "mergePdf" ||
     page === "splitPdf" ||
+    page === "splitRenamePdf" ||
     page === "compressPdf" ||
     page === "redactPdf" ||
     page === "protectPdf" ||

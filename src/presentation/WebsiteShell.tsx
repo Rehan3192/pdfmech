@@ -30,6 +30,7 @@ import { ExtractPagesPage } from "./ExtractPagesPage";
 import { MergePdfPage } from "./MergePdfPage";
 import { ToolsDirectoryPage } from "./ToolsDirectoryPage";
 import { SplitPdfPage } from "./SplitPdfPage";
+import { SplitRenamePage } from "./SplitRenamePage";
 import { CompressPdfPage } from "./CompressPdfPage";
 import { RedactPdfPage } from "./RedactPdfPage";
 import { ProtectPdfPage } from "./ProtectPdfPage";
@@ -44,7 +45,7 @@ import { HomePageRedesign } from "./HomePageRedesign";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "fillPdfForm" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "watermarkPdf" | "signPdf" | "tools" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "fillPdfForm" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "splitRenamePdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "watermarkPdf" | "signPdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -76,6 +77,7 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/extract-pdf-pages": "extractPdfPages",
   "/merge-pdf": "mergePdf",
   "/split-pdf": "splitPdf",
+  "/split-pdf-and-rename": "splitRenamePdf",
   "/compress-pdf": "compressPdf",
   "/redact-pdf": "redactPdf",
   "/protect-pdf": "protectPdf",
@@ -114,6 +116,7 @@ const toolLandingPages = new Set<WebsitePage>([
   "extractPdfPages",
   "mergePdf",
   "splitPdf",
+  "splitRenamePdf",
   "compressPdf",
   "redactPdf",
   "protectPdf",
@@ -307,7 +310,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "splitRenamePdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -389,7 +392,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             className="tools-nav-link"
             href="/tools"
             aria-current={page === "tools" ? "page" : undefined}
-            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "splitRenamePdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf" || activeToolRoute !== null ? "true" : "false"}
             onClick={(event) => {
               event.preventDefault();
               navigateTo("/tools");
@@ -488,6 +491,11 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="splitPdf" />
           <SplitPdfPage />
+        </>
+      ) : page === "splitRenamePdf" ? (
+        <>
+          <Breadcrumbs page="splitRenamePdf" />
+          <SplitRenamePage />
         </>
       ) : page === "compressPdf" ? (
         <>
@@ -636,7 +644,8 @@ function SiteFooter() {
           <SiteLink path="/fill-pdf-form">Fill PDF Forms</SiteLink>
           <SiteLink path="/sign-pdf">Sign PDF</SiteLink>
           <SiteLink path="/redact-pdf">Redact PDF</SiteLink>
-          <SiteLink path="/tools">View all 25 tools</SiteLink>
+          <SiteLink path="/split-pdf-and-rename">Split &amp; Rename</SiteLink>
+          <SiteLink path="/tools">View all 26 tools</SiteLink>
         </div>
       </nav>
       <nav className="footer-column" aria-label="Company links">

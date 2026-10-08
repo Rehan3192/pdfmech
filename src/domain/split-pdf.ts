@@ -1,6 +1,7 @@
 export interface SplitPageGroup {
   readonly label: string;
   readonly pageIndexes: readonly number[];
+  readonly outputName?: string;
 }
 
 export const SPLIT_MAX_OUTPUTS = 100;
@@ -16,11 +17,11 @@ export function createEveryPageGroups(pageCount: number): readonly SplitPageGrou
   }));
 }
 
-export function parseSplitPageGroups(value: string, pageCount: number): readonly SplitPageGroup[] {
+export function parseSplitPageGroups(value: string, pageCount: number, maxOutputs = SPLIT_MAX_OUTPUTS): readonly SplitPageGroup[] {
   assertPageCount(pageCount);
   const parts = value.split(",").map((part) => part.trim()).filter(Boolean);
   if (parts.length < 2) throw new Error("Enter at least two page ranges separated by commas.");
-  if (parts.length > SPLIT_MAX_OUTPUTS) throw new Error(`Create no more than ${SPLIT_MAX_OUTPUTS} output files at once.`);
+  if (parts.length > maxOutputs) throw new Error(`Create no more than ${maxOutputs} output files at once.`);
 
   const usedPages = new Set<number>();
   return parts.map((part) => {

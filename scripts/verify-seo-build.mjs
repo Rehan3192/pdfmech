@@ -228,6 +228,19 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "splitRenamePdf" &&
+    (!html.includes("How to split and rename PDF files in bulk") ||
+      !html.includes("Strict document-to-filename validation") ||
+      !html.includes("Visual matching prevents silent reassignment") ||
+      !html.includes("Private local batch processing") ||
+      !html.includes("Verified ZIP and manifest") ||
+      !html.includes('/split-pdf-and-rename#split-pdf-and-rename-tool'))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable split-and-rename safeguards, local processing details, integrity checks, and a same-route action.`,
+    );
+  }
+  if (
     page === "compressPdf" &&
     (!html.includes("How to compress a PDF online") ||
       !html.includes("Private local PDF compression") ||

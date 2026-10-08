@@ -17,7 +17,7 @@ const popularTools = [
 
 const categories = [
   { title: "Edit & sign", text: "Make visible changes and complete documents.", links: [["PDF Editor", "/editor"], ["Add Text", "/add-text-to-pdf"], ["Sign PDF", "/sign-pdf"]] },
-  { title: "Organize", text: "Fix page order and build the document you need.", links: [["Merge PDF", "/merge-pdf"], ["Split PDF", "/split-pdf"], ["Extract Pages", "/extract-pdf-pages"]] },
+  { title: "Organize", text: "Fix page order and build the document you need.", links: [["Merge PDF", "/merge-pdf"], ["Split PDF", "/split-pdf"], ["Split & Rename", "/split-pdf-and-rename"], ["Extract Pages", "/extract-pdf-pages"]] },
   { title: "Scan & forms", text: "Work with scans and interactive documents.", links: [["OCR PDF", "/ocr-pdf"], ["Deskew PDF", "/deskew-pdf"], ["Fill Forms", "/fill-pdf-form"]] },
   { title: "Protect & review", text: "Prepare documents for safer sharing.", links: [["Redact PDF", "/redact-pdf"], ["Protect PDF", "/protect-pdf"], ["Remove Metadata", "/remove-pdf-metadata"]] },
 ] as const;
@@ -36,7 +36,7 @@ export function HomePageRedesign({ onNavigate }: HomePageRedesignProps) {
     <main className="site-page home-redesign" data-testid="site-home">
       <section className="home-direct-hero">
         <div className="home-direct-copy">
-          <span className="hero-kicker">25 free PDF tools · browser-local</span>
+          <span className="hero-kicker">26 free PDF tools · browser-local</span>
           <h1>Work with PDFs <span>privately</span> in your browser.</h1>
           <p>Edit, organize, convert, scan, sign, and protect PDF files without sending supported documents to an editing server.</p>
           <div className="home-direct-actions">
@@ -53,7 +53,7 @@ export function HomePageRedesign({ onNavigate }: HomePageRedesignProps) {
           <a href="/compress-pdf"><span>%</span><div><strong>Make a PDF smaller</strong><small>Compress image-heavy documents</small></div><b>→</b></a>
           <a href="/ocr-pdf"><span>OCR</span><div><strong>Search a scanned PDF</strong><small>Recognize text without an OCR upload</small></div><b>→</b></a>
           <a href="/redact-pdf"><span>■</span><div><strong>Remove private content</strong><small>Apply permanent page redactions</small></div><b>→</b></a>
-          <a className="home-tool-finder-all" href="/tools">Browse all 25 tools <b>→</b></a>
+          <a className="home-tool-finder-all" href="/tools">Browse all 26 tools <b>→</b></a>
         </aside>
       </section>
 

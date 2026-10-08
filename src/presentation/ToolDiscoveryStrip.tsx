@@ -16,6 +16,7 @@ const toolLinks: readonly ToolLink[] = [
   { name: "Whiteout (visual cover)", description: "Visually hide content for layout corrections.", path: "/whiteout-pdf", group: "Edit & Sign", mark: "□" },
   { name: "Merge PDF", description: "Combine several PDFs in your chosen order.", path: "/merge-pdf", group: "Organize", mark: "+" },
   { name: "Split PDF", description: "Divide a document by pages or ranges.", path: "/split-pdf", group: "Organize", mark: "↔" },
+  { name: "Split & Rename", description: "Match PDF groups to CSV or TXT filenames.", path: "/split-pdf-and-rename", group: "Organize", mark: "CSV" },
   { name: "Compress PDF", description: "Reduce image-heavy PDF file sizes.", path: "/compress-pdf", group: "Organize", mark: "%" },
   { name: "Extract Pages", description: "Save selected pages as a new PDF.", path: "/extract-pdf-pages", group: "Organize", mark: "⇱" },
   { name: "Delete Pages", description: "Remove complete pages from a PDF.", path: "/delete-pdf-pages", group: "Organize", mark: "×" },
@@ -42,6 +43,8 @@ const preferredRelated: Readonly<Record<string, readonly string[]>> = {
   "/fill-pdf-form": ["/flatten-pdf", "/sign-pdf", "/protect-pdf", "/editor"],
   "/flatten-pdf": ["/fill-pdf-form", "/sign-pdf", "/redact-pdf", "/protect-pdf"],
   "/sign-pdf": ["/fill-pdf-form", "/flatten-pdf", "/protect-pdf", "/editor"],
+  "/split-pdf": ["/split-pdf-and-rename", "/extract-pdf-pages", "/merge-pdf", "/delete-pdf-pages"],
+  "/split-pdf-and-rename": ["/split-pdf", "/extract-pdf-pages", "/merge-pdf", "/unlock-pdf"],
 };
 
 function relatedTools(currentPath: string): readonly ToolLink[] {

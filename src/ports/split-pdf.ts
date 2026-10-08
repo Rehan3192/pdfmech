@@ -21,6 +21,12 @@ export interface SplitPdfOutput {
   readonly downloadName: string;
   readonly label: string;
   readonly pageCount: number;
+  readonly sourcePageIndexes: readonly number[];
+}
+
+export interface SplitPdfOptions {
+  readonly includeManifest?: boolean;
+  readonly manifestName?: string;
 }
 
 export interface SplitPdfResult {
@@ -29,9 +35,11 @@ export interface SplitPdfResult {
   readonly zipDownloadName: string;
   readonly outputCount: number;
   readonly pageCount: number;
+  readonly manifestBlob?: Blob;
+  readonly manifestDownloadName?: string;
 }
 
 export interface SplitPdfProcessor {
   inspect(file: File, onProgress: (progress: SplitPdfProgress) => void, signal?: AbortSignal): Promise<SplitPdfInspection>;
-  split(file: File, groups: readonly SplitPageGroup[], onProgress: (progress: SplitPdfProgress) => void, signal?: AbortSignal): Promise<SplitPdfResult>;
+  split(file: File, groups: readonly SplitPageGroup[], onProgress: (progress: SplitPdfProgress) => void, signal?: AbortSignal, options?: SplitPdfOptions): Promise<SplitPdfResult>;
 }
