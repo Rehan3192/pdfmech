@@ -37,7 +37,7 @@ export function HomePageRedesign({ onNavigate }: HomePageRedesignProps) {
       <section className="home-direct-hero">
         <div className="home-direct-copy">
           <span className="hero-kicker">25 free PDF tools · browser-local</span>
-          <h1>Work with PDFs privately in your browser.</h1>
+          <h1>Work with PDFs <span>privately</span> in your browser.</h1>
           <p>Edit, organize, convert, scan, sign, and protect PDF files without sending supported documents to an editing server.</p>
           <div className="home-direct-actions">
             <button type="button" onClick={() => onNavigate("/tools")}>Choose a PDF tool</button>
