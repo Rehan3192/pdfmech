@@ -59,6 +59,19 @@ for (const page of SEO_PAGE_KEYS) {
   if ((html.match(/<h1>/gi) ?? []).length !== 1) {
     throw new Error(`${filename} must contain exactly one crawlable H1.`);
   }
+  const snapshotNavigation = match(
+    html,
+    /<nav aria-label="Main navigation">([\s\S]*?)<\/nav>/i,
+    "a compact snapshot navigation",
+    filename,
+  );
+  if (
+    (snapshotNavigation.match(/<a\s/gi) ?? []).length !== 8 ||
+    snapshotNavigation.includes("/add-text-to-pdf") ||
+    !html.includes(`class="seo-snapshot" data-page="${page}"`)
+  ) {
+    throw new Error(`${filename} must use the compact first-paint navigation shell.`);
+  }
   if (
     page === "addTextToPdf" &&
     (!html.includes("How to add text to a PDF") ||
