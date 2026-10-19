@@ -2553,6 +2553,39 @@ function AboutPage() {
           />
         </div>
       </section>
+      <section className="founder-profile" aria-labelledby="founder-profile-title">
+        <div className="founder-profile-photo">
+          <img
+            src="/Muhammad Rehan.jpeg"
+            alt="Muhammad Rehan, founder and owner of PDFMech"
+            width="1254"
+            height="1254"
+            loading="lazy"
+            decoding="async"
+          />
+          <span>Founder &amp; owner</span>
+        </div>
+        <div className="founder-profile-copy">
+          <span className="hero-kicker">Meet the person behind PDFMech</span>
+          <h2 id="founder-profile-title">Built by Muhammad Rehan.</h2>
+          <p className="founder-profile-lead">
+            Muhammad Rehan is a Computer Engineer and full-stack developer who builds practical web products around privacy, clarity, and useful automation.
+          </p>
+          <p>
+            A graduate of COMSATS University Islamabad, his work spans browser applications, AI and machine learning, OCR, embedded systems, and content platforms. He created PDFMech to make everyday document work feel direct: choose the exact tool you need, process supported files in your browser, and download a separate result.
+          </p>
+          <div className="founder-profile-tags" aria-label="Muhammad Rehan's areas of work">
+            <span>Computer Engineering</span>
+            <span>Full-stack development</span>
+            <span>AI, ML &amp; OCR</span>
+            <span>Privacy-first products</span>
+          </div>
+          <div className="founder-profile-links">
+            <a href="https://github.com/Rehan3192" target="_blank" rel="noreferrer">View GitHub</a>
+            <a href="https://www.linkedin.com/in/muhammad-rehan" target="_blank" rel="noreferrer">View LinkedIn</a>
+          </div>
+        </div>
+      </section>
       <BulletGuideSection
         kicker="Why PDFMech exists"
         title="Practical PDF tools with a clear purpose"
