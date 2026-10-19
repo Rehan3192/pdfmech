@@ -33,7 +33,7 @@ const post = {
   excerpt: { rendered: "Make a scanned PDF searchable without uploading it." },
   content: {
     rendered:
-      '<h2>Use browser OCR</h2><p>Private processing.</p><script>alert("x")</script>',
+      '<h1>Use browser OCR</h1><p>Private processing.</p><h4>Check the result</h4><script>alert("x")</script>',
   },
   _embedded: {
     "wp:featuredmedia": [
@@ -83,6 +83,10 @@ describe("dynamic WordPress blog route", () => {
       '<link rel="canonical" href="https://www.pdfmech.com/blog/how-to-make-a-scanned-pdf-searchable" />',
     );
     expect(html).toContain("<h1>How to Make a Scanned PDF Searchable</h1>");
+    expect(html.match(/<h1\b/g)).toHaveLength(1);
+    expect(html).toContain('<nav class="blog-table-of-contents"');
+    expect(html).toContain('<h2 id="use-browser-ocr">Use browser OCR</h2>');
+    expect(html).toContain('<h3 id="check-the-result">Check the result</h3>');
     expect(html).toContain('"@type":"Article"');
     expect(html).toContain('id="blog-post-data"');
     expect(html).not.toContain("Stale archive");

@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { normalizeBlogArticleHtml } from "../blog-content.ts";
 
 const SITE_ORIGIN = "https://www.pdfmech.com";
 const WORDPRESS_API = "https://cms.pdfmech.com/wp-json/wp/v2/posts";
@@ -97,15 +98,15 @@ function rewriteWordPressHref(href: string): string {
 }
 
 function sanitizePostHtml(value: string): string {
-  return sanitizeHtml(value, {
+  const sanitized = sanitizeHtml(value, {
     allowedTags: [
       "a", "blockquote", "br", "caption", "code", "col", "colgroup", "del",
-      "div", "em", "figcaption", "figure", "h2", "h3", "h4", "h5", "hr",
-      "img", "li", "ol", "p", "pre", "s", "span", "strong", "sub", "sup",
+      "div", "em", "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6", "hr",
+      "img", "li", "nav", "ol", "p", "pre", "s", "span", "strong", "sub", "sup",
       "table", "tbody", "td", "tfoot", "th", "thead", "tr", "u", "ul",
     ],
     allowedAttributes: {
-      "*": ["class", "id"],
+      "*": ["class", "id", "aria-label", "data-pdfmech-toc"],
       a: ["href", "title", "target", "rel"],
       col: ["span"],
       img: ["src", "alt", "width", "height", "loading"],
@@ -138,6 +139,7 @@ function sanitizePostHtml(value: string): string {
       }),
     },
   });
+  return normalizeBlogArticleHtml(sanitized).html;
 }
 
 function normalizePost(post: WordPressPostResponse): BlogPost {

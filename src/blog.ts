@@ -1,4 +1,5 @@
 import DOMPurify from "dompurify";
+import { normalizeBlogArticleHtml } from "./blog-content.ts";
 
 export const WORDPRESS_SITE_ORIGIN = "https://cms.pdfmech.com";
 export const WORDPRESS_API_BASE = `${WORDPRESS_SITE_ORIGIN}/wp-json/wp/v2`;
@@ -194,13 +195,16 @@ export function sanitizeWordPressHtml(value: string): string {
       "em",
       "figcaption",
       "figure",
+      "h1",
       "h2",
       "h3",
       "h4",
       "h5",
+      "h6",
       "hr",
       "img",
       "li",
+      "nav",
       "ol",
       "p",
       "pre",
@@ -226,6 +230,8 @@ export function sanitizeWordPressHtml(value: string): string {
       "height",
       "href",
       "id",
+      "aria-label",
+      "data-pdfmech-toc",
       "rel",
       "reversed",
       "rowspan",
@@ -260,7 +266,7 @@ export function sanitizeWordPressHtml(value: string): string {
     image.setAttribute("loading", "lazy");
     if (!image.hasAttribute("alt")) image.setAttribute("alt", "");
   }
-  return document.body.innerHTML;
+  return normalizeBlogArticleHtml(document.body.innerHTML).html;
 }
 
 function safeHttpsUrl(value: string | undefined): string | null {

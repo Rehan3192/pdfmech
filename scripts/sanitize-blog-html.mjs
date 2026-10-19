@@ -1,16 +1,17 @@
 import sanitizeHtml from "sanitize-html";
 import { rewriteWordPressHref } from "../src/blog.ts";
+import { normalizeBlogArticleHtml } from "../src/blog-content.ts";
 
 export function sanitizeBlogHtmlForBuild(value) {
-  return sanitizeHtml(value, {
+  const sanitized = sanitizeHtml(value, {
     allowedTags: [
       "a", "blockquote", "br", "caption", "code", "col", "colgroup", "del",
-      "div", "em", "figcaption", "figure", "h2", "h3", "h4", "h5", "hr",
-      "img", "li", "ol", "p", "pre", "s", "span", "strong", "sub", "sup",
+      "div", "em", "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6", "hr",
+      "img", "li", "nav", "ol", "p", "pre", "s", "span", "strong", "sub", "sup",
       "table", "tbody", "td", "tfoot", "th", "thead", "tr", "u", "ul",
     ],
     allowedAttributes: {
-      "*": ["class", "id"],
+      "*": ["class", "id", "aria-label", "data-pdfmech-toc"],
       a: ["href", "title", "target", "rel"],
       col: ["span"],
       img: ["src", "alt", "width", "height", "loading"],
@@ -40,4 +41,5 @@ export function sanitizeBlogHtmlForBuild(value) {
       }),
     },
   });
+  return normalizeBlogArticleHtml(sanitized).html;
 }

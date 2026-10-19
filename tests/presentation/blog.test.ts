@@ -5,6 +5,7 @@ import {
   rewriteWordPressHref,
   type BlogPost,
 } from "../../src/blog";
+import { normalizeBlogArticleHtml } from "../../src/blog-content";
 
 describe("WordPress blog content", () => {
   it("rewrites public WordPress post links to the PDFMech blog", () => {
@@ -34,5 +35,19 @@ describe("WordPress blog content", () => {
 
     expect(blogPostDescription(post)).toHaveLength(158);
     expect(blogPostDescription(post)).toMatch(/…$/);
+  });
+
+  it("repairs WordPress heading structure and generates a stable table of contents", () => {
+    const html = normalizeBlogArticleHtml(
+      '<h1>First Section</h1><p>Intro</p><h4>Skipped Level</h4><h5>Deep Topic</h5><h2>First Section</h2>',
+    ).html;
+
+    expect(html).not.toMatch(/<h1\b/i);
+    expect(html).toContain('<h2 id="first-section">First Section</h2>');
+    expect(html).toContain('<h3 id="skipped-level">Skipped Level</h3>');
+    expect(html).toContain('<h4 id="deep-topic">Deep Topic</h4>');
+    expect(html).toContain('<h2 id="first-section-2">First Section</h2>');
+    expect(html).toContain('aria-label="Table of contents"');
+    expect(html).toContain('href="#skipped-level"');
   });
 });
