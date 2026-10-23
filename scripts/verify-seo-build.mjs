@@ -4,6 +4,7 @@ import {
   canonicalUrl,
   SEO_PAGE_KEYS,
   SEO_PAGES,
+  SITE_ORIGIN,
   TOOL_ROUTE_FAQS,
   TOOL_SEO_PAGE_KEYS,
 } from "../src/seo-config.ts";
@@ -437,6 +438,37 @@ for (const page of SEO_PAGE_KEYS) {
 const blogArchive = await readFile(join(outputDirectory, "blog.html"), "utf8");
 if (blogArchive.includes("Hello world!")) {
   throw new Error("The default WordPress Hello world post must not be published on PDFMech.");
+}
+const embeddedBlogPostsMatch = blogArchive.match(
+  /<script id="blog-posts-data" type="application\/json">([\s\S]*?)<\/script>/i,
+);
+if (embeddedBlogPostsMatch?.[1] === undefined) {
+  throw new Error("blog.html must embed its prerendered article inventory.");
+}
+const embeddedBlogPosts = JSON.parse(embeddedBlogPostsMatch[1]);
+if (!Array.isArray(embeddedBlogPosts)) {
+  throw new Error("The embedded blog inventory must be an array.");
+}
+for (const post of embeddedBlogPosts) {
+  if (
+    typeof post !== "object" ||
+    post === null ||
+    typeof post.slug !== "string" ||
+    typeof post.modified !== "string"
+  ) {
+    throw new Error("The embedded blog inventory contains an invalid post.");
+  }
+  const articleUrl = `${SITE_ORIGIN}/blog/${post.slug}`;
+  if (!blogArchive.includes(`href="/blog/${post.slug}"`)) {
+    throw new Error(`blog.html is missing its crawlable link to ${articleUrl}.`);
+  }
+  if (!sitemap.includes(`<loc>${articleUrl}</loc>`)) {
+    throw new Error(`sitemap.xml is missing ${articleUrl}.`);
+  }
+  const modified = post.modified.split("T")[0];
+  if (!sitemap.includes(`<loc>${articleUrl}</loc>\n    <lastmod>${modified}</lastmod>`)) {
+    throw new Error(`sitemap.xml has an incorrect modification date for ${articleUrl}.`);
+  }
 }
 
 let blogFiles = [];

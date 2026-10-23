@@ -19,12 +19,7 @@ import { sanitizeBlogHtmlForBuild } from "./sanitize-blog-html.mjs";
 
 const outputDirectory = join(process.cwd(), "dist");
 const template = await readFile(join(outputDirectory, "index.html"), "utf8");
-let blogPosts = [];
-try {
-  blogPosts = await getBlogPosts(100, sanitizeBlogHtmlForBuild);
-} catch (error) {
-  console.warn(`WordPress content was unavailable during prerender: ${error instanceof Error ? error.message : String(error)}`);
-}
+const blogPosts = await getBlogPosts(100, sanitizeBlogHtmlForBuild);
 
 function escapeHtml(value) {
   return value
@@ -32,6 +27,15 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function serializeInlineJson(value) {
+  return JSON.stringify(value)
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("&", "\\u0026")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
 }
 
 function replaceMeta(html, selector, value) {
@@ -304,6 +308,13 @@ function renderRoute(page) {
   html = replaceMeta(html, "og:description", config.description);
   html = replaceMeta(html, "twitter:title", config.title);
   html = replaceMeta(html, "twitter:description", config.description);
+  if (page === "blog") {
+    const archivePosts = blogPosts.map((post) => ({ ...post, contentHtml: "" }));
+    html = html.replace(
+      /<\/head>/i,
+      `<script id="blog-posts-data" type="application/json">${serializeInlineJson(archivePosts)}</script>\n  </head>`,
+    );
+  }
   return html;
 }
 

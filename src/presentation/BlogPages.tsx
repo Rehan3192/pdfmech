@@ -3,6 +3,7 @@ import {
   blogPostDescription,
   formatBlogDate,
   getEmbeddedBlogPost,
+  getEmbeddedBlogPosts,
   getBlogPostBySlug,
   getBlogPosts,
   type BlogPost,
@@ -88,8 +89,11 @@ export function BlogArchivePage({
 }: {
   readonly onNavigate: (path: string) => void;
 }) {
-  const [posts, setPosts] = useState<readonly BlogPost[]>([]);
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const embeddedPosts = getEmbeddedBlogPosts();
+  const [posts, setPosts] = useState<readonly BlogPost[]>(embeddedPosts);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">(
+    embeddedPosts.length > 0 ? "ready" : "loading",
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -100,10 +104,16 @@ export function BlogArchivePage({
         setStatus("ready");
       })
       .catch(() => {
-        if (!controller.signal.aborted) setStatus("error");
+        if (controller.signal.aborted) return;
+        if (embeddedPosts.length > 0) {
+          setPosts(embeddedPosts);
+          setStatus("ready");
+          return;
+        }
+        setStatus("error");
       });
     return () => controller.abort();
-  }, []);
+  }, [embeddedPosts]);
 
   return (
     <main className="blog-page" data-testid="blog-archive">

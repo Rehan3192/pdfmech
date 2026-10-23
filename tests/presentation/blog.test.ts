@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   blogPostDescription,
   htmlToPlainText,
+  parseEmbeddedBlogPosts,
   rewriteWordPressHref,
   type BlogPost,
 } from "../../src/blog";
@@ -49,5 +50,26 @@ describe("WordPress blog content", () => {
     expect(html).toContain('<h2 id="first-section-2">First Section</h2>');
     expect(html).toContain('aria-label="Table of contents"');
     expect(html).toContain('href="#skipped-level"');
+  });
+
+  it("recovers a prerendered blog inventory without requiring a client fetch", () => {
+    const posts = parseEmbeddedBlogPosts(JSON.stringify([
+      {
+        id: 12,
+        slug: "split-and-rename-pdfs",
+        title: "Split and rename PDFs",
+        excerpt: "A practical guide.",
+        contentHtml: "",
+        date: "2026-10-19T10:00:00",
+        modified: "2026-10-20T11:00:00",
+        featuredImageUrl: null,
+        featuredImageAlt: "",
+        categories: [{ name: "PDF guides", slug: "pdf-guides" }],
+      },
+    ]));
+
+    expect(posts).toHaveLength(1);
+    expect(posts[0]?.slug).toBe("split-and-rename-pdfs");
+    expect(posts[0]?.contentHtml).toBe("");
   });
 });

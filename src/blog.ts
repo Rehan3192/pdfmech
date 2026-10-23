@@ -55,6 +55,7 @@ export interface BlogPost {
 }
 
 let embeddedBlogPostCache: BlogPost | null | undefined;
+let embeddedBlogPostsCache: readonly BlogPost[] | undefined;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -72,56 +73,86 @@ export function getEmbeddedBlogPost(slug: string): BlogPost | null {
 
   try {
     const value: unknown = JSON.parse(element.textContent);
-    if (
-      !isRecord(value) ||
-      typeof value.id !== "number" ||
-      typeof value.slug !== "string" ||
-      typeof value.title !== "string" ||
-      typeof value.excerpt !== "string" ||
-      typeof value.contentHtml !== "string" ||
-      typeof value.date !== "string" ||
-      typeof value.modified !== "string" ||
-      !Array.isArray(value.categories)
-    ) {
-      return null;
-    }
-
-    const categories = value.categories
-      .filter(
-        (category): category is Record<string, unknown> =>
-          isRecord(category) &&
-          typeof category.name === "string" &&
-          typeof category.slug === "string",
-      )
-      .map((category) => ({
-        name: category.name as string,
-        slug: category.slug as string,
-      }));
-    const featuredImageUrl =
-      value.featuredImageUrl === null
-        ? null
-        : typeof value.featuredImageUrl === "string"
-          ? safeHttpsUrl(value.featuredImageUrl)
-          : null;
-
-    embeddedBlogPostCache = {
-      id: value.id,
-      slug: value.slug,
-      title: value.title,
-      excerpt: value.excerpt,
-      contentHtml: sanitizeWordPressHtml(value.contentHtml),
-      date: value.date,
-      modified: value.modified,
-      featuredImageUrl,
-      featuredImageAlt:
-        typeof value.featuredImageAlt === "string" ? value.featuredImageAlt : "",
-      categories,
-    };
+    embeddedBlogPostCache = parseEmbeddedBlogPost(value, true);
   } catch {
     embeddedBlogPostCache = null;
   }
 
   return embeddedBlogPostCache?.slug === slug ? embeddedBlogPostCache : null;
+}
+
+function parseEmbeddedBlogPost(value: unknown, includeContent: boolean): BlogPost | null {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "number" ||
+    typeof value.slug !== "string" ||
+    typeof value.title !== "string" ||
+    typeof value.excerpt !== "string" ||
+    typeof value.contentHtml !== "string" ||
+    typeof value.date !== "string" ||
+    typeof value.modified !== "string" ||
+    !Array.isArray(value.categories)
+  ) {
+    return null;
+  }
+
+  const categories = value.categories
+    .filter(
+      (category): category is Record<string, unknown> =>
+        isRecord(category) &&
+        typeof category.name === "string" &&
+        typeof category.slug === "string",
+    )
+    .map((category) => ({
+      name: category.name as string,
+      slug: category.slug as string,
+    }));
+  const featuredImageUrl =
+    value.featuredImageUrl === null
+      ? null
+      : typeof value.featuredImageUrl === "string"
+        ? safeHttpsUrl(value.featuredImageUrl)
+        : null;
+
+  return {
+    id: value.id,
+    slug: value.slug,
+    title: value.title,
+    excerpt: value.excerpt,
+    contentHtml: includeContent ? sanitizeWordPressHtml(value.contentHtml) : "",
+    date: value.date,
+    modified: value.modified,
+    featuredImageUrl,
+    featuredImageAlt:
+      typeof value.featuredImageAlt === "string" ? value.featuredImageAlt : "",
+    categories,
+  };
+}
+
+export function parseEmbeddedBlogPosts(value: string): BlogPost[] {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((post) => parseEmbeddedBlogPost(post, false))
+      .filter((post): post is BlogPost => post !== null);
+  } catch {
+    return [];
+  }
+}
+
+export function getEmbeddedBlogPosts(): readonly BlogPost[] {
+  if (embeddedBlogPostsCache !== undefined) return embeddedBlogPostsCache;
+  embeddedBlogPostsCache = [];
+  if (typeof document === "undefined") return embeddedBlogPostsCache;
+
+  const element = document.querySelector<HTMLScriptElement>("#blog-posts-data");
+  if (element?.textContent === null || element?.textContent === undefined) {
+    return embeddedBlogPostsCache;
+  }
+
+  embeddedBlogPostsCache = parseEmbeddedBlogPosts(element.textContent);
+  return embeddedBlogPostsCache;
 }
 
 function decodeHtmlEntities(value: string): string {

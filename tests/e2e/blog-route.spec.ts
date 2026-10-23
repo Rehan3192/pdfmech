@@ -46,3 +46,41 @@ test("blog archive and article use the shared PDFMech template safely", async ({
     `https://www.pdfmech.com/blog/${post.slug}`,
   );
 });
+
+test("blog archive preserves prerendered links when WordPress is temporarily unavailable", async ({ page }) => {
+  await page.unroute("**/wp-json/wp/v2/posts**");
+  await page.route("**/wp-json/wp/v2/posts**", (route) => route.abort());
+
+  const embeddedPost = {
+    id: 42,
+    slug: post.slug,
+    date: post.date,
+    modified: post.modified,
+    title: post.title.rendered,
+    excerpt: post.excerpt.rendered,
+    contentHtml: "",
+    featuredImageUrl: null,
+    featuredImageAlt: "",
+    categories: [{ name: "OCR & Searchable PDFs", slug: "ocr-searchable-pdfs" }],
+  };
+  await page.route((url) => url.pathname === "/blog", async (route) => {
+    const response = await route.fetch();
+    const html = await response.text();
+    await route.fulfill({
+      response,
+      body: html.replace(
+        "</head>",
+        `<script id="blog-posts-data" type="application/json">${JSON.stringify([embeddedPost])}</script></head>`,
+      ),
+    });
+  });
+
+  await page.goto("/blog");
+
+  await expect(page.getByRole("heading", { name: post.title.rendered })).toBeVisible();
+  await expect(page.getByRole("link", { name: post.title.rendered })).toHaveAttribute(
+    "href",
+    `/blog/${post.slug}`,
+  );
+  await expect(page.getByText("Guides are temporarily unavailable.")).toHaveCount(0);
+});
