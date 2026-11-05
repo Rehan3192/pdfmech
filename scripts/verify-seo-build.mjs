@@ -436,6 +436,13 @@ for (const page of SEO_PAGE_KEYS) {
 }
 
 const blogArchive = await readFile(join(outputDirectory, "blog.html"), "utf8");
+const fallbackBlogArchive = await readFile(
+  join(outputDirectory, "_internal", "blog.html"),
+  "utf8",
+);
+if (fallbackBlogArchive !== blogArchive) {
+  throw new Error("The dynamic blog fallback must match the verified build archive.");
+}
 if (blogArchive.includes("Hello world!")) {
   throw new Error("The default WordPress Hello world post must not be published on PDFMech.");
 }
@@ -471,6 +478,14 @@ for (const post of embeddedBlogPosts) {
   }
 }
 
+const fallbackSitemap = await readFile(
+  join(outputDirectory, "_internal", "sitemap.xml"),
+  "utf8",
+);
+if (fallbackSitemap !== sitemap) {
+  throw new Error("The dynamic sitemap fallback must match the verified build sitemap.");
+}
+
 let blogFiles = [];
 try {
   blogFiles = (await readdir(join(outputDirectory, "blog"))).filter((file) => file.endsWith(".html"));
@@ -492,5 +507,21 @@ const dynamicBlogRewrite = vercelConfig.rewrites?.find(
 if (dynamicBlogRewrite === undefined) {
   throw new Error("vercel.json must route dynamic blog posts through the server renderer.");
 }
+const dynamicArchiveRewrite = vercelConfig.rewrites?.find(
+  (rewrite) =>
+    rewrite.source === "/blog" &&
+    rewrite.destination === "/api/blog-archive",
+);
+if (dynamicArchiveRewrite === undefined) {
+  throw new Error("vercel.json must route the blog archive through the server renderer.");
+}
+const dynamicSitemapRewrite = vercelConfig.rewrites?.find(
+  (rewrite) =>
+    rewrite.source === "/sitemap.xml" &&
+    rewrite.destination === "/api/sitemap",
+);
+if (dynamicSitemapRewrite === undefined) {
+  throw new Error("vercel.json must route the sitemap through the server renderer.");
+}
 
-console.log(`Verified SEO output for ${SEO_PAGE_KEYS.length} routes, the dynamic blog renderer, and the custom 404 page.`);
+console.log(`Verified SEO output for ${SEO_PAGE_KEYS.length} routes, dynamic blog discovery, and the custom 404 page.`);

@@ -55,7 +55,7 @@ function createFetcher(posts: readonly unknown[]): typeof fetch {
         headers: { "Content-Type": "application/json" },
       });
     }
-    if (url === "https://www.pdfmech.com/blog") {
+    if (url === "https://www.pdfmech.com/") {
       return new Response(template, {
         status: 200,
         headers: { "Content-Type": "text/html" },
@@ -113,7 +113,10 @@ describe("dynamic WordPress blog route", () => {
       if (url.includes("cms.pdfmech.com/wp-json/")) {
         return new Response("Unavailable", { status: 503 });
       }
-      return new Response(template, { status: 200 });
+      if (url === "https://www.pdfmech.com/") {
+        return new Response(template, { status: 200 });
+      }
+      return new Response("Not found", { status: 404 });
     }) as typeof fetch;
     const response = await renderDynamicBlogRoute(
       new Request("https://www.pdfmech.com/api/blog-post?slug=published-guide"),

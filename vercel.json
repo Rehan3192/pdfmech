@@ -6,9 +6,23 @@
     {
       "source": "/blog/:slug",
       "destination": "/api/blog-post?slug=:slug"
+    },
+    {
+      "source": "/blog",
+      "destination": "/api/blog-archive"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
     }
   ],
   "headers": [
+    {
+      "source": "/_internal/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

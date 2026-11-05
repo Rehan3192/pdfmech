@@ -25,6 +25,14 @@ describe("deployment metadata", () => {
       join(process.cwd(), "public", "robots.txt"),
       "utf8",
     );
+    const vercelConfig = JSON.parse(
+      await readFile(join(process.cwd(), "vercel.json"), "utf8"),
+    ) as {
+      readonly rewrites?: readonly {
+        readonly source?: string;
+        readonly destination?: string;
+      }[];
+    };
 
     expect(indexHtml).toContain(
       "<title>Free PDF Editor Online – Private &amp; No Upload | PDFMech</title>",
@@ -57,5 +65,13 @@ describe("deployment metadata", () => {
     expect(icon512.length).toBeGreaterThan(100);
     expect(robots).toContain("Allow: /");
     expect(robots).toContain("https://www.pdfmech.com/sitemap.xml");
+    expect(vercelConfig.rewrites).toEqual(expect.arrayContaining([
+      {
+        source: "/blog/:slug",
+        destination: "/api/blog-post?slug=:slug",
+      },
+      { source: "/blog", destination: "/api/blog-archive" },
+      { source: "/sitemap.xml", destination: "/api/sitemap" },
+    ]));
   });
 });

@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   buildStructuredData,
@@ -324,6 +324,10 @@ for (const page of SEO_PAGE_KEYS) {
   await writeFile(join(outputDirectory, filename), renderRoute(page));
 }
 
+const internalFallbackDirectory = join(outputDirectory, "_internal");
+await mkdir(internalFallbackDirectory, { recursive: true });
+await writeFile(join(internalFallbackDirectory, "blog.html"), renderRoute("blog"));
+
 const notFoundTitle = "Page Not Found | PDFMech";
 let notFound = template
   .replace(/<title>[\s\S]*?<\/title>/i, `<title>${notFoundTitle}</title>`)
@@ -345,6 +349,7 @@ const sitemapEntries = [
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries.map((entry) => `  <url>\n    <loc>${escapeHtml(entry.url)}</loc>\n    <lastmod>${escapeHtml(entry.modified)}</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
 await writeFile(join(outputDirectory, "sitemap.xml"), sitemap);
+await writeFile(join(internalFallbackDirectory, "sitemap.xml"), sitemap);
 
 if (!template.includes(`content="${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}"`)) {
   throw new Error("The social sharing image metadata is missing from index.html.");

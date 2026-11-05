@@ -215,7 +215,10 @@ async function fetchPublishedPost(slug: string, fetcher: Fetcher): Promise<BlogP
 
 async function fetchHtmlTemplate(request: Request, fetcher: Fetcher): Promise<string> {
   const requestUrl = new URL(request.url);
-  const templateUrl = new URL("/blog", requestUrl.origin);
+  // Use the static home document as the shell. Fetching /blog here would route
+  // through the dynamic archive function and make article rendering depend on
+  // a second WordPress request.
+  const templateUrl = new URL("/", requestUrl.origin);
   const response = await fetchWithTimeout(fetcher, templateUrl.toString(), {
     headers: { Accept: "text/html" },
   });
@@ -400,7 +403,7 @@ export async function renderDynamicBlogRoute(
     return htmlResponse(
       renderArticleDocument(template, post),
       200,
-      "public, s-maxage=60",
+      "public, s-maxage=300, stale-while-revalidate=86400",
     );
   } catch (error) {
     console.error("Unable to render the dynamic blog article.", error);
