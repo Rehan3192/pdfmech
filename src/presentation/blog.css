@@ -317,6 +317,14 @@
 .blog-prose code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 
 .blog-inline-cta { margin: 0 28px 34px; }
+.blog-related-guides { margin: 0 28px 34px; border: 1px solid #d2e4eb; border-radius: 18px; background: #f7fbfd; padding: 22px; }
+.blog-related-guides > div > span { color: #087f9f; font-size: 12px; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.blog-related-guides h2 { margin: 5px 0 16px; font-size: clamp(21px, 3vw, 28px); }
+.blog-related-guides nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.blog-related-guides nav a { display: flex; min-width: 0; flex-direction: column; gap: 7px; border: 1px solid #d5e4ea; border-radius: 13px; background: #fff; padding: 15px; color: #12394b; text-decoration: none; }
+.blog-related-guides nav a:hover { border-color: #88c2d2; box-shadow: 0 8px 20px rgb(31 87 106 / 9%); }
+.blog-related-guides nav strong { line-height: 1.35; }
+.blog-related-guides nav span { color: #607986; font-size: 13px; line-height: 1.45; }
 .blog-article-footer-nav {
   display: flex;
   justify-content: space-between;
@@ -341,6 +349,7 @@
   .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .blog-tool-cta,
   .blog-inline-cta { align-items: flex-start; flex-direction: column; }
+  .blog-related-guides nav { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 620px) {
@@ -366,6 +375,7 @@
   .blog-table-of-contents .blog-toc-level-3 { margin-left: 10px; }
   .blog-table-of-contents .blog-toc-level-4 { margin-left: 20px; }
   .blog-inline-cta { margin: 0 14px 20px; padding: 20px; }
+  .blog-related-guides { margin: 0 14px 20px; padding: 18px; }
   .blog-article-footer-nav { align-items: flex-start; flex-direction: column; }
 }
 

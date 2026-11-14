@@ -180,7 +180,9 @@ export function BlogPostPage({
   readonly onPostResolved: (post: BlogPost | null) => void;
 }) {
   const embeddedPost = getEmbeddedBlogPost(slug);
+  const embeddedRelatedPosts = getEmbeddedBlogPosts().filter((item) => item.slug !== slug).slice(0, 3);
   const [post, setPost] = useState<BlogPost | null>(embeddedPost);
+  const [relatedPosts, setRelatedPosts] = useState<readonly BlogPost[]>(embeddedRelatedPosts);
   const [status, setStatus] = useState<"loading" | "ready" | "notFound" | "error">(
     embeddedPost === null ? "loading" : "ready",
   );
@@ -210,6 +212,16 @@ export function BlogPostPage({
         if (initialPost !== null) return;
         setStatus("error");
         onPostResolved(null);
+      });
+
+    setRelatedPosts(getEmbeddedBlogPosts().filter((item) => item.slug !== slug).slice(0, 3));
+    void getBlogPosts(6)
+      .then((posts) => {
+        if (!active) return;
+        setRelatedPosts(posts.filter((item) => item.slug !== slug).slice(0, 3));
+      })
+      .catch(() => {
+        // Preserve the server-rendered links when WordPress is temporarily unavailable.
       });
 
     return () => {
@@ -290,11 +302,28 @@ export function BlogPostPage({
           </div>
           <BlogLink path="/editor" onNavigate={onNavigate}>Open PDF Editor</BlogLink>
         </aside>
+
+        {relatedPosts.length === 0 ? null : (
+          <aside className="blog-related-guides" aria-labelledby="related-guides-title">
+            <div>
+              <span>Continue reading</span>
+              <h2 id="related-guides-title">Related PDF guides</h2>
+            </div>
+            <nav aria-label="Related PDF guides">
+              {relatedPosts.map((item) => (
+                <BlogLink key={item.slug} path={`/blog/${item.slug}`} onNavigate={onNavigate}>
+                  <strong>{item.title}</strong>
+                  {item.excerpt ? <span>{item.excerpt}</span> : null}
+                </BlogLink>
+              ))}
+            </nav>
+          </aside>
+        )}
       </article>
 
       <nav className="blog-article-footer-nav" aria-label="Article navigation">
         <BlogLink path="/blog" onNavigate={onNavigate}>← Back to all PDF guides</BlogLink>
-        <BlogLink path="/features" onNavigate={onNavigate}>Explore PDFMech tools →</BlogLink>
+        <BlogLink path="/tools" onNavigate={onNavigate}>Explore PDFMech tools →</BlogLink>
       </nav>
     </main>
   );

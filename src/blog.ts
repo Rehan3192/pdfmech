@@ -1,5 +1,6 @@
 import DOMPurify from "dompurify";
 import { normalizeBlogArticleHtml } from "./blog-content.ts";
+import { rewritePublishedWordPressHref } from "./wordpress-links.ts";
 
 export const WORDPRESS_SITE_ORIGIN = "https://cms.pdfmech.com";
 export const WORDPRESS_API_BASE = `${WORDPRESS_SITE_ORIGIN}/wp-json/wp/v2`;
@@ -194,21 +195,7 @@ export function htmlToPlainText(value: string): string {
 }
 
 export function rewriteWordPressHref(href: string): string {
-  try {
-    const url = new URL(href, WORDPRESS_SITE_ORIGIN);
-    if (!["http:", "https:", "mailto:"].includes(url.protocol)) return "#";
-    if (href.startsWith("//")) return url.toString();
-    if (url.origin !== WORDPRESS_SITE_ORIGIN) return href;
-
-    const segments = url.pathname.split("/").filter(Boolean);
-    if (segments.length === 1 && segments[0] !== undefined) {
-      return `/blog/${segments[0]}${url.hash}`;
-    }
-  } catch {
-    return "#";
-  }
-
-  return href;
+  return rewritePublishedWordPressHref(href);
 }
 
 export function sanitizeWordPressHtml(value: string): string {

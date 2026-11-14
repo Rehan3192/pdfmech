@@ -16,6 +16,11 @@ describe("WordPress blog content", () => {
     expect(rewriteWordPressHref("https://example.com/guide")).toBe(
       "https://example.com/guide",
     );
+    expect(
+      rewriteWordPressHref(
+        "https://www.pdfmech.com/ocr-pdf?utm_source=chatgpt.com&utm_medium=answer#tool",
+      ),
+    ).toBe("/ocr-pdf#tool");
   });
 
   it("normalizes rendered text and creates a bounded description", () => {

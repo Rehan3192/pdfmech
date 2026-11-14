@@ -8,6 +8,7 @@ import {
   TOOL_ROUTE_FAQS,
   TOOL_SEO_PAGE_KEYS,
 } from "../src/seo-config.ts";
+import { guideForToolPath, relatedTools } from "../src/tool-discovery.ts";
 
 const outputDirectory = join(process.cwd(), "dist");
 const titles = new Set();
@@ -30,7 +31,10 @@ function escapeForHtmlCheck(value) {
 for (const page of SEO_PAGE_KEYS) {
   const config = SEO_PAGES[page];
   const filename = page === "home" ? "index.html" : `${config.path.slice(1)}.html`;
-  const html = await readFile(join(outputDirectory, filename), "utf8");
+  const routePath = page === "blog"
+    ? join(outputDirectory, "_internal", "blog.html")
+    : join(outputDirectory, filename);
+  const html = await readFile(routePath, "utf8");
   const title = match(html, /<title>(.*?)<\/title>/i, "a title", filename);
   const description = match(
     html,
@@ -72,6 +76,18 @@ for (const page of SEO_PAGE_KEYS) {
     !html.includes(`class="seo-snapshot" data-page="${page}"`)
   ) {
     throw new Error(`${filename} must use the compact first-paint navigation shell.`);
+  }
+  const crawlableRelatedTools = relatedTools(config.path);
+  if (
+    crawlableRelatedTools.length > 0 &&
+    (!html.includes('href="/tools"') ||
+      crawlableRelatedTools.some((tool) => !html.includes(`href="${tool.path}"`)))
+  ) {
+    throw new Error(`${filename} must expose its page-specific related PDF tools in initial HTML.`);
+  }
+  const crawlableGuide = guideForToolPath(config.path);
+  if (crawlableGuide !== null && !html.includes(`href="${crawlableGuide.path}"`)) {
+    throw new Error(`${filename} must expose its relevant PDF guide in initial HTML.`);
   }
   if (
     page === "addTextToPdf" &&
@@ -405,6 +421,9 @@ for (const page of SEO_PAGE_KEYS) {
     ) {
       throw new Error(`${filename} must identify every focused PDF tool in its ItemList schema.`);
     }
+    if (!html.includes('href="/edit-pdf-on-iphone"')) {
+      throw new Error(`${filename} must expose the iPhone PDF guide as a crawlable link.`);
+    }
   }
   if (
     page === "editPdfOnIphone" &&
@@ -428,21 +447,20 @@ if (notFound.includes('rel="canonical"')) {
   throw new Error("404.html must not claim a canonical indexable URL.");
 }
 
-const sitemap = await readFile(join(outputDirectory, "sitemap.xml"), "utf8");
+const sitemap = await readFile(
+  join(outputDirectory, "_internal", "sitemap.xml"),
+  "utf8",
+);
 for (const page of SEO_PAGE_KEYS) {
   if (!sitemap.includes(`<loc>${canonicalUrl(page)}</loc>`)) {
     throw new Error(`sitemap.xml is missing ${canonicalUrl(page)}.`);
   }
 }
 
-const blogArchive = await readFile(join(outputDirectory, "blog.html"), "utf8");
-const fallbackBlogArchive = await readFile(
+const blogArchive = await readFile(
   join(outputDirectory, "_internal", "blog.html"),
   "utf8",
 );
-if (fallbackBlogArchive !== blogArchive) {
-  throw new Error("The dynamic blog fallback must match the verified build archive.");
-}
 if (blogArchive.includes("Hello world!")) {
   throw new Error("The default WordPress Hello world post must not be published on PDFMech.");
 }
@@ -478,12 +496,22 @@ for (const post of embeddedBlogPosts) {
   }
 }
 
-const fallbackSitemap = await readFile(
-  join(outputDirectory, "_internal", "sitemap.xml"),
-  "utf8",
-);
-if (fallbackSitemap !== sitemap) {
-  throw new Error("The dynamic sitemap fallback must match the verified build sitemap.");
+for (const shadowingFile of ["blog.html", "sitemap.xml"]) {
+  try {
+    await readFile(join(outputDirectory, shadowingFile), "utf8");
+    throw new Error(
+      `${shadowingFile} must not shadow its dynamic Vercel discovery route.`,
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      continue;
+    }
+    throw error;
+  }
 }
 
 let blogFiles = [];

@@ -50,6 +50,8 @@
 .tool-discovery h2 { margin: 7px 0 5px; font-size: clamp(1.6rem, 2.5vw, 2.35rem); letter-spacing: -.035em; }
 .tool-discovery header p { margin: 0; color: #647b8f; line-height: 1.55; }
 .tool-discovery-all { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #bdd9ea; border-radius: 12px; padding: 12px 16px; background: #fff; color: #0877df; text-decoration: none; font-weight: 900; }
+.tool-discovery-actions { display: flex; flex: 0 0 auto; align-items: stretch; gap: 9px; }
+.tool-discovery-guide { display: inline-flex; max-width: 270px; align-items: center; border: 1px solid #bce4d2; border-radius: 12px; padding: 10px 14px; background: #effcf6; color: #08734a; text-decoration: none; font-size: .82rem; font-weight: 850; line-height: 1.35; }
 .tool-discovery-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
 .tool-discovery-card {
   display: grid;
@@ -143,6 +145,8 @@
 @media (max-width: 700px) {
   .tool-discovery { width: calc(100% - 24px); margin-top: 20px; margin-bottom: 45px; border-radius: 19px; padding: 20px; }
   .tool-discovery > header { align-items: stretch; flex-direction: column; gap: 16px; }
+  .tool-discovery-actions { flex-direction: column; }
+  .tool-discovery-guide { max-width: none; justify-content: center; text-align: center; }
   .tool-discovery-all { justify-content: center; }
   .tool-discovery-grid { grid-template-columns: 1fr; }
   .tool-discovery-card { min-height: 120px; }

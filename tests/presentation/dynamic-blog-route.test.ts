@@ -33,7 +33,7 @@ const post = {
   excerpt: { rendered: "Make a scanned PDF searchable without uploading it." },
   content: {
     rendered:
-      '<h1>Use browser OCR</h1><p>Private processing.</p><h4>Check the result</h4><script>alert("x")</script>',
+      '<h1>Use browser OCR</h1><p>Private processing. <a href="https://www.pdfmech.com/ocr-pdf?utm_source=chatgpt.com">Open OCR</a></p><h4>Check the result</h4><script>alert("x")</script>',
   },
   _embedded: {
     "wp:featuredmedia": [
@@ -44,6 +44,14 @@ const post = {
     ],
     "wp:term": [[{ taxonomy: "category", name: "OCR guides", slug: "ocr-guides" }]],
   },
+};
+
+const relatedPost = {
+  ...post,
+  id: 11,
+  slug: "why-cant-i-type-on-a-pdf",
+  title: { rendered: "Why Can’t I Type on a PDF?" },
+  excerpt: { rendered: "Understand common PDF typing problems." },
 };
 
 function createFetcher(posts: readonly unknown[]): typeof fetch {
@@ -71,7 +79,7 @@ describe("dynamic WordPress blog route", () => {
       new Request(
         "https://www.pdfmech.com/api/blog-post?slug=how-to-make-a-scanned-pdf-searchable",
       ),
-      createFetcher([post]),
+      createFetcher([post, relatedPost]),
     );
     const html = await response.text();
 
@@ -89,6 +97,10 @@ describe("dynamic WordPress blog route", () => {
     expect(html).toContain('<h3 id="check-the-result">Check the result</h3>');
     expect(html).toContain('"@type":"Article"');
     expect(html).toContain('id="blog-post-data"');
+    expect(html).toContain('id="blog-posts-data"');
+    expect(html).toContain('href="/blog/why-cant-i-type-on-a-pdf"');
+    expect(html).toContain('href="/ocr-pdf"');
+    expect(html).not.toContain("utm_source");
     expect(html).not.toContain("Stale archive");
     expect(html).not.toContain("alert(&quot;x&quot;)");
   });

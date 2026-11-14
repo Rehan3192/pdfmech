@@ -1,5 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 import { normalizeBlogArticleHtml } from "../blog-content.ts";
+import { rewritePublishedWordPressHref } from "../wordpress-links.ts";
 
 const SITE_ORIGIN = "https://www.pdfmech.com";
 const WORDPRESS_API = "https://cms.pdfmech.com/wp-json/wp/v2/posts";
@@ -53,6 +54,15 @@ interface BlogPost {
   readonly categories: readonly BlogCategory[];
 }
 
+interface RelatedBlogPost {
+  readonly id: number;
+  readonly slug: string;
+  readonly title: string;
+  readonly excerpt: string;
+  readonly date: string;
+  readonly modified: string;
+}
+
 type Fetcher = typeof fetch;
 
 function escapeHtml(value: string): string {
@@ -80,21 +90,7 @@ function safeHttpsUrl(value: string | undefined): string | null {
 }
 
 function rewriteWordPressHref(href: string): string {
-  try {
-    const url = new URL(href, "https://cms.pdfmech.com");
-    if (!["http:", "https:", "mailto:"].includes(url.protocol)) return "#";
-    if (href.startsWith("//")) return url.toString();
-    if (url.origin !== "https://cms.pdfmech.com") return href;
-
-    const segments = url.pathname.split("/").filter(Boolean);
-    if (segments.length === 1 && segments[0] !== undefined) {
-      return `/blog/${segments[0]}${url.hash}`;
-    }
-  } catch {
-    return "#";
-  }
-
-  return href;
+  return rewritePublishedWordPressHref(href);
 }
 
 function sanitizePostHtml(value: string): string {
@@ -213,6 +209,36 @@ async function fetchPublishedPost(slug: string, fetcher: Fetcher): Promise<BlogP
   return post === undefined ? null : normalizePost(post);
 }
 
+async function fetchRelatedPosts(
+  currentSlug: string,
+  fetcher: Fetcher,
+): Promise<readonly RelatedBlogPost[]> {
+  const url = new URL(WORDPRESS_API);
+  url.searchParams.set("status", "publish");
+  url.searchParams.set("orderby", "date");
+  url.searchParams.set("order", "desc");
+  url.searchParams.set("per_page", "6");
+  url.searchParams.set("_fields", "id,slug,date,modified,title,excerpt");
+
+  const response = await fetchWithTimeout(fetcher, url.toString(), {
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`WordPress returned ${response.status}.`);
+
+  const posts = (await response.json()) as WordPressPostResponse[];
+  return posts
+    .filter((post) => post.slug !== currentSlug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(post.slug))
+    .slice(0, 3)
+    .map((post) => ({
+      id: post.id,
+      slug: post.slug,
+      title: plainText(post.title.rendered),
+      excerpt: plainText(post.excerpt.rendered),
+      date: post.date,
+      modified: post.modified,
+    }));
+}
+
 async function fetchHtmlTemplate(request: Request, fetcher: Fetcher): Promise<string> {
   const requestUrl = new URL(request.url);
   // Use the static home document as the shell. Fetching /blog here would route
@@ -256,7 +282,25 @@ function serializeEmbeddedPost(post: BlogPost): string {
     .replaceAll("\u2029", "\\u2029");
 }
 
-function renderArticleSnapshot(post: BlogPost): string {
+function serializeRelatedPosts(posts: readonly RelatedBlogPost[]): string {
+  return JSON.stringify(posts.map((post) => ({
+    ...post,
+    contentHtml: "",
+    featuredImageUrl: null,
+    featuredImageAlt: "",
+    categories: [],
+  })))
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("&", "\\u0026")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+}
+
+function renderArticleSnapshot(
+  post: BlogPost,
+  relatedPosts: readonly RelatedBlogPost[],
+): string {
   const description = postDescription(post);
   const category =
     post.categories.find((item) => item.slug !== "uncategorized")?.name ?? "PDF guide";
@@ -264,11 +308,18 @@ function renderArticleSnapshot(post: BlogPost): string {
   const featuredImage = post.featuredImageUrl === null
     ? ""
     : `<img class="blog-featured-image" src="${escapeHtml(post.featuredImageUrl)}" alt="${escapeHtml(post.featuredImageAlt)}" width="1200" height="675">`;
+  const relatedGuides = relatedPosts.length === 0
+    ? ""
+    : `<aside class="blog-related-guides" aria-labelledby="related-guides-title"><div><span>Continue reading</span><h2 id="related-guides-title">Related PDF guides</h2></div><nav>${relatedPosts.map((item) => `<a href="/blog/${escapeHtml(item.slug)}"><strong>${escapeHtml(item.title)}</strong>${item.excerpt ? `<span>${escapeHtml(item.excerpt)}</span>` : ""}</a>`).join("")}</nav></aside>`;
 
-  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation"><a href="/">Home</a><a href="/editor">PDF Editor</a><a href="/ocr-pdf">OCR PDF</a><a href="/features">Features</a><a href="/how-it-works">How It Works</a><a href="/blog">Blog</a></nav></header><main class="blog-article-page"><nav class="blog-article-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog">Guides</a><span aria-hidden="true">/</span><span aria-current="page">${escapeHtml(post.title)}</span></nav><article class="blog-article-shell"><header class="blog-article-header"><span class="hero-kicker">${escapeHtml(category)}</span><h1>${escapeHtml(post.title)}</h1><p>${escapeHtml(description)}</p><div class="blog-article-dates"><span>Published <time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time></span>${updated ? `<span>Updated <time datetime="${escapeHtml(post.modified)}">${escapeHtml(formatDate(post.modified))}</time></span>` : ""}</div>${featuredImage}</header><div class="blog-prose">${post.contentHtml}</div><aside class="blog-inline-cta"><div><span>PDFMech browser tools</span><h2>Edit the document while it stays on your device.</h2></div><a href="/editor">Open PDF Editor</a></aside></article><nav class="blog-article-footer-nav" aria-label="Article navigation"><a href="/blog">← Back to all PDF guides</a><a href="/features">Explore PDFMech tools →</a></nav></main><footer><a href="/blog">Blog</a><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
+  return `<div class="seo-snapshot"><header><a href="/" aria-label="PDFMech home"><img src="/PDFMechLogo-small.webp" width="55" height="55" alt=""><strong>PDFMech</strong></a><nav aria-label="Main navigation"><a href="/">Home</a><a href="/editor">PDF Editor</a><a href="/ocr-pdf">OCR PDF</a><a href="/features">Features</a><a href="/how-it-works">How It Works</a><a href="/blog">Blog</a></nav></header><main class="blog-article-page"><nav class="blog-article-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog">Guides</a><span aria-hidden="true">/</span><span aria-current="page">${escapeHtml(post.title)}</span></nav><article class="blog-article-shell"><header class="blog-article-header"><span class="hero-kicker">${escapeHtml(category)}</span><h1>${escapeHtml(post.title)}</h1><p>${escapeHtml(description)}</p><div class="blog-article-dates"><span>Published <time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time></span>${updated ? `<span>Updated <time datetime="${escapeHtml(post.modified)}">${escapeHtml(formatDate(post.modified))}</time></span>` : ""}</div>${featuredImage}</header><div class="blog-prose">${post.contentHtml}</div><aside class="blog-inline-cta"><div><span>PDFMech browser tools</span><h2>Edit the document while it stays on your device.</h2></div><a href="/editor">Open PDF Editor</a></aside>${relatedGuides}</article><nav class="blog-article-footer-nav" aria-label="Article navigation"><a href="/blog">← Back to all PDF guides</a><a href="/tools">Explore PDFMech tools →</a></nav></main><footer><a href="/blog">Blog</a><a href="/privacy">Privacy</a><a href="/security">Security</a><a href="/terms">Terms</a><a href="/sitemap.xml">Sitemap</a></footer></div>`;
 }
 
-function renderArticleDocument(template: string, post: BlogPost): string {
+function renderArticleDocument(
+  template: string,
+  post: BlogPost,
+  relatedPosts: readonly RelatedBlogPost[],
+): string {
   const url = `${SITE_ORIGIN}/blog/${post.slug}`;
   const title = `${post.title} | PDFMech`;
   const description = postDescription(post);
@@ -311,7 +362,7 @@ function renderArticleDocument(template: string, post: BlogPost): string {
     )
     .replace(
       /<\/head>/i,
-      `<script id="blog-post-data" type="application/json">${serializeEmbeddedPost(post)}</script>\n  </head>`,
+      `<script id="blog-post-data" type="application/json">${serializeEmbeddedPost(post)}</script>\n  <script id="blog-posts-data" type="application/json">${serializeRelatedPosts(relatedPosts)}</script>\n  </head>`,
     );
 
   html = replaceMeta(html, "description", description);
@@ -324,7 +375,7 @@ function renderArticleDocument(template: string, post: BlogPost): string {
   html = replaceMeta(html, "twitter:title", title);
   html = replaceMeta(html, "twitter:description", description);
   html = replaceMeta(html, "twitter:image", image);
-  return replaceApplicationMarkup(html, renderArticleSnapshot(post));
+  return replaceApplicationMarkup(html, renderArticleSnapshot(post, relatedPosts));
 }
 
 function renderStatusDocument(
@@ -388,8 +439,12 @@ export async function renderDynamicBlogRoute(
   }
 
   try {
-    const [post, template] = await Promise.all([
+    const [post, relatedPosts, template] = await Promise.all([
       fetchPublishedPost(slug, fetcher),
+      fetchRelatedPosts(slug, fetcher).catch((error) => {
+        console.error("Unable to load related blog articles.", error);
+        return [];
+      }),
       fetchHtmlTemplate(request, fetcher),
     ]);
     if (post === null) {
@@ -401,7 +456,7 @@ export async function renderDynamicBlogRoute(
     }
 
     return htmlResponse(
-      renderArticleDocument(template, post),
+      renderArticleDocument(template, post, relatedPosts),
       200,
       "public, s-maxage=300, stale-while-revalidate=86400",
     );

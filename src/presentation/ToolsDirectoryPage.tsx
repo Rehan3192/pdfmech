@@ -87,6 +87,16 @@ export function ToolsDirectoryPage() {
         ) : <div className="tools-directory-empty"><strong>No matching tools found.</strong><p>Try another search or select All tools.</p><button type="button" onClick={() => { setQuery(""); setCategory("All tools"); }}>Show all tools</button></div>}
       </section>
 
+      <aside className="tools-directory-mobile-guide" aria-labelledby="mobile-pdf-guide-title">
+        <span aria-hidden="true">iOS</span>
+        <div>
+          <small>Mobile workflow</small>
+          <h2 id="mobile-pdf-guide-title">Need to edit a PDF on iPhone?</h2>
+          <p>Follow the Safari and Files workflow for opening, editing, and downloading a PDF without installing an app.</p>
+        </div>
+        <a href="/edit-pdf-on-iphone">Read the iPhone PDF guide <span aria-hidden="true">→</span></a>
+      </aside>
+
       <section className="tools-directory-explainer"><article><span>1</span><h2>Choose a focused workflow</h2><p>Each page is designed around one PDF task instead of a crowded all-purpose interface.</p></article><article><span>2</span><h2>Work locally</h2><p>Source PDFs remain in your browser during supported processing and download.</p></article><article><span>3</span><h2>Review the limits</h2><p>Every tool explains what changes, what stays untouched, and what may not transfer.</p></article></section>
     </main>
   );

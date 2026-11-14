@@ -16,6 +16,7 @@ import {
   getBlogPosts,
 } from "../src/blog.ts";
 import { sanitizeBlogHtmlForBuild } from "./sanitize-blog-html.mjs";
+import { guideForToolPath, relatedTools } from "../src/tool-discovery.ts";
 
 const outputDirectory = join(process.cwd(), "dist");
 const template = await readFile(join(outputDirectory, "index.html"), "utf8");
@@ -87,11 +88,26 @@ function renderSnapshot(page) {
   const nav = primaryNavKeys
     .map((key) => `<a href="${SEO_PAGES[key].path}">${routeLabels[key] ?? key}</a>`)
     .join("");
-  const related = SEO_PAGE_KEYS
-    .filter((key) => key !== page)
-    .slice(0, 5)
-    .map((key) => `<a href="${SEO_PAGES[key].path}">${escapeHtml(SEO_PAGES[key].h1)}</a>`)
-    .join("");
+  const fallbackRelatedPages = {
+    home: ["tools", "editor", "blog", "security"],
+    features: ["tools", "howItWorks", "blog", "privacy"],
+    howItWorks: ["editor", "tools", "faq", "privacy"],
+    blog: ["tools", "editor", "ocrPdf", "editPdfOnIphone"],
+    faq: ["tools", "howItWorks", "contact", "security"],
+    security: ["privacy", "privatePdfEditor", "redactPdf", "protectPdf"],
+    terms: ["privacy", "security", "contact", "tools"],
+    about: ["tools", "blog", "security", "contact"],
+    privacy: ["security", "privatePdfEditor", "tools", "contact"],
+    contact: ["faq", "about", "privacy", "tools"],
+  };
+  const relatedToolLinks = relatedTools(config.path);
+  const guide = guideForToolPath(config.path);
+  const related = relatedToolLinks.length > 0
+    ? `${relatedToolLinks.map((tool) => `<a href="${tool.path}">${escapeHtml(tool.name)}</a>`).join("")}<a href="/tools">View all PDF tools</a>${guide === null ? "" : `<a href="${guide.path}">${escapeHtml(guide.title)}</a>`}`
+    : (fallbackRelatedPages[page] ?? ["tools", "blog", "privacy", "contact"])
+      .filter((key) => key !== page)
+      .map((key) => `<a href="${SEO_PAGES[key].path}">${escapeHtml(SEO_PAGES[key].h1)}</a>`)
+      .join("");
 
   const isAddTextTool = page === "addTextToPdf";
   const isDeletePagesTool = page === "deletePdfPages";
@@ -124,7 +140,7 @@ function renderSnapshot(page) {
     ? `<section aria-label="Latest PDF guides"><h2>Latest articles</h2>${blogPosts.length === 0 ? "<p>New PDF guides are on the way.</p>" : blogPosts.map((post) => `<article><h3><a href="/blog/${post.slug}">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.excerpt || "Read this practical PDF guide from PDFMech.")}</p><time datetime="${escapeHtml(post.date)}">${escapeHtml(formatBlogDate(post.date))}</time></article>`).join("")}</section>`
     : "";
   const toolContent = isToolsDirectory
-    ? `<section><h2>Choose your PDF tool</h2><p>Use a focused browser-local workflow for editing, organizing, scanning, forms, privacy, or document review.</p>${TOOL_SEO_PAGE_KEYS.map((toolPage) => `<article><h3><a href="${SEO_PAGES[toolPage].path}">${escapeHtml(SEO_PAGES[toolPage].h1)}</a></h3><p>${escapeHtml(SEO_PAGES[toolPage].description)}</p></article>`).join("")}</section>`
+    ? `<section><h2>Choose your PDF tool</h2><p>Use a focused browser-local workflow for editing, organizing, scanning, forms, privacy, or document review.</p>${TOOL_SEO_PAGE_KEYS.map((toolPage) => `<article><h3><a href="${SEO_PAGES[toolPage].path}">${escapeHtml(SEO_PAGES[toolPage].h1)}</a></h3><p>${escapeHtml(SEO_PAGES[toolPage].description)}</p></article>`).join("")}</section><aside><h2>Edit a PDF on iPhone</h2><p>Follow the Safari and Files workflow without installing an app.</p><a href="/edit-pdf-on-iphone">Read the iPhone PDF guide</a></aside>`
     : isAddTextTool
       ? `<section><h2>How to add text to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Click or tap where the new text should appear.</li><li>Adjust font, size, color, bold style, and alignment.</li><li>Review and download a separate edited copy.</li></ol><h2>Local browser processing</h2><p>Your source PDF is processed in this browser and is not sent to PDFMech for editing. Local recovery may store a browser copy and editing state on this device.</p><h2>What the Text tool changes</h2><p>PDFMech adds a new editable text box above the PDF page. It does not rewrite text already embedded in the original PDF.</p></section>`
     : isDeletePagesTool
@@ -319,6 +335,9 @@ function renderRoute(page) {
 }
 
 for (const page of SEO_PAGE_KEYS) {
+  // /blog is served by the cached Vercel archive function. Keeping blog.html
+  // at the public root would make Vercel's filesystem shadow that rewrite.
+  if (page === "blog") continue;
   const config = SEO_PAGES[page];
   const filename = page === "home" ? "index.html" : `${config.path.slice(1)}.html`;
   await writeFile(join(outputDirectory, filename), renderRoute(page));
@@ -348,7 +367,8 @@ const sitemapEntries = [
   ...blogPosts.map((post) => ({ url: `${SITE_ORIGIN}/blog/${post.slug}`, modified: post.modified.split("T")[0] })),
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries.map((entry) => `  <url>\n    <loc>${escapeHtml(entry.url)}</loc>\n    <lastmod>${escapeHtml(entry.modified)}</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
-await writeFile(join(outputDirectory, "sitemap.xml"), sitemap);
+// /sitemap.xml is served by the cached Vercel sitemap function. The verified
+// build copy remains private fallback data for WordPress outages.
 await writeFile(join(internalFallbackDirectory, "sitemap.xml"), sitemap);
 
 if (!template.includes(`content="${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}"`)) {
