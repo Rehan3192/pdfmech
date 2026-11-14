@@ -16,88 +16,38 @@ describe("SEO configuration", () => {
     expect(new Set(titles).size).toBe(SEO_PAGE_KEYS.length);
     expect(new Set(descriptions).size).toBe(SEO_PAGE_KEYS.length);
     for (const page of SEO_PAGE_KEYS) {
-      expect(SEO_PAGES[page].title.length).toBeLessThanOrEqual(65);
+      expect(SEO_PAGES[page].title.length).toBeLessThanOrEqual(60);
       expect(SEO_PAGES[page].description.length).toBeGreaterThanOrEqual(100);
+      expect(SEO_PAGES[page].description.length).toBeLessThanOrEqual(155);
       expect(canonicalUrl(page)).toMatch(/^https:\/\/www\.pdfmech\.com\//);
     }
   });
 
-  it("includes suitable structured data for product and FAQ routes", () => {
+  it("includes suitable structured data without unsupported app rich-result claims", () => {
     const home = JSON.stringify(buildStructuredData("home"));
     const faq = JSON.stringify(buildStructuredData("faq"));
 
-    expect(home).toContain("WebApplication");
     expect(home).toContain("Organization");
+    expect(home).toContain("WebSite");
+    expect(home).toContain("WebPage");
+    expect(home).not.toContain("WebApplication");
+    expect(home).not.toContain("aggregateRating");
+    expect(home).not.toContain("review");
     expect(faq).toContain("FAQPage");
     expect(faq).toContain("BreadcrumbList");
   });
 
-  it("uses self-referencing metadata and honest product schema for add text", () => {
-    const config = SEO_PAGES.addTextToPdf;
-    const structuredData = JSON.stringify(buildStructuredData("addTextToPdf"));
+  it("uses self-referencing WebPage metadata for every focused route", () => {
+    for (const page of TOOL_SEO_PAGE_KEYS) {
+      const config = SEO_PAGES[page];
+      const structuredData = JSON.stringify(buildStructuredData(page));
 
-    expect(config.path).toBe("/add-text-to-pdf");
-    expect(canonicalUrl("addTextToPdf")).toBe(
-      "https://www.pdfmech.com/add-text-to-pdf",
-    );
-    expect(structuredData).toContain(canonicalUrl("addTextToPdf"));
-    expect(structuredData).toContain(config.description);
-    expect(structuredData).toContain('"price":"0"');
-    expect(structuredData).not.toContain("aggregateRating");
-    expect(structuredData).not.toContain("review");
-  });
-
-  it("uses self-referencing metadata and product schema for deleting pages", () => {
-    const config = SEO_PAGES.deletePdfPages;
-    const structuredData = JSON.stringify(buildStructuredData("deletePdfPages"));
-
-    expect(config.path).toBe("/delete-pdf-pages");
-    expect(canonicalUrl("deletePdfPages")).toBe(
-      "https://www.pdfmech.com/delete-pdf-pages",
-    );
-    expect(structuredData).toContain(canonicalUrl("deletePdfPages"));
-    expect(structuredData).toContain('"price":"0"');
-    expect(structuredData).not.toContain("aggregateRating");
-  });
-
-  it("uses self-referencing metadata and product schema for reordering pages", () => {
-    const config = SEO_PAGES.reorderPdfPages;
-    const structuredData = JSON.stringify(buildStructuredData("reorderPdfPages"));
-
-    expect(config.path).toBe("/reorder-pdf-pages");
-    expect(canonicalUrl("reorderPdfPages")).toBe(
-      "https://www.pdfmech.com/reorder-pdf-pages",
-    );
-    expect(structuredData).toContain(canonicalUrl("reorderPdfPages"));
-    expect(structuredData).toContain('"price":"0"');
-    expect(structuredData).not.toContain("aggregateRating");
-  });
-
-  it("uses self-referencing metadata and product schema for rotating pages", () => {
-    const config = SEO_PAGES.rotatePdfPages;
-    const structuredData = JSON.stringify(buildStructuredData("rotatePdfPages"));
-
-    expect(config.path).toBe("/rotate-pdf-pages");
-    expect(canonicalUrl("rotatePdfPages")).toBe(
-      "https://www.pdfmech.com/rotate-pdf-pages",
-    );
-    expect(structuredData).toContain(canonicalUrl("rotatePdfPages"));
-    expect(structuredData).toContain('"price":"0"');
-    expect(structuredData).not.toContain("aggregateRating");
-  });
-
-  it("uses self-referencing metadata and honest product schema for whiteout", () => {
-    const config = SEO_PAGES.whiteoutPdf;
-    const structuredData = JSON.stringify(buildStructuredData("whiteoutPdf"));
-
-    expect(config.path).toBe("/whiteout-pdf");
-    expect(canonicalUrl("whiteoutPdf")).toBe(
-      "https://www.pdfmech.com/whiteout-pdf",
-    );
-    expect(config.description.toLowerCase()).toContain("visual cover");
-    expect(structuredData).toContain(canonicalUrl("whiteoutPdf"));
-    expect(structuredData).toContain('"price":"0"');
-    expect(structuredData).not.toContain("aggregateRating");
+      expect(structuredData).toContain(canonicalUrl(page));
+      expect(structuredData).toContain(config.description);
+      expect(structuredData).toContain('"@type":"WebPage"');
+      expect(structuredData).not.toContain("WebApplication");
+      expect(structuredData).not.toContain("aggregateRating");
+    }
   });
 
   it("publishes FAQ schema that matches every focused tool route", () => {
@@ -123,6 +73,7 @@ describe("SEO configuration", () => {
     expect(structuredData).toContain('"@type":"Article"');
     expect(structuredData).toContain(config.h1);
     expect(structuredData).toContain('"dateModified":"2026-09-27"');
+    expect(structuredData).toContain('"image":"https://www.pdfmech.com/PDFMechLogo.png"');
   });
 
   it("describes the Tools page as the hub for every focused PDF tool", () => {

@@ -90,6 +90,7 @@ describe("dynamic WordPress blog route", () => {
     expect(html).toContain(
       '<link rel="canonical" href="https://www.pdfmech.com/blog/how-to-make-a-scanned-pdf-searchable" />',
     );
+    expect(html).toContain("<title>Make a Scanned PDF Searchable | PDFMech</title>");
     expect(html).toContain("<h1>How to Make a Scanned PDF Searchable</h1>");
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain('<nav class="blog-table-of-contents"');

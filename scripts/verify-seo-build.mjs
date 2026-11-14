@@ -13,6 +13,25 @@ import { guideForToolPath, relatedTools } from "../src/tool-discovery.ts";
 const outputDirectory = join(process.cwd(), "dist");
 const titles = new Set();
 const descriptions = new Set();
+const CONTENT_COMPLETE_PAGES = new Set([
+  "home",
+  "editor",
+  "features",
+  "howItWorks",
+  "blog",
+  "faq",
+  "security",
+  "terms",
+  "about",
+  "privacy",
+  "contact",
+]);
+
+function crawlableWordCount(html) {
+  const appMarkup = html.match(/<div id="app">([\s\S]*)<\/div>/i)?.[1] ?? "";
+  const text = appMarkup.replaceAll(/<[^>]+>/g, " ");
+  return (text.match(/[A-Za-z0-9']+/g) ?? []).length;
+}
 
 function match(html, pattern, label, filename) {
   const value = html.match(pattern)?.[1];
@@ -61,8 +80,22 @@ for (const page of SEO_PAGE_KEYS) {
   if (!html.includes('name="robots" content="index,follow,max-image-preview:large"')) {
     throw new Error(`${filename} is not indexable.`);
   }
+  if (/href="\/(?!\/)[^"]*[?&](?:utm_|gclid|fbclid)/i.test(html)) {
+    throw new Error(`${filename} contains an internally linked tracking URL.`);
+  }
   if ((html.match(/<h1>/gi) ?? []).length !== 1) {
     throw new Error(`${filename} must contain exactly one crawlable H1.`);
+  }
+  if (
+    CONTENT_COMPLETE_PAGES.has(page) &&
+    (crawlableWordCount(html) < 220 || (html.match(/<h2\b/gi) ?? []).length < 2)
+  ) {
+    throw new Error(
+      `${filename} must contain at least 220 crawlable words and two meaningful H2 sections.`,
+    );
+  }
+  if (title.length > 60 || description.length > 155) {
+    throw new Error(`${filename} exceeds the title or meta-description length guardrail.`);
   }
   const snapshotNavigation = match(
     html,
@@ -92,7 +125,7 @@ for (const page of SEO_PAGE_KEYS) {
   if (
     page === "addTextToPdf" &&
     (!html.includes("How to add text to a PDF") ||
-      !html.includes("Local browser processing") ||
+      !html.includes("Private local text placement") ||
       !html.includes('/add-text-to-pdf#add-text-tool'))
   ) {
     throw new Error(
@@ -102,7 +135,7 @@ for (const page of SEO_PAGE_KEYS) {
   if (
     page === "deletePdfPages" &&
     (!html.includes("How to delete PDF pages") ||
-      !html.includes("Local browser processing") ||
+      !html.includes("Private local page deletion") ||
       !html.includes('/delete-pdf-pages#delete-pages-tool'))
   ) {
     throw new Error(
@@ -112,7 +145,7 @@ for (const page of SEO_PAGE_KEYS) {
   if (
     page === "reorderPdfPages" &&
     (!html.includes("How to reorder PDF pages") ||
-      !html.includes("Local browser processing") ||
+      !html.includes("Private local page reordering") ||
       !html.includes('/reorder-pdf-pages#reorder-pages-tool'))
   ) {
     throw new Error(
@@ -122,7 +155,7 @@ for (const page of SEO_PAGE_KEYS) {
   if (
     page === "rotatePdfPages" &&
     (!html.includes("How to rotate PDF pages") ||
-      !html.includes("Local browser processing") ||
+      !html.includes("Private local page rotation") ||
       !html.includes('/rotate-pdf-pages#rotate-pages-tool'))
   ) {
     throw new Error(
@@ -474,6 +507,9 @@ const embeddedBlogPosts = JSON.parse(embeddedBlogPostsMatch[1]);
 if (!Array.isArray(embeddedBlogPosts)) {
   throw new Error("The embedded blog inventory must be an array.");
 }
+if (embeddedBlogPosts.length === 0) {
+  throw new Error("The embedded blog inventory must retain at least one published guide.");
+}
 for (const post of embeddedBlogPosts) {
   if (
     typeof post !== "object" ||
@@ -527,6 +563,21 @@ if (blogFiles.length > 0) {
 }
 
 const vercelConfig = JSON.parse(await readFile(join(process.cwd(), "vercel.json"), "utf8"));
+const globalHeaders = vercelConfig.headers?.find(
+  (entry) => entry.source === "/(.*)",
+)?.headers ?? [];
+const contentSecurityPolicy = globalHeaders.find(
+  (header) => header.key === "Content-Security-Policy",
+)?.value;
+if (
+  typeof contentSecurityPolicy !== "string" ||
+  !contentSecurityPolicy.includes("default-src 'self'") ||
+  !contentSecurityPolicy.includes("object-src 'none'") ||
+  !contentSecurityPolicy.includes("frame-ancestors 'none'") ||
+  !contentSecurityPolicy.includes("worker-src 'self' blob:")
+) {
+  throw new Error("vercel.json must provide the application-safe Content-Security-Policy.");
+}
 const dynamicBlogRewrite = vercelConfig.rewrites?.find(
   (rewrite) =>
     rewrite.source === "/blog/:slug" &&

@@ -7,6 +7,7 @@ import {
   type BlogPost,
 } from "../../src/blog";
 import { normalizeBlogArticleHtml } from "../../src/blog-content";
+import { BUILD_BLOG_FALLBACK } from "../../src/blog-fallback";
 
 describe("WordPress blog content", () => {
   it("rewrites public WordPress post links to the PDFMech blog", () => {
@@ -39,7 +40,7 @@ describe("WordPress blog content", () => {
       categories: [],
     };
 
-    expect(blogPostDescription(post)).toHaveLength(158);
+    expect(blogPostDescription(post)).toHaveLength(150);
     expect(blogPostDescription(post)).toMatch(/…$/);
   });
 
@@ -76,5 +77,17 @@ describe("WordPress blog content", () => {
     expect(posts).toHaveLength(1);
     expect(posts[0]?.slug).toBe("split-and-rename-pdfs");
     expect(posts[0]?.contentHtml).toBe("");
+  });
+
+  it("retains a valid last-known inventory for CMS build outages", () => {
+    expect(BUILD_BLOG_FALLBACK.length).toBeGreaterThan(0);
+    expect(new Set(BUILD_BLOG_FALLBACK.map((post) => post.slug)).size).toBe(
+      BUILD_BLOG_FALLBACK.length,
+    );
+    for (const post of BUILD_BLOG_FALLBACK) {
+      expect(post.slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+      expect(post.title).not.toBe("");
+      expect(Number.isNaN(Date.parse(post.modified))).toBe(false);
+    }
   });
 });

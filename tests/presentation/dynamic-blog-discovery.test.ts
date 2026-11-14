@@ -99,6 +99,8 @@ describe("dynamic blog discovery routes", () => {
     expect(html).toContain("Why Can’t I Type on a PDF?");
     expect(html).toContain('id="blog-posts-data"');
     expect(html).toContain('"slug":"why-cant-i-type-on-a-pdf-how-to-fix-it-for-free"');
+    expect(html).toContain("Practical answers connected to working tools");
+    expect(html).toContain("Written for careful document work");
     expect(html).not.toContain("Build fallback archive");
   });
 

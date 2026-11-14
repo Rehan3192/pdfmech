@@ -1,5 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 import { normalizeBlogArticleHtml } from "../blog-content.ts";
+import { blogArticleDocumentTitle, blogMetaDescription } from "../blog-seo.ts";
 import { rewritePublishedWordPressHref } from "../wordpress-links.ts";
 
 const SITE_ORIGIN = "https://www.pdfmech.com";
@@ -161,7 +162,7 @@ function normalizePost(post: WordPressPostResponse): BlogPost {
 
 function postDescription(post: BlogPost): string {
   const source = post.excerpt || plainText(post.contentHtml);
-  return source.length <= 160 ? source : `${source.slice(0, 157).trimEnd()}…`;
+  return blogMetaDescription(source);
 }
 
 function formatDate(value: string): string {
@@ -321,7 +322,7 @@ function renderArticleDocument(
   relatedPosts: readonly RelatedBlogPost[],
 ): string {
   const url = `${SITE_ORIGIN}/blog/${post.slug}`;
-  const title = `${post.title} | PDFMech`;
+  const title = blogArticleDocumentTitle(post.slug, post.title);
   const description = postDescription(post);
   const image = post.featuredImageUrl ?? SOCIAL_IMAGE;
   const structuredData = {

@@ -78,7 +78,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   deletePdfPages: {
     path: "/delete-pdf-pages",
     title: "Delete PDF Pages Online Free - No Upload | PDFMech",
-    description: "Delete unwanted PDF pages online for free with PDFMech. Select pages, remove them locally in your browser, and download a new PDF without uploading your file.",
+    description: "Delete PDF pages online for free. Remove selected pages in your browser and download a new PDF without uploading your file.",
     h1: "Delete PDF pages online for free.",
     intro: "Remove unwanted pages from a PDF locally in your browser, review the remaining document, and download a separate copy.",
     schemaType: "WebPage",
@@ -86,7 +86,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   reorderPdfPages: {
     path: "/reorder-pdf-pages",
     title: "Reorder PDF Pages Online Free - No Upload | PDFMech",
-    description: "Reorder PDF pages online for free with PDFMech. Select a page, move it earlier or later locally in your browser, and download a new PDF without uploading it.",
+    description: "Reorder PDF pages online for free. Move pages earlier or later in your browser and download a new PDF without uploading the file.",
     h1: "Reorder PDF pages online for free.",
     intro: "Rearrange PDF pages locally in your browser, review the new sequence, and download a separate organized copy.",
     schemaType: "WebPage",
@@ -133,7 +133,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   },
   fillPdfForm: {
     path: "/fill-pdf-form",
-    title: "Fill PDF Forms Online Free - Private & No Upload | PDFMech",
+    title: "Fill PDF Forms Online Free - No Upload | PDFMech",
     description: "Fill PDF forms online for free. Complete text fields, checkboxes, radio buttons, dropdowns, and list boxes locally without uploading your document.",
     h1: "Fill PDF forms online for free.",
     intro: "Complete supported interactive PDF fields, keep them editable or flatten the finished copy, and download privately in your browser.",
@@ -197,7 +197,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   },
   compressPdf: {
     path: "/compress-pdf",
-    title: "Compress PDF Online Free - Reduce PDF Size Locally | PDFMech",
+    title: "Compress PDF Online Free - Reduce File Size | PDFMech",
     description: "Compress PDF files online for free. Reduce scanned and image-heavy PDF sizes locally in your browser without uploading your document.",
     h1: "Compress PDF files online for free.",
     intro: "Choose Light, Balanced, or Strong compression and download a smaller visible-page copy created privately in your browser.",
@@ -253,7 +253,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   },
   signPdf: {
     path: "/sign-pdf",
-    title: "Sign PDF Online Free - Private Electronic Signature | PDFMech",
+    title: "Sign PDF Online Free - Add a Signature | PDFMech",
     description: "Sign a PDF online for free. Draw, type, or upload an electronic signature and place it on PDF pages locally without uploading your document.",
     h1: "Sign a PDF online for free.",
     intro: "Create a visible electronic signature, place and resize it on one or more pages, then download a separate signed copy made privately in your browser.",
@@ -318,14 +318,14 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   security: {
     path: "/security",
     title: "PDF Editor Security & Local Processing | PDFMech",
-    description: "Learn how PDFMech processes supported PDF edits locally in your browser, what recovery data is stored, and the limits of visual whiteout for sensitive information.",
+    description: "Learn how PDFMech processes PDFs locally, stores browser recovery data, and explains the limits of visual whiteout.",
     h1: "PDF editing built around local processing.",
     intro: "Understand PDFMech's browser-based security model, user controls, and important product limits.",
     schemaType: "WebPage",
   },
   terms: {
     path: "/terms",
-    title: "Terms of Service | PDFMech",
+    title: "Terms of Service & Acceptable Use | PDFMech",
     description: "Read the terms for using PDFMech, including acceptable use, browser-local processing, download responsibilities, service limits, and availability.",
     h1: "Clear terms for using PDFMech.",
     intro: "The conditions and responsibilities that apply when you use PDFMech's browser-based PDF tools.",
@@ -349,7 +349,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   },
   contact: {
     path: "/contact",
-    title: "Contact PDFMech Support",
+    title: "Contact PDFMech Support for PDF Help",
     description: "Contact PDFMech for help with opening PDFs, adding text, visual covers, page organization, browser issues, recovery, or downloading an edited file.",
     h1: "Get clear PDFMech support.",
     intro: "Find focused help for PDF editing questions, browser issues, recovery, and downloads without sharing a sensitive source document.",
@@ -963,48 +963,6 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
     });
   }
 
-  if (
-    page === "home" ||
-    page === "editor" ||
-    page === "addTextToPdf" ||
-    page === "deletePdfPages" ||
-    page === "reorderPdfPages" ||
-    page === "rotatePdfPages" ||
-    page === "whiteoutPdf" ||
-    page === "ocrPdf" ||
-    page === "batesNumberingPdf" ||
-    page === "flattenPdf" ||
-    page === "fillPdfForm" ||
-    page === "deskewPdf" ||
-    page === "metadataPdf" ||
-    page === "comparePdf" ||
-    page === "extractPdfPages" ||
-    page === "mergePdf" ||
-    page === "splitPdf" ||
-    page === "splitRenamePdf" ||
-    page === "compressPdf" ||
-    page === "redactPdf" ||
-    page === "protectPdf" ||
-    page === "unlockPdf" ||
-    page === "pdfToJpg" ||
-    page === "jpgToPdf" ||
-    page === "watermarkPdf" ||
-    page === "signPdf" ||
-    page === "privatePdfEditor"
-  ) {
-    graph.push({
-      "@type": "WebApplication",
-      name: "PDFMech",
-      url,
-      applicationCategory: "BusinessApplication",
-      applicationSubCategory: "PDF editor",
-      operatingSystem: "Any operating system with a modern web browser",
-      browserRequirements: "Requires JavaScript and a modern web browser",
-      description: config.description,
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    });
-  }
-
   const faqItems = page === "faq" ? FAQ_SCHEMA_ITEMS : TOOL_ROUTE_FAQS[page];
   if (faqItems !== undefined) {
     graph.push({
@@ -1044,6 +1002,7 @@ export function buildStructuredData(page: SeoPageKey): Record<string, unknown> {
       publisher: { "@id": organizationId },
       datePublished: "2026-09-27",
       dateModified: lastModifiedDate(page),
+      image: `${SITE_ORIGIN}${SOCIAL_IMAGE_PATH}`,
       inLanguage: "en",
     });
   }

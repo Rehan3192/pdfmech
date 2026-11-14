@@ -156,6 +156,27 @@ export function BlogArchivePage({
         )}
       </section>
 
+      <section className="blog-guide-principles" aria-labelledby="blog-guide-principles-title">
+        <article>
+          <span>Useful by design</span>
+          <h2 id="blog-guide-principles-title">Practical answers connected to working tools</h2>
+          <p>
+            PDFMech guides explain common document problems, show the browser-based
+            steps that solve them, and link directly to the relevant tool. Topics
+            include editing, OCR, forms, page organization, privacy, and conversion.
+          </p>
+        </article>
+        <article>
+          <span>Review with confidence</span>
+          <h2>Written for careful document work</h2>
+          <p>
+            Each guide identifies important limits, including raster output,
+            signature changes, and the difference between visual whiteout and secure
+            redaction. Keep the original file and verify important downloads.
+          </p>
+        </article>
+      </section>
+
       <aside className="blog-tool-cta">
         <div>
           <span>Ready to work on a document?</span>

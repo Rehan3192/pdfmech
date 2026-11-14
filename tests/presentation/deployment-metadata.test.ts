@@ -32,6 +32,10 @@ describe("deployment metadata", () => {
         readonly source?: string;
         readonly destination?: string;
       }[];
+      readonly headers?: readonly {
+        readonly source?: string;
+        readonly headers?: readonly { readonly key?: string; readonly value?: string }[];
+      }[];
     };
 
     expect(indexHtml).toContain(
@@ -72,6 +76,13 @@ describe("deployment metadata", () => {
       },
       { source: "/blog", destination: "/api/blog-archive" },
       { source: "/sitemap.xml", destination: "/api/sitemap" },
+    ]));
+    const globalHeaders = vercelConfig.headers?.find((item) => item.source === "/(.*)")?.headers;
+    expect(globalHeaders).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: "Content-Security-Policy",
+        value: expect.stringContaining("default-src 'self'"),
+      }),
     ]));
   });
 });

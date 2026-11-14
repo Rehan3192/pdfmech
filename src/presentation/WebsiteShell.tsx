@@ -20,6 +20,7 @@ import {
   type ToolRouteDefinition,
 } from "../tool-routes";
 import { getEmbeddedBlogPost, type BlogPost } from "../blog";
+import { blogArticleDocumentTitle, blogMetaDescription } from "../blog-seo";
 import { BlogArchivePage, BlogPostPage } from "./BlogPages";
 import { BatesNumberingPage } from "./BatesNumberingPage";
 import { FlattenPdfPage } from "./FlattenPdfPage";
@@ -180,14 +181,14 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
       : isBlogPost
         ? matchingPost === null
           ? "PDF Guide | PDFMech"
-          : `${matchingPost.title} | PDFMech`
+          : blogArticleDocumentTitle(matchingPost.slug, matchingPost.title)
         : SEO_PAGES[page].title;
     const description = isNotFound
       ? "The requested PDFMech page could not be found. Return home or open the free browser PDF editor."
       : isBlogPost
         ? matchingPost === null
           ? "Read practical PDF editing, OCR, privacy, and document workflow guides from PDFMech."
-          : matchingPost.excerpt || "Read this practical PDF guide from PDFMech."
+          : blogMetaDescription(matchingPost.excerpt || "Read this practical PDF guide from PDFMech.")
         : SEO_PAGES[page].description;
     const pageCanonical = isNotFound || (isBlogPost && matchingPost === null)
       ? null

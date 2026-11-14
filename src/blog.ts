@@ -1,5 +1,6 @@
 import DOMPurify from "dompurify";
 import { normalizeBlogArticleHtml } from "./blog-content.ts";
+import { blogMetaDescription } from "./blog-seo.ts";
 import { rewritePublishedWordPressHref } from "./wordpress-links.ts";
 
 export const WORDPRESS_SITE_ORIGIN = "https://cms.pdfmech.com";
@@ -392,7 +393,7 @@ export async function getBlogPostBySlug(
 
 export function blogPostDescription(post: BlogPost): string {
   const source = post.excerpt || htmlToPlainText(post.contentHtml);
-  return source.length <= 160 ? source : `${source.slice(0, 157).trimEnd()}…`;
+  return blogMetaDescription(source);
 }
 
 export function formatBlogDate(value: string): string {
