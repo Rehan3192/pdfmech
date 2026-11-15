@@ -1,4 +1,4 @@
-import type { JpgPdfOptions } from "../domain/jpg-to-pdf";
+import type { JpgPdfOptions, PdfImageInputFormat } from "../domain/jpg-to-pdf";
 
 export interface JpgInspection {
   readonly fileName: string;
@@ -28,6 +28,6 @@ export interface JpgToPdfResult {
 }
 
 export interface JpgToPdfProcessor {
-  inspect(file: File, signal?: AbortSignal): Promise<JpgInspection>;
-  convert(sources: readonly JpgPdfSource[], options: JpgPdfOptions, onProgress: (progress: JpgToPdfProgress) => void, signal?: AbortSignal): Promise<JpgToPdfResult>;
+  inspect(file: File, format: PdfImageInputFormat, signal?: AbortSignal): Promise<JpgInspection>;
+  convert(sources: readonly JpgPdfSource[], options: JpgPdfOptions, format: PdfImageInputFormat, onProgress: (progress: JpgToPdfProgress) => void, signal?: AbortSignal): Promise<JpgToPdfResult>;
 }

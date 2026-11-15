@@ -11,6 +11,7 @@ describe("PDF to JPG domain rules", () => {
 
   it("builds stable padded names and exposes quality presets", () => {
     expect(pdfPageImageName("Quarterly.Report.pdf", 3, 120)).toBe("Quarterly.Report-page-003.jpg");
+    expect(pdfPageImageName("Quarterly.Report.pdf", 3, 120, "png")).toBe("Quarterly.Report-page-003.png");
     expect(pdfToJpgPreset("high").jpegQuality).toBeGreaterThan(pdfToJpgPreset("web").jpegQuality);
   });
 });

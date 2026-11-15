@@ -1,4 +1,4 @@
-import type { JpgPdfOptions } from "../../domain/jpg-to-pdf";
+import type { JpgPdfOptions, PdfImageInputFormat } from "../../domain/jpg-to-pdf";
 import type { JpgInspection, JpgPdfSource, JpgToPdfProcessor, JpgToPdfProgress, JpgToPdfResult } from "../../ports/jpg-to-pdf";
 
 export type JpgToPdfProcessorLoader = () => Promise<JpgToPdfProcessor>;
@@ -12,9 +12,9 @@ export function createLazyJpgToPdfProcessor(loadProcessor: JpgToPdfProcessorLoad
   let processorPromise: Promise<JpgToPdfProcessor> | null = null;
   const getProcessor = () => (processorPromise ??= loadProcessor());
   return {
-    async inspect(file: File, signal?: AbortSignal): Promise<JpgInspection> { return (await getProcessor()).inspect(file, signal); },
-    async convert(sources: readonly JpgPdfSource[], options: JpgPdfOptions, onProgress: (progress: JpgToPdfProgress) => void, signal?: AbortSignal): Promise<JpgToPdfResult> {
-      return (await getProcessor()).convert(sources, options, onProgress, signal);
+    async inspect(file: File, format: PdfImageInputFormat, signal?: AbortSignal): Promise<JpgInspection> { return (await getProcessor()).inspect(file, format, signal); },
+    async convert(sources: readonly JpgPdfSource[], options: JpgPdfOptions, format: PdfImageInputFormat, onProgress: (progress: JpgToPdfProgress) => void, signal?: AbortSignal): Promise<JpgToPdfResult> {
+      return (await getProcessor()).convert(sources, options, format, onProgress, signal);
     },
   };
 }

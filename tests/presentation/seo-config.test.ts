@@ -87,4 +87,11 @@ describe("SEO configuration", () => {
       expect(structuredData).toContain(canonicalUrl(page));
     }
   });
+
+  it("publishes dedicated PNG conversion routes", () => {
+    expect(SEO_PAGES.pdfToPng.path).toBe("/pdf-to-png");
+    expect(SEO_PAGES.pngToPdf.path).toBe("/png-to-pdf");
+    expect(TOOL_SEO_PAGE_KEYS).toContain("pdfToPng");
+    expect(TOOL_SEO_PAGE_KEYS).toContain("pngToPdf");
+  });
 });

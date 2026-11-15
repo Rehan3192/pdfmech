@@ -1,7 +1,7 @@
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { zip } from "fflate";
 
-import { pdfPageImageName, pdfToJpgPreset, type PdfToJpgQuality } from "../../domain/pdf-to-jpg";
+import { pdfPageImageName, pdfToJpgPreset, type PdfImageFormat, type PdfToJpgQuality } from "../../domain/pdf-to-jpg";
 import type { PdfToJpgInspection, PdfToJpgProcessor, PdfToJpgProgress, PdfToJpgResult } from "../../ports/pdf-to-jpg";
 import { BrowserPageExtractor } from "./browser-page-extractor";
 
@@ -20,7 +20,7 @@ export class BrowserPdfToJpgProcessor implements PdfToJpgProcessor {
     return result;
   }
 
-  async convert(file: File, pageIndexes: readonly number[], quality: PdfToJpgQuality, onProgress: (progress: PdfToJpgProgress) => void, signal?: AbortSignal): Promise<PdfToJpgResult> {
+  async convert(file: File, pageIndexes: readonly number[], quality: PdfToJpgQuality, format: PdfImageFormat, onProgress: (progress: PdfToJpgProgress) => void, signal?: AbortSignal): Promise<PdfToJpgResult> {
     assertPdfFile(file);
     if (pageIndexes.length === 0) throw new Error("Choose at least one page to convert.");
     const preset = pdfToJpgPreset(quality);
@@ -45,8 +45,8 @@ export class BrowserPdfToJpgProcessor implements PdfToJpgProcessor {
         onProgress({ phase: "rendering", completedPages: index, totalPages: uniqueIndexes.length, message: `Converting page ${pageIndex + 1} (${index + 1} of ${uniqueIndexes.length})` });
         const page = await viewer.getPage(pageIndex + 1);
         try {
-          const blob = await renderJpeg(page, preset.renderScale, preset.jpegQuality);
-          images.push({ name: pdfPageImageName(file.name, pageIndex + 1, viewer.numPages), bytes: new Uint8Array(await blob.arrayBuffer()) });
+          const blob = await renderImage(page, preset.renderScale, preset.jpegQuality, format);
+          images.push({ name: pdfPageImageName(file.name, pageIndex + 1, viewer.numPages, format), bytes: new Uint8Array(await blob.arrayBuffer()) });
         } finally {
           page.cleanup();
         }
@@ -55,19 +55,20 @@ export class BrowserPdfToJpgProcessor implements PdfToJpgProcessor {
       if (images.length === 1) {
         const image = images[0]!;
         const buffer = image.bytes.buffer.slice(image.bytes.byteOffset, image.bytes.byteOffset + image.bytes.byteLength) as ArrayBuffer;
-        return { blob: new Blob([buffer], { type: "image/jpeg" }), downloadName: image.name, imageCount: 1, outputBytes: image.bytes.byteLength, isZip: false, quality };
+        return { blob: new Blob([buffer], { type: format === "png" ? "image/png" : "image/jpeg" }), downloadName: image.name, imageCount: 1, outputBytes: image.bytes.byteLength, isZip: false, quality, format };
       }
-      onProgress({ phase: "packaging", completedPages: images.length, totalPages: images.length, message: "Packaging JPG images into a ZIP file" });
+      onProgress({ phase: "packaging", completedPages: images.length, totalPages: images.length, message: `Packaging ${format.toUpperCase()} images into a ZIP file` });
       const archive = await createZip(Object.fromEntries(images.map((image) => [image.name, image.bytes])));
       throwIfAborted(signal);
       const archiveBuffer = archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength) as ArrayBuffer;
       return {
         blob: new Blob([archiveBuffer], { type: "application/zip" }),
-        downloadName: `${file.name.replace(/\.pdf$/i, "") || "document"}-jpg-images.zip`,
+        downloadName: `${file.name.replace(/\.pdf$/i, "") || "document"}-${format}-images.zip`,
         imageCount: images.length,
         outputBytes: archive.byteLength,
         isZip: true,
         quality,
+        format,
       };
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") throw error;
@@ -79,7 +80,7 @@ export class BrowserPdfToJpgProcessor implements PdfToJpgProcessor {
   }
 }
 
-async function renderJpeg(page: PDFPageProxy, requestedScale: number, quality: number): Promise<Blob> {
+async function renderImage(page: PDFPageProxy, requestedScale: number, quality: number, format: PdfImageFormat): Promise<Blob> {
   const sourceViewport = page.getViewport({ scale: 1 });
   const pixelLimitedScale = Math.sqrt(MAX_PAGE_PIXELS / (sourceViewport.width * sourceViewport.height));
   const viewport = page.getViewport({ scale: Math.min(requestedScale, pixelLimitedScale) });
@@ -91,7 +92,8 @@ async function renderJpeg(page: PDFPageProxy, requestedScale: number, quality: n
   context.fillStyle = "#ffffff";
   context.fillRect(0, 0, canvas.width, canvas.height);
   await page.render({ canvas, canvasContext: context, viewport }).promise;
-  const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob((value) => value === null ? reject(new Error("A JPG page image could not be created.")) : resolve(value), "image/jpeg", quality));
+  const mimeType = format === "png" ? "image/png" : "image/jpeg";
+  const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob((value) => value === null ? reject(new Error(`A ${format.toUpperCase()} page image could not be created.`)) : resolve(value), mimeType, format === "jpg" ? quality : undefined));
   canvas.width = 1;
   canvas.height = 1;
   return blob;

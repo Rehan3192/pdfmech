@@ -1,4 +1,4 @@
-import type { PdfToJpgQuality } from "../domain/pdf-to-jpg";
+import type { PdfImageFormat, PdfToJpgQuality } from "../domain/pdf-to-jpg";
 
 export interface PdfToJpgPagePreview {
   readonly pageIndex: number;
@@ -28,9 +28,10 @@ export interface PdfToJpgResult {
   readonly outputBytes: number;
   readonly isZip: boolean;
   readonly quality: PdfToJpgQuality;
+  readonly format: PdfImageFormat;
 }
 
 export interface PdfToJpgProcessor {
   inspect(file: File, onProgress: (progress: PdfToJpgProgress) => void, signal?: AbortSignal): Promise<PdfToJpgInspection>;
-  convert(file: File, pageIndexes: readonly number[], quality: PdfToJpgQuality, onProgress: (progress: PdfToJpgProgress) => void, signal?: AbortSignal): Promise<PdfToJpgResult>;
+  convert(file: File, pageIndexes: readonly number[], quality: PdfToJpgQuality, format: PdfImageFormat, onProgress: (progress: PdfToJpgProgress) => void, signal?: AbortSignal): Promise<PdfToJpgResult>;
 }

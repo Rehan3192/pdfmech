@@ -1,6 +1,7 @@
 export type JpgPdfPageSize = "fit" | "a4" | "letter";
 export type JpgPdfOrientation = "auto" | "portrait" | "landscape";
 export type JpgPdfMargin = "none" | "small" | "large";
+export type PdfImageInputFormat = "jpg" | "png";
 
 export interface JpgPdfOptions {
   readonly pageSize: JpgPdfPageSize;

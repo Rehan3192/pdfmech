@@ -26,6 +26,8 @@ export type SeoPageKey =
   | "unlockPdf"
   | "pdfToJpg"
   | "jpgToPdf"
+  | "pdfToPng"
+  | "pngToPdf"
   | "watermarkPdf"
   | "signPdf"
   | "tools"
@@ -241,6 +243,22 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Convert JPG images to one PDF online for free. Arrange photos, choose A4, Letter, or fitted pages, and create the PDF locally without uploading images.",
     h1: "Convert JPG images to one PDF.",
     intro: "Arrange multiple JPG files, choose page size, orientation, and margins, then download one validated PDF created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  pdfToPng: {
+    path: "/pdf-to-png",
+    title: "PDF to PNG Converter Online Free - No Upload | PDFMech",
+    description: "Convert PDF pages to lossless PNG images online for free. Choose all or selected pages and create PNG files locally without uploading your PDF.",
+    h1: "Convert PDF pages to PNG images.",
+    intro: "Export every PDF page or a custom page range as clear PNG images, with private browser-local processing and no account.",
+    schemaType: "WebPage",
+  },
+  pngToPdf: {
+    path: "/png-to-pdf",
+    title: "PNG to PDF Converter Online Free - No Upload | PDFMech",
+    description: "Convert PNG images to one PDF online for free. Arrange images, choose A4, Letter, or fitted pages, and create the PDF locally without uploading files.",
+    h1: "Convert PNG images to one PDF.",
+    intro: "Arrange multiple PNG files, choose page size, orientation, and margins, then download one validated PDF created privately in your browser.",
     schemaType: "WebPage",
   },
   watermarkPdf: {
@@ -790,6 +808,42 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Fit image is best for preserving the original image shape. Choose A4 or Letter when you need standard printable pages.",
     },
   ],
+  pdfToPng: [
+    {
+      question: "Does PDFMech upload my PDF?",
+      answer: "No. PDF rendering, PNG creation, and ZIP packaging happen locally in your browser.",
+    },
+    {
+      question: "Can I convert selected PDF pages to PNG?",
+      answer: "Yes. Convert every page, enter a custom page range, or tap one page preview to export only that page.",
+    },
+    {
+      question: "Why do multiple PNG pages download as a ZIP?",
+      answer: "A ZIP keeps the selected PNG images together and avoids triggering a separate browser download for every page.",
+    },
+    {
+      question: "Is PNG output lossless?",
+      answer: "PNG uses lossless image encoding, although each page is still rendered at the Web, Balanced, or High resolution you choose.",
+    },
+  ],
+  pngToPdf: [
+    {
+      question: "Are my PNG images uploaded?",
+      answer: "No. PNG inspection, arrangement, PDF creation, validation, and download happen locally in your browser.",
+    },
+    {
+      question: "Can I combine several PNGs into one PDF?",
+      answer: "Yes. Add up to 25 images and arrange them. Each image becomes one page in the finished PDF.",
+    },
+    {
+      question: "Will PDFMech crop or stretch my PNG images?",
+      answer: "No. Each PNG is scaled proportionally to fit the selected page and margin area.",
+    },
+    {
+      question: "What happens to transparent PNG areas?",
+      answer: "Transparent areas appear against the white PDF page behind the embedded image.",
+    },
+  ],
   watermarkPdf: [
     {
       question: "Does PDFMech upload my PDF?",
@@ -887,6 +941,8 @@ export const TOOL_SEO_PAGE_KEYS = [
   "unlockPdf",
   "pdfToJpg",
   "jpgToPdf",
+  "pdfToPng",
+  "pngToPdf",
   "watermarkPdf",
   "signPdf",
   "privatePdfEditor",
@@ -899,6 +955,8 @@ export function canonicalUrl(page: SeoPageKey): string {
 export function lastModifiedDate(page: SeoPageKey): string {
   return page === "fillPdfForm" || page === "tools"
     ? "2026-10-08"
+    : page === "pdfToPng" || page === "pngToPdf"
+    ? "2026-11-15"
     : page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf"
     ? "2026-10-07"
     : page === "splitRenamePdf"

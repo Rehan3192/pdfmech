@@ -142,6 +142,8 @@ function renderSnapshot(page) {
     unlockPdf: "Unlock PDF",
     pdfToJpg: "PDF to JPG",
     jpgToPdf: "JPG to PDF",
+    pdfToPng: "PDF to PNG",
+    pngToPdf: "PNG to PDF",
     watermarkPdf: "Watermark PDF",
     signPdf: "Sign PDF",
     tools: "All PDF Tools",
@@ -201,6 +203,8 @@ function renderSnapshot(page) {
   const isUnlockTool = page === "unlockPdf";
   const isPdfToJpgTool = page === "pdfToJpg";
   const isJpgToPdfTool = page === "jpgToPdf";
+  const isPdfToPngTool = page === "pdfToPng";
+  const isPngToPdfTool = page === "pngToPdf";
   const isWatermarkTool = page === "watermarkPdf";
   const isSignTool = page === "signPdf";
   const isToolsDirectory = page === "tools";
@@ -256,6 +260,10 @@ function renderSnapshot(page) {
                               ? `<section><h2>How to convert a PDF to JPG</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High JPG quality.</li><li>Download one JPG or a ZIP containing multiple page images.</li></ol><h2>Private browser-local PDF conversion</h2><p>PDFMech renders the selected pages and creates JPG images inside your browser without uploading the source PDF.</p><h2>Page selection and JPG quality</h2><p>Convert every page or a custom range with three useful quality levels.</p><h2>What changes when PDF pages become images</h2><p>JPG preserves the visible page as a flat image, not interactive PDF text, links, forms, layers, or signatures.</p></section>`
                             : isJpgToPdfTool
                               ? `<section><h2>How to convert JPG images to PDF</h2><ol><li>Choose one or more JPG images from your device.</li><li>Move images up or down into the required page order.</li><li>Select Fit image, A4, or Letter pages, then choose orientation and margins.</li><li>Create and download one validated PDF in your browser.</li></ol><h2>Combine multiple JPG files into one PDF</h2><p>Each image becomes one PDF page in the exact order shown.</p><h2>Private browser-local image conversion</h2><p>PDFMech decodes the JPG files, builds the PDF, and validates it without uploading your images.</p><h2>Page size, orientation, and margin options</h2><p>Choose fitted pages or printable A4 and Letter paper without cropping or stretching images.</p></section>`
+                            : isPdfToPngTool
+                              ? `<section><h2>How to convert a PDF to PNG</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High output resolution.</li><li>Download one PNG or a ZIP containing multiple page images.</li></ol><h2>Lossless PNG page images</h2><p>PDFMech renders selected pages and encodes them as lossless PNG images inside your browser.</p><h2>Private browser-local PDF conversion</h2><p>The source PDF and generated PNG files are not uploaded to a conversion server.</p><h2>Flat image output</h2><p>PNG preserves the visible page, not interactive PDF text, links, forms, layers, or signatures.</p></section>`
+                            : isPngToPdfTool
+                              ? `<section><h2>How to convert PNG images to PDF</h2><ol><li>Choose one or more PNG images from your device.</li><li>Move images up or down into the required page order.</li><li>Select Fit image, A4, or Letter pages, then choose orientation and margins.</li><li>Create and download one validated PDF in your browser.</li></ol><h2>Combine multiple PNG files into one PDF</h2><p>Each image becomes one PDF page in the exact order shown.</p><h2>Private browser-local image conversion</h2><p>PDFMech embeds the PNG files, builds the PDF, and validates it without uploading your images.</p><h2>Transparency and page layout</h2><p>Transparent PNG areas appear against the white PDF page, while images stay proportional without cropping or stretching.</p></section>`
                             : isWatermarkTool
                               ? `<section><h2>How to add a watermark to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Enter watermark text and adjust its color, size, opacity, rotation, and position.</li><li>Select every page or enter a custom page range.</li><li>Apply the watermark and download the separate PDF created in your browser.</li></ol><h2>Custom text watermark controls</h2><p>Add labels such as Confidential, Draft, Sample, Copy, or a company name and check their placement in the live preview.</p><h2>Private browser-local PDF watermarking</h2><p>PDFMech previews, modifies, validates, and downloads the PDF locally without uploading the source document.</p><h2>Watermark scope and document limits</h2><p>A watermark is a visible label rather than access control, encryption, redaction, or copy prevention. Modifying a signed PDF invalidates its existing signatures.</p></section>`
                             : isSignTool
@@ -313,6 +321,10 @@ function renderSnapshot(page) {
                               ? "/pdf-to-jpg#pdf-to-jpg-tool"
                             : isJpgToPdfTool
                               ? "/jpg-to-pdf#jpg-to-pdf-tool"
+                            : isPdfToPngTool
+                              ? "/pdf-to-png#pdf-to-png-tool"
+                            : isPngToPdfTool
+                              ? "/png-to-pdf#png-to-pdf-tool"
                             : isWatermarkTool
                               ? "/watermark-pdf#watermark-pdf-tool"
                             : isSignTool
@@ -366,6 +378,10 @@ function renderSnapshot(page) {
                               ? "Choose a PDF to convert to JPG"
                             : isJpgToPdfTool
                               ? "Choose JPG images to convert to PDF"
+                            : isPdfToPngTool
+                              ? "Choose a PDF to convert to PNG"
+                            : isPngToPdfTool
+                              ? "Choose PNG images to convert to PDF"
                             : isWatermarkTool
                               ? "Choose a PDF to watermark"
                             : isSignTool

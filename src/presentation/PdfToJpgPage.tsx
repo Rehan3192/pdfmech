@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 
-import { PDF_TO_JPG_PRESETS, parsePdfPageSelection, type PdfToJpgQuality } from "../domain/pdf-to-jpg";
+import { PDF_TO_JPG_PRESETS, parsePdfPageSelection, type PdfImageFormat, type PdfToJpgQuality } from "../domain/pdf-to-jpg";
 import { createLazyPdfToJpgProcessor } from "../infrastructure/pdflib/lazy-pdf-to-jpg";
 import type { PdfToJpgInspection, PdfToJpgProgress, PdfToJpgResult } from "../ports/pdf-to-jpg";
 
@@ -8,7 +8,8 @@ const processor = createLazyPdfToJpgProcessor();
 
 interface PdfToJpgDownload extends PdfToJpgResult { readonly url: string; }
 
-export function PdfToJpgPage() {
+export function PdfToJpgPage({ outputFormat = "jpg" }: { readonly outputFormat?: PdfImageFormat }) {
+  const formatLabel = outputFormat.toUpperCase();
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const thumbnailUrlsRef = useRef<readonly string[]>([]);
@@ -96,7 +97,7 @@ export function PdfToJpgPage() {
     setError(null);
     setIsConverting(true);
     try {
-      const result = await processor.convert(file, pageIndexes, quality, setProgress, controller.signal);
+      const result = await processor.convert(file, pageIndexes, quality, outputFormat, setProgress, controller.signal);
       setDownload({ ...result, url: URL.createObjectURL(result.blob) });
     } catch (convertError) {
       if (!(convertError instanceof Error && convertError.name === "AbortError")) setError(messageFromError(convertError));
@@ -125,17 +126,17 @@ export function PdfToJpgPage() {
   return (
     <main className="pdf-jpg-page">
       <section className="pdf-jpg-hero">
-        <span className="hero-kicker">PRIVATE PDF TO JPG CONVERTER</span>
-        <h1>Convert PDF pages to JPG images.</h1>
-        <p>Turn every page—or only the pages you choose—into clear JPG files directly in your browser. Your PDF is never uploaded.</p>
-        <div className="pdf-jpg-trust" aria-label="PDF to JPG benefits"><span><b aria-hidden="true">&#10003;</b> Free</span><span><b aria-hidden="true">&#9889;</b> No upload</span><span><b aria-hidden="true">JPG</b> Three quality levels</span></div>
+        <span className="hero-kicker">PRIVATE PDF TO {formatLabel} CONVERTER</span>
+        <h1>Convert PDF pages to {formatLabel} images.</h1>
+        <p>Turn every page—or only the pages you choose—into clear {formatLabel} files directly in your browser. Your PDF is never uploaded.</p>
+        <div className="pdf-jpg-trust" aria-label={`PDF to ${formatLabel} benefits`}><span><b aria-hidden="true">&#10003;</b> Free</span><span><b aria-hidden="true">&#9889;</b> No upload</span><span><b aria-hidden="true">{formatLabel}</b> Three resolution levels</span></div>
       </section>
 
-      <section className="pdf-jpg-tool" id="pdf-to-jpg-tool" aria-labelledby="pdf-jpg-tool-title">
-        <div className="pdf-jpg-steps" aria-label="PDF to JPG workflow">
+      <section className="pdf-jpg-tool" id={`pdf-to-${outputFormat}-tool`} aria-labelledby="pdf-jpg-tool-title">
+        <div className="pdf-jpg-steps" aria-label={`PDF to ${formatLabel} workflow`}>
           <span className={inspection === null ? "is-active" : "is-complete"}><b>{inspection === null ? "1" : "\u2713"}</b><i>Choose PDF</i></span>
           <span className={inspection !== null && download === null ? "is-active" : download !== null ? "is-complete" : ""}><b>{download === null ? "2" : "\u2713"}</b><i>Select pages</i></span>
-          <span className={download !== null ? "is-active" : ""}><b>3</b><i>Download JPG</i></span>
+          <span className={download !== null ? "is-active" : ""}><b>3</b><i>Download {formatLabel}</i></span>
         </div>
         <input ref={inputRef} className="pdf-jpg-input" type="file" accept="application/pdf,.pdf" onChange={(event: ChangeEvent<HTMLInputElement>) => void chooseFile(event.target.files?.[0] ?? null)} />
 
@@ -161,12 +162,12 @@ export function PdfToJpgPage() {
 
               <aside className="pdf-jpg-settings" aria-labelledby="pdf-jpg-settings-title">
                 <div className="pdf-jpg-section-heading"><div><span>2</span><div><h2 id="pdf-jpg-settings-title">Export settings</h2><p>Choose pages and image quality.</p></div></div></div>
-                <fieldset className="pdf-jpg-page-choice"><legend>Pages to convert</legend><label><input type="radio" name="jpg-pages" checked={selectionMode === "all"} onChange={() => { setSelectionMode("all"); setError(null); clearDownload(); }} /><span><b>All pages</b><small>{inspection.pageCount} JPG images</small></span></label><label><input type="radio" name="jpg-pages" checked={selectionMode === "custom"} onChange={() => { setSelectionMode("custom"); setPageRange(pageRange || "1"); setError(null); clearDownload(); }} /><span><b>Custom pages</b><small>Examples: 1, 3-5, 8</small></span></label></fieldset>
+                <fieldset className="pdf-jpg-page-choice"><legend>Pages to convert</legend><label><input type="radio" name={`${outputFormat}-pages`} checked={selectionMode === "all"} onChange={() => { setSelectionMode("all"); setError(null); clearDownload(); }} /><span><b>All pages</b><small>{inspection.pageCount} {formatLabel} images</small></span></label><label><input type="radio" name={`${outputFormat}-pages`} checked={selectionMode === "custom"} onChange={() => { setSelectionMode("custom"); setPageRange(pageRange || "1"); setError(null); clearDownload(); }} /><span><b>Custom pages</b><small>Examples: 1, 3-5, 8</small></span></label></fieldset>
                 {selectionMode === "custom" ? <label className="pdf-jpg-range"><span>Page numbers</span><input aria-label="Pages to convert" value={pageRange} onChange={(event) => { setPageRange(event.target.value); setError(null); clearDownload(); }} placeholder="1, 3-5, 8" inputMode="numeric" /></label> : null}
-                <fieldset className="pdf-jpg-quality"><legend>JPG quality</legend>{PDF_TO_JPG_PRESETS.map((preset) => <button type="button" key={preset.quality} aria-pressed={quality === preset.quality} className={quality === preset.quality ? "is-selected" : ""} onClick={() => { setQuality(preset.quality); clearDownload(); }}><span><b>{preset.label}</b>{preset.quality === "balanced" ? <i>Recommended</i> : null}</span><small>{preset.description}</small><em aria-hidden="true">{quality === preset.quality ? "\u2713" : ""}</em></button>)}</fieldset>
-                <div className="pdf-jpg-summary"><span><small>Selected</small><strong>{selectedCount || "—"}</strong></span><span><small>Format</small><strong>JPG</strong></span><span><small>Delivery</small><strong>{selectedCount === 1 ? "Image" : "ZIP"}</strong></span></div>
-                <p className="pdf-jpg-note"><strong>Image output</strong>Each selected page becomes a flat JPG image. Selectable text, links, forms, layers, and signatures are not included as interactive PDF features.</p>
-                <button type="button" className="pdf-jpg-primary" disabled={isConverting || selectedCount === 0} onClick={() => void convertPdf()}>{isConverting ? progress?.message ?? "Converting pages..." : `Convert ${selectedCount || "selected"} page${selectedCount === 1 ? "" : "s"} to JPG`}</button>
+                <fieldset className="pdf-jpg-quality"><legend>{formatLabel} resolution</legend>{PDF_TO_JPG_PRESETS.map((preset) => <button type="button" key={preset.quality} aria-pressed={quality === preset.quality} className={quality === preset.quality ? "is-selected" : ""} onClick={() => { setQuality(preset.quality); clearDownload(); }}><span><b>{preset.label}</b>{preset.quality === "balanced" ? <i>Recommended</i> : null}</span><small>{preset.description}</small><em aria-hidden="true">{quality === preset.quality ? "\u2713" : ""}</em></button>)}</fieldset>
+                <div className="pdf-jpg-summary"><span><small>Selected</small><strong>{selectedCount || "—"}</strong></span><span><small>Format</small><strong>{formatLabel}</strong></span><span><small>Delivery</small><strong>{selectedCount === 1 ? "Image" : "ZIP"}</strong></span></div>
+                <p className="pdf-jpg-note"><strong>Image output</strong>Each selected page becomes a flat {formatLabel} image. Selectable text, links, forms, layers, and signatures are not included as interactive PDF features.</p>
+                <button type="button" className="pdf-jpg-primary" disabled={isConverting || selectedCount === 0} onClick={() => void convertPdf()}>{isConverting ? progress?.message ?? "Converting pages..." : `Convert ${selectedCount || "selected"} page${selectedCount === 1 ? "" : "s"} to ${formatLabel}`}</button>
                 {isConverting ? <button type="button" className="pdf-jpg-cancel" onClick={() => abortRef.current?.abort()}>Cancel</button> : null}
               </aside>
             </div>
@@ -174,18 +175,18 @@ export function PdfToJpgPage() {
         )}
 
         {error !== null ? <p className="pdf-jpg-error" role="alert">{error}</p> : null}
-        {download !== null ? <section className="pdf-jpg-result" aria-labelledby="pdf-jpg-result-title"><span aria-hidden="true">&#10003;</span><div><h2 id="pdf-jpg-result-title">{download.imageCount === 1 ? "Your JPG image is ready" : `${download.imageCount} JPG images are ready`}</h2><p>{download.isZip ? "Images are packaged in one ZIP file" : "Single page exported as JPG"} - {formatBytes(download.outputBytes)}</p></div><a href={download.url} download={download.downloadName}>{download.isZip ? "Download JPG ZIP" : "Download JPG"}</a></section> : null}
+        {download !== null ? <section className="pdf-jpg-result" aria-labelledby="pdf-jpg-result-title"><span aria-hidden="true">&#10003;</span><div><h2 id="pdf-jpg-result-title">{download.imageCount === 1 ? `Your ${formatLabel} image is ready` : `${download.imageCount} ${formatLabel} images are ready`}</h2><p>{download.isZip ? "Images are packaged in one ZIP file" : `Single page exported as ${formatLabel}`} - {formatBytes(download.outputBytes)}</p></div><a href={download.url} download={download.downloadName}>{download.isZip ? `Download ${formatLabel} ZIP` : `Download ${formatLabel}`}</a></section> : null}
       </section>
 
-      <section className="pdf-jpg-benefits" aria-label="PDF to JPG benefits"><article><span aria-hidden="true">JPG</span><div><h2>Choose exactly which pages</h2><p>Export the complete document or enter a custom page range.</p></div></article><article><span aria-hidden="true">&#128274;</span><div><h2>Private browser conversion</h2><p>Rendering and image creation happen locally on your device.</p></div></article><article><span aria-hidden="true">ZIP</span><div><h2>Simple multi-page download</h2><p>Multiple page images arrive together in one ZIP archive.</p></div></article></section>
+      <section className="pdf-jpg-benefits" aria-label={`PDF to ${formatLabel} benefits`}><article><span aria-hidden="true">{formatLabel}</span><div><h2>Choose exactly which pages</h2><p>Export the complete document or enter a custom page range.</p></div></article><article><span aria-hidden="true">&#128274;</span><div><h2>Private browser conversion</h2><p>Rendering and image creation happen locally on your device.</p></div></article><article><span aria-hidden="true">ZIP</span><div><h2>Simple multi-page download</h2><p>Multiple page images arrive together in one ZIP archive.</p></div></article></section>
 
       <section className="pdf-jpg-copy">
-        <h2>How to convert a PDF to JPG</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High JPG quality.</li><li>Download one JPG or a ZIP containing multiple page images.</li></ol>
-        <h2>Private browser-local PDF conversion</h2><p>PDFMech renders the selected pages and creates JPG images inside your browser. Your source PDF and generated images are not sent to a conversion server.</p>
-        <h2>Page selection and JPG quality</h2><p>Use custom ranges when you only need certain pages. Balanced works well for most documents, Web produces smaller files, and High preserves more page detail.</p>
-        <h2>What changes when PDF pages become images</h2><p>JPG preserves the visible appearance as a flat image. Selectable text, links, forms, layers, accessibility structure, and digital signatures do not remain interactive.</p>
-        <h2>PDF to JPG FAQ</h2><h3>Does PDFMech upload my PDF?</h3><p>No. PDF rendering, JPG creation, and ZIP packaging happen locally in your browser.</p><h3>Can I convert only one PDF page?</h3><p>Yes. Choose Custom pages, enter one page number, or tap a page preview. A single selection downloads directly as a JPG.</p><h3>Why do multiple pages download as a ZIP?</h3><p>A ZIP keeps all selected JPG images together and avoids triggering a separate browser download for every page.</p><h3>Which JPG quality should I choose?</h3><p>Balanced is recommended for most documents. Choose Web for smaller images or High when fine text and graphics need more detail.</p>
-        <nav className="pdf-jpg-related" aria-label="Related PDF tools"><strong>Related tools</strong><a href="/compress-pdf">Compress PDF</a><a href="/extract-pdf-pages">Extract PDF Pages</a><a href="/ocr-pdf">OCR PDF</a><a href="/tools">All PDF tools</a></nav>
+        <h2>How to convert a PDF to {formatLabel}</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High output resolution.</li><li>Download one {formatLabel} or a ZIP containing multiple page images.</li></ol>
+        <h2>Private browser-local PDF conversion</h2><p>PDFMech renders the selected pages and creates {formatLabel} images inside your browser. Your source PDF and generated images are not sent to a conversion server.</p>
+        <h2>Page selection and image resolution</h2><p>Use custom ranges when you only need certain pages. Balanced works well for most documents, Web produces smaller dimensions, and High preserves more page detail.</p>
+        <h2>What changes when PDF pages become images</h2><p>{formatLabel} preserves the visible appearance as a flat image. Selectable text, links, forms, layers, accessibility structure, and digital signatures do not remain interactive.</p>
+        <h2>PDF to {formatLabel} FAQ</h2><h3>Does PDFMech upload my PDF?</h3><p>No. PDF rendering, {formatLabel} creation, and ZIP packaging happen locally in your browser.</p><h3>Can I convert only one PDF page?</h3><p>Yes. Choose Custom pages, enter one page number, or tap a page preview. A single selection downloads directly as a {formatLabel}.</p><h3>Why do multiple pages download as a ZIP?</h3><p>A ZIP keeps all selected {formatLabel} images together and avoids triggering a separate browser download for every page.</p><h3>Which resolution should I choose?</h3><p>Balanced is recommended for most documents. Choose Web for smaller images or High when fine text and graphics need more detail.</p>
+        <nav className="pdf-jpg-related" aria-label="Related PDF tools"><strong>Related tools</strong><a href={outputFormat === "png" ? "/pdf-to-jpg" : "/pdf-to-png"}>PDF to {outputFormat === "png" ? "JPG" : "PNG"}</a><a href="/extract-pdf-pages">Extract PDF Pages</a><a href="/ocr-pdf">OCR PDF</a><a href="/tools">All PDF tools</a></nav>
       </section>
     </main>
   );
@@ -198,5 +199,5 @@ function formatBytes(bytes: number): string {
 }
 
 function messageFromError(error: unknown): string {
-  return error instanceof Error ? error.message : "The PDF could not be converted to JPG. Please try another file.";
+  return error instanceof Error ? error.message : "The PDF could not be converted to an image. Please try another file.";
 }

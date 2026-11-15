@@ -1,4 +1,5 @@
 export type PdfToJpgQuality = "web" | "balanced" | "high";
+export type PdfImageFormat = "jpg" | "png";
 
 export interface PdfToJpgPreset {
   readonly quality: PdfToJpgQuality;
@@ -35,10 +36,10 @@ export function parsePdfPageSelection(value: string, pageCount: number): readonl
   return [...selected].sort((left, right) => left - right);
 }
 
-export function pdfPageImageName(fileName: string, pageNumber: number, pageCount: number): string {
+export function pdfPageImageName(fileName: string, pageNumber: number, pageCount: number, format: PdfImageFormat = "jpg"): string {
   const baseName = fileName.replace(/\.pdf$/i, "") || "document";
   const digits = Math.max(2, String(pageCount).length);
-  return `${baseName}-page-${String(pageNumber).padStart(digits, "0")}.jpg`;
+  return `${baseName}-page-${String(pageNumber).padStart(digits, "0")}.${format}`;
 }
 
 function parsePage(value: string): number {

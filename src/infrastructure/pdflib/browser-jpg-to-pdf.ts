@@ -1,26 +1,26 @@
 import { PDFDocument } from "pdf-lib";
 
-import { fitJpgOnPage, JPG_PDF_MARGIN_POINTS, JPG_TO_PDF_LIMITS, jpgPdfPageDimensions, type JpgPdfOptions } from "../../domain/jpg-to-pdf";
+import { fitJpgOnPage, JPG_PDF_MARGIN_POINTS, JPG_TO_PDF_LIMITS, jpgPdfPageDimensions, type JpgPdfOptions, type PdfImageInputFormat } from "../../domain/jpg-to-pdf";
 import type { JpgInspection, JpgPdfSource, JpgToPdfProcessor, JpgToPdfProgress, JpgToPdfResult } from "../../ports/jpg-to-pdf";
 
 export class BrowserJpgToPdfProcessor implements JpgToPdfProcessor {
-  async inspect(file: File, signal?: AbortSignal): Promise<JpgInspection> {
-    assertJpgFile(file);
+  async inspect(file: File, format: PdfImageInputFormat, signal?: AbortSignal): Promise<JpgInspection> {
+    assertImageFile(file, format);
     throwIfAborted(signal);
     const dimensions = await decodeDimensions(file);
     if (dimensions.width * dimensions.height > JPG_TO_PDF_LIMITS.maxPixelsPerImage) throw new Error(`${file.name} exceeds the 50-megapixel image limit.`);
     return { fileName: file.name, byteLength: file.size, ...dimensions };
   }
 
-  async convert(sources: readonly JpgPdfSource[], options: JpgPdfOptions, onProgress: (progress: JpgToPdfProgress) => void, signal?: AbortSignal): Promise<JpgToPdfResult> {
-    validateSources(sources);
+  async convert(sources: readonly JpgPdfSource[], options: JpgPdfOptions, format: PdfImageInputFormat, onProgress: (progress: JpgToPdfProgress) => void, signal?: AbortSignal): Promise<JpgToPdfResult> {
+    validateSources(sources, format);
     const output = await PDFDocument.create();
     for (const [index, source] of sources.entries()) {
       throwIfAborted(signal);
       onProgress({ phase: "normalizing", completed: index, total: sources.length, message: `Preparing ${source.file.name}` });
-      const normalized = await normalizeJpg(source.file);
+      const normalized = format === "png" ? await source.file.arrayBuffer() : await normalizeJpg(source.file);
       throwIfAborted(signal);
-      const image = await output.embedJpg(normalized);
+      const image = format === "png" ? await output.embedPng(normalized) : await output.embedJpg(normalized);
       const [pageWidth, pageHeight] = jpgPdfPageDimensions(image.width, image.height, options);
       const page = output.addPage([pageWidth, pageHeight]);
       const placement = fitJpgOnPage(image.width, image.height, pageWidth, pageHeight, JPG_PDF_MARGIN_POINTS[options.margin]);
@@ -28,7 +28,7 @@ export class BrowserJpgToPdfProcessor implements JpgToPdfProcessor {
       onProgress({ phase: "writing", completed: index + 1, total: sources.length, message: `Added image ${index + 1} of ${sources.length}` });
     }
     throwIfAborted(signal);
-    output.setTitle(`${sources[0]?.file.name.replace(/\.(?:jpe?g)$/i, "") || "images"} images`);
+    output.setTitle(`${sources[0]?.file.name.replace(/\.(?:jpe?g|png)$/i, "") || "images"} images`);
     output.setCreator("PDFMech");
     const saved = new Uint8Array(await output.save({ useObjectStreams: true }));
     onProgress({ phase: "validating", completed: sources.length, total: sources.length, message: "Validating the PDF" });
@@ -37,7 +37,7 @@ export class BrowserJpgToPdfProcessor implements JpgToPdfProcessor {
     const buffer = saved.buffer.slice(saved.byteOffset, saved.byteOffset + saved.byteLength) as ArrayBuffer;
     return {
       blob: new Blob([buffer], { type: "application/pdf" }),
-      downloadName: `${sources[0]?.file.name.replace(/\.(?:jpe?g)$/i, "") || "images"}-images.pdf`,
+      downloadName: `${sources[0]?.file.name.replace(/\.(?:jpe?g|png)$/i, "") || "images"}-images.pdf`,
       pageCount: sources.length,
       outputBytes: saved.byteLength,
     };
@@ -96,20 +96,21 @@ function loadHtmlImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
-function validateSources(sources: readonly JpgPdfSource[]): void {
-  if (sources.length < 1) throw new Error("Choose at least one JPG image.");
-  if (sources.length > JPG_TO_PDF_LIMITS.maxFiles) throw new Error(`Choose no more than ${JPG_TO_PDF_LIMITS.maxFiles} JPG images.`);
+function validateSources(sources: readonly JpgPdfSource[], format: PdfImageInputFormat): void {
+  const label = format.toUpperCase();
+  if (sources.length < 1) throw new Error(`Choose at least one ${label} image.`);
+  if (sources.length > JPG_TO_PDF_LIMITS.maxFiles) throw new Error(`Choose no more than ${JPG_TO_PDF_LIMITS.maxFiles} ${label} images.`);
   const totalBytes = sources.reduce((sum, source) => sum + source.file.size, 0);
   if (totalBytes > JPG_TO_PDF_LIMITS.maxTotalBytes) throw new Error("The selected images exceed the 150 MB combined limit.");
-  sources.forEach((source) => assertJpgFile(source.file));
+  sources.forEach((source) => assertImageFile(source.file, format));
 }
 
-function assertJpgFile(file: File): void {
+function assertImageFile(file: File, format: PdfImageInputFormat): void {
   if (file.size === 0) throw new Error(`${file.name || "This image"} is empty.`);
   if (file.size > JPG_TO_PDF_LIMITS.maxFileBytes) throw new Error(`${file.name} is larger than the 30 MB per-image limit.`);
-  const isJpgName = /\.(?:jpe?g)$/i.test(file.name);
-  const isJpgType = file.type === "image/jpeg";
-  if (!isJpgName && !isJpgType) throw new Error(`${file.name} is not a JPG image.`);
+  const matchesName = format === "png" ? /\.png$/i.test(file.name) : /\.(?:jpe?g)$/i.test(file.name);
+  const matchesType = format === "png" ? file.type === "image/png" : file.type === "image/jpeg";
+  if (!matchesName && !matchesType) throw new Error(`${file.name} is not a ${format.toUpperCase()} image.`);
 }
 
 function throwIfAborted(signal?: AbortSignal): void {
