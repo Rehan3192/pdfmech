@@ -146,6 +146,8 @@ function renderSnapshot(page) {
     pngToPdf: "PNG to PDF",
     pdfToWord: "PDF to Word",
     wordToPdf: "Word to PDF",
+    csvToPdf: "CSV to PDF",
+    pdfToCsv: "PDF to CSV",
     watermarkPdf: "Watermark PDF",
     signPdf: "Sign PDF",
     tools: "All PDF Tools",
@@ -209,6 +211,8 @@ function renderSnapshot(page) {
   const isPngToPdfTool = page === "pngToPdf";
   const isPdfToWordTool = page === "pdfToWord";
   const isWordToPdfTool = page === "wordToPdf";
+  const isCsvToPdfTool = page === "csvToPdf";
+  const isPdfToCsvTool = page === "pdfToCsv";
   const isWatermarkTool = page === "watermarkPdf";
   const isSignTool = page === "signPdf";
   const isToolsDirectory = page === "tools";
@@ -272,6 +276,10 @@ function renderSnapshot(page) {
                               ? `<section><h2>How to convert PDF to Word</h2><ol><li>Choose a PDF containing selectable text.</li><li>Review the extracted text preview and scanned-page warning.</li><li>Create the editable DOCX locally in your browser.</li><li>Download the Word document and review its layout.</li></ol><h2>Editable Word output from selectable PDF text</h2><p>PDFMech extracts readable text page by page and packages it as editable Word paragraphs rather than page screenshots. Short numbered and uppercase lines may be identified as headings.</p><h2>Run OCR before converting scanned pages</h2><p>A scanned PDF contains page images instead of selectable text. Make the document searchable with OCR PDF first, then convert the searchable copy to Word.</p><h2>Private browser-local PDF to DOCX conversion</h2><p>The source PDF, extracted text, and generated DOCX stay in your browser and are not sent to a conversion server.</p><h2>Why PDF and Word layouts differ</h2><p>PDF fixes content at page coordinates while Word reflows editable document structure. Complex columns, exact fonts, forms, floating graphics, spacing, and page breaks may change.</p></section>`
                             : isWordToPdfTool
                               ? `<section><h2>How to convert Word to PDF</h2><ol><li>Choose a modern DOCX document from your device.</li><li>Review the extracted document content.</li><li>Select A4 or Letter paper, orientation, and margins.</li><li>Create and download the PDF locally.</li></ol><h2>Supported Word document content</h2><p>PDFMech rebuilds headings, paragraphs, lists, simple tables, and common embedded PNG or JPG images into a new PDF with selectable text.</p><h2>Private browser-local DOCX conversion</h2><p>The Word file is read and the PDF is generated in this browser tab without uploading the source document to a conversion server.</p><h2>Modern DOCX files only</h2><p>The converter supports the current DOCX format. It does not silently accept the older binary DOC format, which requires a different document engine.</p><h2>Word layout limits</h2><p>Headers, footers, tracked changes, floating shapes, uncommon fonts, exact pagination, advanced tables, and other Microsoft Word-specific layout may change in the generated PDF.</p></section>`
+                            : isCsvToPdfTool
+                              ? `<section><h2>How to convert CSV to PDF</h2><ol><li>Choose a CSV file from your device.</li><li>Review the detected rows and columns.</li><li>Select A4 or Letter paper, orientation, text density, and header behavior.</li><li>Create and download the paginated PDF locally.</li></ol><h2>Quoted values and common delimiters</h2><p>PDFMech detects comma, semicolon, and tab-delimited data and reads quoted fields, escaped quote characters, and line breaks inside quoted cells.</p><h2>Readable multipage table output</h2><p>Rows continue across new pages and the first row can repeat as a table header. Landscape orientation and compact text help wide tables fit, while unusually long cell values are shortened for readable output.</p><h2>Private browser-local CSV conversion</h2><p>CSV parsing, table preview, PDF creation, and download happen in this browser without uploading spreadsheet data to a conversion server.</p><h2>CSV to PDF limits</h2><p>This tool creates a static table document. It does not preserve spreadsheet formulas, cell formatting, charts, hidden rows, worksheets, or interactive filters because CSV files do not contain those features.</p></section>`
+                            : isPdfToCsvTool
+                              ? `<section><h2>How to convert PDF tables to CSV</h2><ol><li>Choose a PDF containing selectable table text.</li><li>Review the detected rows and aligned columns.</li><li>Optionally include source page numbers and remove empty rows.</li><li>Create and download the spreadsheet-ready CSV locally.</li></ol><h2>Position-based table detection</h2><p>PDFMech groups selectable text by its vertical and horizontal page positions to infer rows and columns. Regular tables with consistent alignment produce the clearest results.</p><h2>Run OCR before extracting scanned tables</h2><p>An image-only scan has no selectable text for this tool to group. Use OCR PDF first, review the searchable copy, and then extract its recognized table text to CSV.</p><h2>Private browser-local PDF extraction</h2><p>The source PDF, extracted text, detected rows, and generated CSV stay in your browser and are not sent to a table-extraction server.</p><h2>PDF table extraction limits</h2><p>PDF files usually store visual text positions rather than true spreadsheet cells. Merged cells, rotated text, irregular spacing, and multi-column paragraphs may require manual correction, so verify important data before use.</p></section>`
                             : isWatermarkTool
                               ? `<section><h2>How to add a watermark to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Enter watermark text and adjust its color, size, opacity, rotation, and position.</li><li>Select every page or enter a custom page range.</li><li>Apply the watermark and download the separate PDF created in your browser.</li></ol><h2>Custom text watermark controls</h2><p>Add labels such as Confidential, Draft, Sample, Copy, or a company name and check their placement in the live preview.</p><h2>Private browser-local PDF watermarking</h2><p>PDFMech previews, modifies, validates, and downloads the PDF locally without uploading the source document.</p><h2>Watermark scope and document limits</h2><p>A watermark is a visible label rather than access control, encryption, redaction, or copy prevention. Modifying a signed PDF invalidates its existing signatures.</p></section>`
                             : isSignTool
@@ -337,6 +345,10 @@ function renderSnapshot(page) {
                               ? "/pdf-to-word#pdf-to-word-tool"
                             : isWordToPdfTool
                               ? "/word-to-pdf#word-to-pdf-tool"
+                            : isCsvToPdfTool
+                              ? "/csv-to-pdf#csv-to-pdf-tool"
+                            : isPdfToCsvTool
+                              ? "/pdf-to-csv#pdf-to-csv-tool"
                             : isWatermarkTool
                               ? "/watermark-pdf#watermark-pdf-tool"
                             : isSignTool
@@ -398,6 +410,10 @@ function renderSnapshot(page) {
                               ? "Choose a PDF to convert to Word"
                             : isWordToPdfTool
                               ? "Choose a Word DOCX to convert to PDF"
+                            : isCsvToPdfTool
+                              ? "Choose a CSV to convert to PDF"
+                            : isPdfToCsvTool
+                              ? "Choose a PDF table to convert to CSV"
                             : isWatermarkTool
                               ? "Choose a PDF to watermark"
                             : isSignTool

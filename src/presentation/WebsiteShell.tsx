@@ -42,6 +42,8 @@ import { PdfToPngPage } from "./PdfToPngPage";
 import { PngToPdfPage } from "./PngToPdfPage";
 import { PdfToWordPage } from "./PdfToWordPage";
 import { WordToPdfPage } from "./WordToPdfPage";
+import { CsvToPdfPage } from "./CsvToPdfPage";
+import { PdfToCsvPage } from "./PdfToCsvPage";
 import { WatermarkPdfPage } from "./WatermarkPdfPage";
 import { SignPdfPage } from "./SignPdfPage";
 import { FillPdfFormPage } from "./FillPdfFormPage";
@@ -50,7 +52,7 @@ import { HomePageRedesign } from "./HomePageRedesign";
 
 type WebsitePage = SeoPageKey | "blogPost" | "notFound";
 type PublicPageKey = Exclude<SeoPageKey, "editor">;
-type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "fillPdfForm" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "splitRenamePdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "pdfToPng" | "pngToPdf" | "pdfToWord" | "wordToPdf" | "watermarkPdf" | "signPdf" | "tools" | "blog">;
+type MarketingPageKey = Exclude<PublicPageKey, "ocrPdf" | "batesNumberingPdf" | "flattenPdf" | "fillPdfForm" | "deskewPdf" | "metadataPdf" | "comparePdf" | "extractPdfPages" | "mergePdf" | "splitPdf" | "splitRenamePdf" | "compressPdf" | "redactPdf" | "protectPdf" | "unlockPdf" | "pdfToJpg" | "jpgToPdf" | "pdfToPng" | "pngToPdf" | "pdfToWord" | "wordToPdf" | "csvToPdf" | "pdfToCsv" | "watermarkPdf" | "signPdf" | "tools" | "blog">;
 
 interface WebsiteShellProps {
   readonly renderEditor: (options: {
@@ -93,6 +95,8 @@ const routes: Readonly<Record<string, WebsitePage>> = {
   "/png-to-pdf": "pngToPdf",
   "/pdf-to-word": "pdfToWord",
   "/word-to-pdf": "wordToPdf",
+  "/csv-to-pdf": "csvToPdf",
+  "/pdf-to-csv": "pdfToCsv",
   "/watermark-pdf": "watermarkPdf",
   "/sign-pdf": "signPdf",
   "/tools": "tools",
@@ -136,6 +140,8 @@ const toolLandingPages = new Set<WebsitePage>([
   "pngToPdf",
   "pdfToWord",
   "wordToPdf",
+  "csvToPdf",
+  "pdfToCsv",
   "watermarkPdf",
   "signPdf",
 ]);
@@ -323,7 +329,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
     activeToolRoute !== null &&
     toolEditorSession?.route.key === activeToolRoute.key;
   const editorExperienceActive =
-    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "splitRenamePdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "pdfToPng" || page === "pngToPdf" || page === "pdfToWord" || page === "wordToPdf" || page === "watermarkPdf" || page === "signPdf" || toolEditorActive;
+    page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "splitRenamePdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "pdfToPng" || page === "pngToPdf" || page === "pdfToWord" || page === "wordToPdf" || page === "csvToPdf" || page === "pdfToCsv" || page === "watermarkPdf" || page === "signPdf" || toolEditorActive;
   const documentEditorActive = page === "editor" || toolEditorActive;
 
   function recordProductEvent(event: ProductEvent): void {
@@ -406,7 +412,7 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
             className="tools-nav-link"
             href="/tools"
             aria-current={page === "tools" ? "page" : undefined}
-            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "splitRenamePdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "pdfToPng" || page === "pngToPdf" || page === "pdfToWord" || page === "wordToPdf" || page === "watermarkPdf" || page === "signPdf" || activeToolRoute !== null ? "true" : "false"}
+            data-active={page === "tools" || page === "editor" || page === "ocrPdf" || page === "batesNumberingPdf" || page === "flattenPdf" || page === "fillPdfForm" || page === "deskewPdf" || page === "metadataPdf" || page === "comparePdf" || page === "extractPdfPages" || page === "mergePdf" || page === "splitPdf" || page === "splitRenamePdf" || page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "pdfToPng" || page === "pngToPdf" || page === "pdfToWord" || page === "wordToPdf" || page === "csvToPdf" || page === "pdfToCsv" || page === "watermarkPdf" || page === "signPdf" || activeToolRoute !== null ? "true" : "false"}
             onClick={(event) => {
               event.preventDefault();
               navigateTo("/tools");
@@ -560,6 +566,16 @@ export function WebsiteShell({ renderEditor, renderOcrTool }: WebsiteShellProps)
         <>
           <Breadcrumbs page="wordToPdf" />
           <WordToPdfPage />
+        </>
+      ) : page === "csvToPdf" ? (
+        <>
+          <Breadcrumbs page="csvToPdf" />
+          <CsvToPdfPage />
+        </>
+      ) : page === "pdfToCsv" ? (
+        <>
+          <Breadcrumbs page="pdfToCsv" />
+          <PdfToCsvPage />
         </>
       ) : page === "watermarkPdf" ? (
         <>

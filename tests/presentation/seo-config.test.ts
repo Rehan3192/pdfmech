@@ -101,4 +101,11 @@ describe("SEO configuration", () => {
     expect(TOOL_SEO_PAGE_KEYS).toContain("pdfToWord");
     expect(TOOL_SEO_PAGE_KEYS).toContain("wordToPdf");
   });
+
+  it("publishes dedicated CSV conversion routes", () => {
+    expect(SEO_PAGES.csvToPdf.path).toBe("/csv-to-pdf");
+    expect(SEO_PAGES.pdfToCsv.path).toBe("/pdf-to-csv");
+    expect(TOOL_SEO_PAGE_KEYS).toContain("csvToPdf");
+    expect(TOOL_SEO_PAGE_KEYS).toContain("pdfToCsv");
+  });
 });

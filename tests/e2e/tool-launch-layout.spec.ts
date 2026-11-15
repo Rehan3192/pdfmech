@@ -27,6 +27,8 @@ const toolLaunches = [
   ["/png-to-pdf", ".jpg-pdf-drop"],
   ["/pdf-to-word", ".word-converter-drop"],
   ["/word-to-pdf", ".word-converter-drop"],
+  ["/csv-to-pdf", ".data-converter-drop"],
+  ["/pdf-to-csv", ".data-converter-drop"],
   ["/watermark-pdf", ".watermark-drop"],
   ["/sign-pdf", ".sign-pdf-drop"],
 ] as const;
@@ -56,6 +58,8 @@ test("mobile tool pages put the upload action before supporting copy", async ({ 
   for (const [route, selector] of [
     ["/add-text-to-pdf", ".tool-route-upload"],
     ["/split-pdf-and-rename", ".split-rename-drop"],
+    ["/csv-to-pdf", ".data-converter-drop"],
+    ["/pdf-to-csv", ".data-converter-drop"],
   ] as const) {
     await page.goto(route);
     const launch = page.locator(selector).first();

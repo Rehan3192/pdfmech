@@ -396,6 +396,26 @@ for (const page of SEO_PAGE_KEYS) {
     throw new Error(`${filename} must expose crawlable Word-to-PDF instructions, format support, layout limits, privacy details, and a same-route action.`);
   }
   if (
+    page === "csvToPdf" &&
+    (!html.includes("How to convert CSV to PDF") ||
+      !html.includes("Quoted values and common delimiters") ||
+      !html.includes("Readable multipage table output") ||
+      !html.includes("CSV to PDF limits") ||
+      !html.includes('/csv-to-pdf#csv-to-pdf-tool'))
+  ) {
+    throw new Error(`${filename} must expose crawlable CSV-to-PDF instructions, delimiter support, table layout limits, privacy details, and a same-route action.`);
+  }
+  if (
+    page === "pdfToCsv" &&
+    (!html.includes("How to convert PDF tables to CSV") ||
+      !html.includes("Position-based table detection") ||
+      !html.includes("Run OCR before extracting scanned tables") ||
+      !html.includes("PDF table extraction limits") ||
+      !html.includes('/pdf-to-csv#pdf-to-csv-tool'))
+  ) {
+    throw new Error(`${filename} must expose crawlable PDF-to-CSV instructions, OCR guidance, extraction limits, privacy details, and a same-route action.`);
+  }
+  if (
     page === "watermarkPdf" &&
     (!html.includes("How to add a watermark to a PDF") ||
       !html.includes("Custom text watermark controls") ||

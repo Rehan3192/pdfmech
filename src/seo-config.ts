@@ -30,6 +30,8 @@ export type SeoPageKey =
   | "pngToPdf"
   | "pdfToWord"
   | "wordToPdf"
+  | "csvToPdf"
+  | "pdfToCsv"
   | "watermarkPdf"
   | "signPdf"
   | "tools"
@@ -277,6 +279,22 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Convert a Word DOCX document to PDF online for free. Choose page layout and create a PDF locally without uploading the Word file.",
     h1: "Convert Word to PDF in your browser.",
     intro: "Turn DOCX headings, paragraphs, lists, simple tables, and common images into a new PDF created privately on your device.",
+    schemaType: "WebPage",
+  },
+  csvToPdf: {
+    path: "/csv-to-pdf",
+    title: "CSV to PDF Converter Online Free - No Upload | PDFMech",
+    description: "Convert CSV tables to a paginated PDF online for free. Preview rows, choose the page layout, and create the PDF locally without uploading your data.",
+    h1: "Convert CSV tables to PDF.",
+    intro: "Preview spreadsheet rows, choose a readable page layout, and create a paginated PDF privately in your browser.",
+    schemaType: "WebPage",
+  },
+  pdfToCsv: {
+    path: "/pdf-to-csv",
+    title: "PDF to CSV Converter Online Free - Extract Tables | PDFMech",
+    description: "Extract aligned table text from PDF to CSV online for free. Review detected rows and columns and download locally without uploading your document.",
+    h1: "Extract PDF tables to CSV.",
+    intro: "Detect rows and aligned columns in selectable PDF text, review the result, and download a spreadsheet-ready CSV privately.",
     schemaType: "WebPage",
   },
   watermarkPdf: {
@@ -874,6 +892,18 @@ export const TOOL_ROUTE_FAQS: Readonly<
     { question: "What Word content is supported?", answer: "Headings, paragraphs, lists, simple tables, and common embedded PNG or JPG images are rebuilt into the PDF." },
     { question: "Will the PDF look exactly like Microsoft Word?", answer: "Complex pagination, headers, footers, tracked changes, floating shapes, uncommon fonts, and advanced Word layout may change." },
   ],
+  csvToPdf: [
+    { question: "Is my CSV data uploaded?", answer: "No. CSV parsing, preview, PDF creation, and download happen locally in your browser." },
+    { question: "Which CSV delimiters are supported?", answer: "PDFMech automatically detects comma, semicolon, and tab-delimited data and supports quoted values and escaped quote characters." },
+    { question: "Can PDFMech repeat the table header?", answer: "Yes. Mark the first row as a header and it will repeat at the top of each new PDF page." },
+    { question: "What happens to very wide tables?", answer: "Columns are fitted across the selected page. Landscape orientation and compact text are recommended for tables with many columns." },
+  ],
+  pdfToCsv: [
+    { question: "Does PDFMech upload my PDF?", answer: "No. Text extraction, row detection, CSV creation, and download happen locally in your browser." },
+    { question: "Can PDFMech extract a scanned table?", answer: "Not directly. Run OCR first so the scanned page has selectable text, then use the searchable PDF with this tool." },
+    { question: "Will every PDF table convert perfectly?", answer: "No. PDFs store text at page coordinates rather than in spreadsheet cells. Merged cells and irregular spacing may require correction." },
+    { question: "Can the CSV include source page numbers?", answer: "Yes. Enable the page-number column to identify which PDF page produced each detected row." },
+  ],
   watermarkPdf: [
     {
       question: "Does PDFMech upload my PDF?",
@@ -975,6 +1005,8 @@ export const TOOL_SEO_PAGE_KEYS = [
   "pngToPdf",
   "pdfToWord",
   "wordToPdf",
+  "csvToPdf",
+  "pdfToCsv",
   "watermarkPdf",
   "signPdf",
   "privatePdfEditor",
@@ -987,7 +1019,7 @@ export function canonicalUrl(page: SeoPageKey): string {
 export function lastModifiedDate(page: SeoPageKey): string {
   return page === "fillPdfForm" || page === "tools"
     ? "2026-10-08"
-    : page === "pdfToWord" || page === "wordToPdf"
+    : page === "pdfToWord" || page === "wordToPdf" || page === "csvToPdf" || page === "pdfToCsv"
     ? "2026-11-15"
     : page === "pdfToPng" || page === "pngToPdf"
     ? "2026-11-15"
