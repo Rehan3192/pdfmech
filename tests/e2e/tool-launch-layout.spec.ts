@@ -25,6 +25,8 @@ const toolLaunches = [
   ["/jpg-to-pdf", ".jpg-pdf-drop"],
   ["/pdf-to-png", ".pdf-jpg-drop"],
   ["/png-to-pdf", ".jpg-pdf-drop"],
+  ["/pdf-to-word", ".word-converter-drop"],
+  ["/word-to-pdf", ".word-converter-drop"],
   ["/watermark-pdf", ".watermark-drop"],
   ["/sign-pdf", ".sign-pdf-drop"],
 ] as const;

@@ -144,6 +144,8 @@ function renderSnapshot(page) {
     jpgToPdf: "JPG to PDF",
     pdfToPng: "PDF to PNG",
     pngToPdf: "PNG to PDF",
+    pdfToWord: "PDF to Word",
+    wordToPdf: "Word to PDF",
     watermarkPdf: "Watermark PDF",
     signPdf: "Sign PDF",
     tools: "All PDF Tools",
@@ -205,6 +207,8 @@ function renderSnapshot(page) {
   const isJpgToPdfTool = page === "jpgToPdf";
   const isPdfToPngTool = page === "pdfToPng";
   const isPngToPdfTool = page === "pngToPdf";
+  const isPdfToWordTool = page === "pdfToWord";
+  const isWordToPdfTool = page === "wordToPdf";
   const isWatermarkTool = page === "watermarkPdf";
   const isSignTool = page === "signPdf";
   const isToolsDirectory = page === "tools";
@@ -264,6 +268,10 @@ function renderSnapshot(page) {
                               ? `<section><h2>How to convert a PDF to PNG</h2><ol><li>Choose a PDF from your device.</li><li>Select every page or enter individual page numbers and ranges.</li><li>Choose Web, Balanced, or High output resolution.</li><li>Download one PNG or a ZIP containing multiple page images.</li></ol><h2>Lossless PNG page images</h2><p>PDFMech renders selected pages and encodes them as lossless PNG images inside your browser.</p><h2>Private browser-local PDF conversion</h2><p>The source PDF and generated PNG files are not uploaded to a conversion server.</p><h2>Flat image output</h2><p>PNG preserves the visible page, not interactive PDF text, links, forms, layers, or signatures.</p></section>`
                             : isPngToPdfTool
                               ? `<section><h2>How to convert PNG images to PDF</h2><ol><li>Choose one or more PNG images from your device.</li><li>Move images up or down into the required page order.</li><li>Select Fit image, A4, or Letter pages, then choose orientation and margins.</li><li>Create and download one validated PDF in your browser.</li></ol><h2>Combine multiple PNG files into one PDF</h2><p>Each image becomes one PDF page in the exact order shown.</p><h2>Private browser-local image conversion</h2><p>PDFMech embeds the PNG files, builds the PDF, and validates it without uploading your images.</p><h2>Transparency and page layout</h2><p>Transparent PNG areas appear against the white PDF page, while images stay proportional without cropping or stretching.</p></section>`
+                            : isPdfToWordTool
+                              ? `<section><h2>How to convert PDF to Word</h2><ol><li>Choose a PDF containing selectable text.</li><li>Review the extracted text preview and scanned-page warning.</li><li>Create the editable DOCX locally in your browser.</li><li>Download the Word document and review its layout.</li></ol><h2>Editable Word output from selectable PDF text</h2><p>PDFMech extracts readable text page by page and packages it as editable Word paragraphs rather than page screenshots. Short numbered and uppercase lines may be identified as headings.</p><h2>Run OCR before converting scanned pages</h2><p>A scanned PDF contains page images instead of selectable text. Make the document searchable with OCR PDF first, then convert the searchable copy to Word.</p><h2>Private browser-local PDF to DOCX conversion</h2><p>The source PDF, extracted text, and generated DOCX stay in your browser and are not sent to a conversion server.</p><h2>Why PDF and Word layouts differ</h2><p>PDF fixes content at page coordinates while Word reflows editable document structure. Complex columns, exact fonts, forms, floating graphics, spacing, and page breaks may change.</p></section>`
+                            : isWordToPdfTool
+                              ? `<section><h2>How to convert Word to PDF</h2><ol><li>Choose a modern DOCX document from your device.</li><li>Review the extracted document content.</li><li>Select A4 or Letter paper, orientation, and margins.</li><li>Create and download the PDF locally.</li></ol><h2>Supported Word document content</h2><p>PDFMech rebuilds headings, paragraphs, lists, simple tables, and common embedded PNG or JPG images into a new PDF with selectable text.</p><h2>Private browser-local DOCX conversion</h2><p>The Word file is read and the PDF is generated in this browser tab without uploading the source document to a conversion server.</p><h2>Modern DOCX files only</h2><p>The converter supports the current DOCX format. It does not silently accept the older binary DOC format, which requires a different document engine.</p><h2>Word layout limits</h2><p>Headers, footers, tracked changes, floating shapes, uncommon fonts, exact pagination, advanced tables, and other Microsoft Word-specific layout may change in the generated PDF.</p></section>`
                             : isWatermarkTool
                               ? `<section><h2>How to add a watermark to a PDF</h2><ol><li>Choose a PDF from your device.</li><li>Enter watermark text and adjust its color, size, opacity, rotation, and position.</li><li>Select every page or enter a custom page range.</li><li>Apply the watermark and download the separate PDF created in your browser.</li></ol><h2>Custom text watermark controls</h2><p>Add labels such as Confidential, Draft, Sample, Copy, or a company name and check their placement in the live preview.</p><h2>Private browser-local PDF watermarking</h2><p>PDFMech previews, modifies, validates, and downloads the PDF locally without uploading the source document.</p><h2>Watermark scope and document limits</h2><p>A watermark is a visible label rather than access control, encryption, redaction, or copy prevention. Modifying a signed PDF invalidates its existing signatures.</p></section>`
                             : isSignTool
@@ -325,6 +333,10 @@ function renderSnapshot(page) {
                               ? "/pdf-to-png#pdf-to-png-tool"
                             : isPngToPdfTool
                               ? "/png-to-pdf#png-to-pdf-tool"
+                            : isPdfToWordTool
+                              ? "/pdf-to-word#pdf-to-word-tool"
+                            : isWordToPdfTool
+                              ? "/word-to-pdf#word-to-pdf-tool"
                             : isWatermarkTool
                               ? "/watermark-pdf#watermark-pdf-tool"
                             : isSignTool
@@ -382,6 +394,10 @@ function renderSnapshot(page) {
                               ? "Choose a PDF to convert to PNG"
                             : isPngToPdfTool
                               ? "Choose PNG images to convert to PDF"
+                            : isPdfToWordTool
+                              ? "Choose a PDF to convert to Word"
+                            : isWordToPdfTool
+                              ? "Choose a Word DOCX to convert to PDF"
                             : isWatermarkTool
                               ? "Choose a PDF to watermark"
                             : isSignTool

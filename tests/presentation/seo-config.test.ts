@@ -94,4 +94,11 @@ describe("SEO configuration", () => {
     expect(TOOL_SEO_PAGE_KEYS).toContain("pdfToPng");
     expect(TOOL_SEO_PAGE_KEYS).toContain("pngToPdf");
   });
+
+  it("publishes dedicated Word conversion routes", () => {
+    expect(SEO_PAGES.pdfToWord.path).toBe("/pdf-to-word");
+    expect(SEO_PAGES.wordToPdf.path).toBe("/word-to-pdf");
+    expect(TOOL_SEO_PAGE_KEYS).toContain("pdfToWord");
+    expect(TOOL_SEO_PAGE_KEYS).toContain("wordToPdf");
+  });
 });

@@ -28,6 +28,8 @@ export type SeoPageKey =
   | "jpgToPdf"
   | "pdfToPng"
   | "pngToPdf"
+  | "pdfToWord"
+  | "wordToPdf"
   | "watermarkPdf"
   | "signPdf"
   | "tools"
@@ -259,6 +261,22 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
     description: "Convert PNG images to one PDF online for free. Arrange images, choose A4, Letter, or fitted pages, and create the PDF locally without uploading files.",
     h1: "Convert PNG images to one PDF.",
     intro: "Arrange multiple PNG files, choose page size, orientation, and margins, then download one validated PDF created privately in your browser.",
+    schemaType: "WebPage",
+  },
+  pdfToWord: {
+    path: "/pdf-to-word",
+    title: "PDF to Word Converter Online Free - No Upload | PDFMech",
+    description: "Convert PDF to an editable Word DOCX online for free. Extract selectable text locally in your browser without uploading your document.",
+    h1: "Convert PDF to editable Word.",
+    intro: "Extract selectable PDF text into an editable DOCX file with private browser-local processing and clear layout limits.",
+    schemaType: "WebPage",
+  },
+  wordToPdf: {
+    path: "/word-to-pdf",
+    title: "Word to PDF Converter Online Free - No Upload | PDFMech",
+    description: "Convert a Word DOCX document to PDF online for free. Choose page layout and create a PDF locally without uploading the Word file.",
+    h1: "Convert Word to PDF in your browser.",
+    intro: "Turn DOCX headings, paragraphs, lists, simple tables, and common images into a new PDF created privately on your device.",
     schemaType: "WebPage",
   },
   watermarkPdf: {
@@ -844,6 +862,18 @@ export const TOOL_ROUTE_FAQS: Readonly<
       answer: "Transparent areas appear against the white PDF page behind the embedded image.",
     },
   ],
+  pdfToWord: [
+    { question: "Does PDFMech upload my PDF?", answer: "No. Selectable text is extracted and the DOCX file is created locally in your browser." },
+    { question: "Can PDFMech convert a scanned PDF to Word?", answer: "Scanned pages need OCR first. Make the PDF searchable with OCR PDF, then convert the searchable copy to Word." },
+    { question: "Will the Word document exactly match the PDF?", answer: "Not always. PDF uses fixed page positions while Word reflows editable content, so columns, fonts, spacing, forms, and floating objects may change." },
+    { question: "Is the converted Word text editable?", answer: "Yes. Detected selectable text is placed into editable DOCX paragraphs rather than page screenshots." },
+  ],
+  wordToPdf: [
+    { question: "Is my Word file uploaded?", answer: "No. DOCX reading, layout, PDF creation, and download happen locally in your browser." },
+    { question: "Does PDFMech support old .doc files?", answer: "No. This browser-local converter supports the modern .docx format, not the older binary .doc format." },
+    { question: "What Word content is supported?", answer: "Headings, paragraphs, lists, simple tables, and common embedded PNG or JPG images are rebuilt into the PDF." },
+    { question: "Will the PDF look exactly like Microsoft Word?", answer: "Complex pagination, headers, footers, tracked changes, floating shapes, uncommon fonts, and advanced Word layout may change." },
+  ],
   watermarkPdf: [
     {
       question: "Does PDFMech upload my PDF?",
@@ -943,6 +973,8 @@ export const TOOL_SEO_PAGE_KEYS = [
   "jpgToPdf",
   "pdfToPng",
   "pngToPdf",
+  "pdfToWord",
+  "wordToPdf",
   "watermarkPdf",
   "signPdf",
   "privatePdfEditor",
@@ -955,6 +987,8 @@ export function canonicalUrl(page: SeoPageKey): string {
 export function lastModifiedDate(page: SeoPageKey): string {
   return page === "fillPdfForm" || page === "tools"
     ? "2026-10-08"
+    : page === "pdfToWord" || page === "wordToPdf"
+    ? "2026-11-15"
     : page === "pdfToPng" || page === "pngToPdf"
     ? "2026-11-15"
     : page === "compressPdf" || page === "redactPdf" || page === "protectPdf" || page === "unlockPdf" || page === "pdfToJpg" || page === "jpgToPdf" || page === "watermarkPdf" || page === "signPdf"

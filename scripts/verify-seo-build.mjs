@@ -376,6 +376,26 @@ for (const page of SEO_PAGE_KEYS) {
     );
   }
   if (
+    page === "pdfToWord" &&
+    (!html.includes("How to convert PDF to Word") ||
+      !html.includes("Editable Word output from selectable PDF text") ||
+      !html.includes("Run OCR before converting scanned pages") ||
+      !html.includes("Why PDF and Word layouts differ") ||
+      !html.includes('/pdf-to-word#pdf-to-word-tool'))
+  ) {
+    throw new Error(`${filename} must expose crawlable PDF-to-Word instructions, OCR guidance, layout limits, privacy details, and a same-route action.`);
+  }
+  if (
+    page === "wordToPdf" &&
+    (!html.includes("How to convert Word to PDF") ||
+      !html.includes("Supported Word document content") ||
+      !html.includes("Modern DOCX files only") ||
+      !html.includes("Word layout limits") ||
+      !html.includes('/word-to-pdf#word-to-pdf-tool'))
+  ) {
+    throw new Error(`${filename} must expose crawlable Word-to-PDF instructions, format support, layout limits, privacy details, and a same-route action.`);
+  }
+  if (
     page === "watermarkPdf" &&
     (!html.includes("How to add a watermark to a PDF") ||
       !html.includes("Custom text watermark controls") ||
