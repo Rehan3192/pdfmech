@@ -396,7 +396,7 @@ export const SEO_PAGES: Readonly<Record<SeoPageKey, SeoPageConfig>> = {
   privacy: {
     path: "/privacy",
     title: "Privacy Policy – Local PDF Editing | PDFMech",
-    description: "Learn how PDFMech handles source PDFs, browser-local editing and recovery data, downloads, contact messages, and your privacy choices.",
+    description: "Learn how PDFMech handles source PDFs, local recovery, website requests, Google AdSense, advertising cookies, consent, and privacy choices.",
     h1: "Your PDF stays close to you.",
     intro: "A clear explanation of local PDF processing, browser recovery data, and the information you control.",
     schemaType: "WebPage",

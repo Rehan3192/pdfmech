@@ -41,6 +41,12 @@ test("website shell has clear navigation and SEO support pages", async ({
   await expect(page.getByTestId("site-privacy")).toContainText(
     "What stays local",
   );
+  await expect(page.getByTestId("site-privacy")).toContainText(
+    "Advertising and Google AdSense",
+  );
+  await expect(page.getByTestId("site-privacy")).toContainText(
+    "does not intentionally send source PDF bytes",
+  );
 
   await mainNavigation.getByRole("link", { name: "Contact" }).click();
   await expect(page).toHaveURL(/\/contact$/);

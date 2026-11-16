@@ -2694,10 +2694,19 @@ function PrivacyPage() {
           { title: "Local recovery data", items: ["Recovery may save the source PDF and current editing state.", "The original filename and text you add may be included.", "This data is stored by the current browser on the current device.", "Anyone using the same browser profile may be able to access it."] },
           { title: "Your privacy controls", items: ["Choose whether to restore an available session.", "Use Clear document to remove the active work and checkpoint.", "Clear browser site data for additional local cleanup.", "Avoid local recovery on a shared or public device."] },
           { title: "Basic website information", items: ["Normal web hosting may process technical requests needed to deliver the site.", "Browsers and hosting infrastructure may handle IP address, user-agent, and request timing data.", "PDFMech does not require an account profile for the editor.", "Do not send sensitive PDFs through general support email."] },
+          { title: "Advertising and Google AdSense", items: ["PDFMech uses Google AdSense to serve and measure advertising after site approval.", "Google and its advertising partners may process IP address, device and browser information, identifiers, page visits, and ad interactions.", "Google may use cookies or similar browser storage to deliver, limit, personalize, and measure ads where permitted.", "PDFMech does not intentionally send source PDF bytes, extracted document text, or local recovery data to Google AdSense."] },
+          { title: "Advertising choices and consent", items: ["Personalized advertising depends on your region, consent choices, and Google settings.", "Where required, a consent message lets you accept, reject, or manage advertising purposes.", "You can review or change Google ad personalization through Google My Ad Center.", "Browser controls can also delete or restrict cookies, although this may affect site and advertising features."] },
           { title: "Downloaded files", items: ["Downloads are saved wherever your browser or device directs them.", "PDFMech does not control files after they are downloaded.", "Protect sensitive output using suitable device and file controls.", "Delete unwanted copies from downloads, backups, and shared folders."] },
           { title: "Before sharing", items: ["Review every edited page in a trusted PDF viewer.", "Check page order, added text, visual covers, and metadata.", "Whiteout is not guaranteed secure data removal.", "Use a specialist redaction tool for confidential information."] },
         ]}
       />
+      <section className="trust-warning-card privacy-note">
+        <span aria-hidden="true">Ad</span>
+        <div>
+          <h2>Advertising, cookies, and your choices</h2>
+          <p>Google AdSense and its partners may use cookies, browser storage, and technical information to provide and measure advertising. Review <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer">how Google uses information for advertising</a>, manage personalization in <a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer">My Ad Center</a>, and use the consent controls shown for your region.</p>
+        </div>
+      </section>
       <section className="trust-warning-card privacy-note">
         <span aria-hidden="true">i</span>
         <div><h2>Privacy includes the finished file</h2><p>Local processing reduces unnecessary document transfer, but you still control where the downloaded PDF is stored and who receives it. Review and protect the finished file before sharing.</p></div>

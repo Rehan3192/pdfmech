@@ -11,6 +11,9 @@ import {
 import { guideForToolPath, relatedTools } from "../src/tool-discovery.ts";
 
 const outputDirectory = join(process.cwd(), "dist");
+const ADSENSE_ACCOUNT = "ca-pub-9905580341062851";
+const ADSENSE_PUBLISHER = "pub-9905580341062851";
+const ADSENSE_SCRIPT = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
 const titles = new Set();
 const descriptions = new Set();
 const CONTENT_COMPLETE_PAGES = new Set([
@@ -79,6 +82,15 @@ for (const page of SEO_PAGE_KEYS) {
   }
   if (!html.includes('name="robots" content="index,follow,max-image-preview:large"')) {
     throw new Error(`${filename} is not indexable.`);
+  }
+  if (!html.includes(`name="google-adsense-account" content="${ADSENSE_ACCOUNT}"`)) {
+    throw new Error(`${filename} is missing the Google AdSense account verification tag.`);
+  }
+  if (
+    !html.includes(ADSENSE_SCRIPT) ||
+    !html.includes(`client=${ADSENSE_ACCOUNT}`)
+  ) {
+    throw new Error(`${filename} is missing the site-wide Google AdSense loader.`);
   }
   if (/href="\/(?!\/)[^"]*[?&](?:utm_|gclid|fbclid)/i.test(html)) {
     throw new Error(`${filename} contains an internally linked tracking URL.`);
@@ -504,6 +516,16 @@ for (const page of SEO_PAGE_KEYS) {
   ) {
     throw new Error(`${filename} must expose Article structured data.`);
   }
+  if (
+    page === "privacy" &&
+    (!html.includes("Advertising and Google AdSense") ||
+      !html.includes("Advertising choices and consent") ||
+      !html.includes("does not intentionally send source PDF bytes"))
+  ) {
+    throw new Error(
+      `${filename} must expose crawlable advertising, consent, and document-privacy disclosures.`,
+    );
+  }
   titles.add(title);
   descriptions.add(description);
 }
@@ -518,6 +540,12 @@ if (!notFound.includes('name="robots" content="noindex,follow"')) {
 }
 if (notFound.includes('rel="canonical"')) {
   throw new Error("404.html must not claim a canonical indexable URL.");
+}
+
+const adsTxt = (await readFile(join(outputDirectory, "ads.txt"), "utf8")).trim();
+const expectedAdsTxt = `google.com, ${ADSENSE_PUBLISHER}, DIRECT, f08c47fec0942fa0`;
+if (adsTxt !== expectedAdsTxt) {
+  throw new Error("ads.txt must contain the exact authorized Google AdSense seller record.");
 }
 
 const sitemap = await readFile(
@@ -614,9 +642,14 @@ if (
   !contentSecurityPolicy.includes("default-src 'self'") ||
   !contentSecurityPolicy.includes("object-src 'none'") ||
   !contentSecurityPolicy.includes("frame-ancestors 'none'") ||
-  !contentSecurityPolicy.includes("worker-src 'self' blob:")
+  !contentSecurityPolicy.includes("worker-src 'self' blob:") ||
+  !contentSecurityPolicy.includes("https://pagead2.googlesyndication.com") ||
+  !contentSecurityPolicy.includes("https://googleads.g.doubleclick.net") ||
+  !contentSecurityPolicy.includes("https://fundingchoicesmessages.google.com")
 ) {
-  throw new Error("vercel.json must provide the application-safe Content-Security-Policy.");
+  throw new Error(
+    "vercel.json must provide the application-safe and AdSense-compatible Content-Security-Policy.",
+  );
 }
 const dynamicBlogRewrite = vercelConfig.rewrites?.find(
   (rewrite) =>
