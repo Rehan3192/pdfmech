@@ -14,7 +14,8 @@ async function makeTablePdf(): Promise<Buffer> {
   ].entries()) {
     const y = 720 - rowIndex * 28;
     row.forEach((value, columnIndex) => {
-      page.drawText(value, { x: [60, 250, 390][columnIndex], y, size: 12, font });
+      const x = [60, 250, 390][columnIndex] ?? 60;
+      page.drawText(value, { x, y, size: 12, font });
     });
   }
   return Buffer.from(await document.save());

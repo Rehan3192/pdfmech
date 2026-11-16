@@ -26,7 +26,7 @@ test("converts quoted CSV data into a valid local PDF", async ({ page }) => {
   await page.getByRole("link", { name: "Download PDF" }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("sales-report.pdf");
-  const document = await PDFDocument.load(await readFile((await download.path())!));
-  expect(document.getPageCount()).toBeGreaterThanOrEqual(1);
+  const pdfDocument = await PDFDocument.load(await readFile((await download.path())!));
+  expect(pdfDocument.getPageCount()).toBeGreaterThanOrEqual(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
